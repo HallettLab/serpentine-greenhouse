@@ -26,7 +26,9 @@ phyt_trts <- left_join(phen_phyt, pots) %>%
 
 ##forbs visualization
 forbs_back <- back_trts %>%
-  filter(seed_sp == "LAPL" | seed_sp == "PLER") 
+  filter(seed_sp == "LAPL" | seed_sp == "PLER") %>%
+  group_by(week, seed_sp, seed_density, trt_water, trt_N) %>%
+  summarize(flowers = mean(flowers), stalks_buds = mean(stalks_buds))
 ggplot(forbs_back) + geom_point(aes(week, flowers, color=trt_N), size = 1.5) +
   geom_line(aes(week,flowers, color=trt_N, linetype=trt_water), size = 1) + 
   facet_grid(seed_sp~seed_density, scale = "free") 
@@ -36,14 +38,18 @@ ggplot(forbs_back) + geom_point(aes(week, stalks_buds, color=trt_N), size = 1.5)
 
 ##grasses visualization
 grass_back <- back_trts %>%
-  filter(seed_sp == "BRHO" | seed_sp == "FEMI")
+  filter(seed_sp == "BRHO" | seed_sp == "FEMI") %>%
+  group_by(week, seed_sp, seed_density, trt_water, trt_N) %>%
+  summarize(culms = mean(culms))
 ggplot(grass_back) + geom_point(aes(week, culms, color=trt_N), size = 1.5) + 
   geom_line(aes(week,culms, color=trt_N, linetype=trt_water), size = 1) + 
   facet_grid(seed_sp~seed_density, scale = "free") 
 
 ##PLER phyto visualization
 pler_phyt <- phyt_trts %>%
-  filter(phytometer == "PLER") 
+  filter(phytometer == "PLER") %>%
+  group_by(week, seed_sp, seed_density, trt_water, trt_N) %>%
+  summarize(flowers = mean(flowers), stalks_buds = mean(stalks_buds))
 pler_phyt[is.na(pler_phyt)] = 0
 ggplot(pler_phyt) + geom_point(aes(week, flowers, color=trt_N), size = 1.5) +
   geom_line(aes(week,flowers, color=trt_N, linetype=trt_water), size = 1) + 
@@ -54,7 +60,9 @@ ggplot(pler_phyt) + geom_point(aes(week, stalks_buds, color=trt_N), size = 1.5) 
 
 ##LAPL phyto visualization
 lapl_phyt <- phyt_trts %>%
-  filter(phytometer == "LAPL") 
+  filter(phytometer == "LAPL") %>%
+  group_by(week, seed_sp, seed_density, trt_water, trt_N) %>%
+  summarize(flowers = mean(flowers), stalks_buds = mean(stalks_buds))
 lapl_phyt[is.na(lapl_phyt)] = 0
 ggplot(lapl_phyt) + geom_point(aes(week, flowers, color=trt_N), size = 1.5) +
   geom_line(aes(week,flowers, color=trt_N, linetype=trt_water), size = 1) + 
