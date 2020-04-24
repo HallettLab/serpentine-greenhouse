@@ -11,14 +11,6 @@ calcSE<-function(x){
   sd(x)/sqrt(length(x))
 }
 
-##datpaths
-#mac Sofi
-datpath <- "~/OneDrive - University Of Oregon/Sofi phenology project/"
-#mac other
-datpath <- "~/OneDrive - University Of Oregon/Serpentine/Sofi phenology project/"
-#pc Eliza
-datpath <- "C:/Users/eliza/OneDrive - University Of Oregon/Serpentine/Sofi phenology project/"
-
 ##read in data
 phen_back <- read.csv(paste(datpath, "/phenology_background.csv", sep = ""))
 phen_phyt <- read.csv(paste(datpath, "/phenology_phytometers.csv", sep = ""))
