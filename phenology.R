@@ -69,15 +69,22 @@ ggplot(grass_back) + geom_point(aes(week, avgculms, color=trt_N), size = 1.5) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
   scale_x_continuous("week", labels = as.character(week), breaks = week)
 
-##PLER phyto visualization
+##PLER phyto data manipulation
 pler_phyt <- phyt_trts %>%
-  filter(phytometer == "PLER") %>%
-  group_by(week, seed_sp, seed_density, trt_water, trt_N) %>%
-  summarize(flowers = mean(flowers), stalks_buds = mean(stalks_buds))
+  filter(phytometer == "PLER")
 pler_phyt[is.na(pler_phyt)] = 0
-ggplot(pler_phyt) + geom_point(aes(week, flowers, color=trt_N), size = 1.5) +
-  geom_line(aes(week,flowers, color=trt_N, linetype=trt_water), size = 1) + 
-  facet_grid(seed_sp~seed_density, scale = "free") 
+pler_phyt <- pler_phyt %>%
+  group_by(week, seed_sp, seed_density, trt_water, trt_N) %>%
+  summarize(avgflowers = mean(flowers), avgbuds = mean(stalks_buds), seflowers = calcSE(flowers), sebuds = calcSE(stalks_buds))
+
+##PLER phyto data visualization
+ggplot(pler_phyt) + geom_point(aes(week, avgflowers, color=trt_N), size = 1.5) +
+  geom_line(aes(week,avgflowers, color=trt_N, linetype=trt_water), size = 1) +
+  geom_errorbar(aes(x = week, y = avgflowers, ymin = avgflowers - seflowers, ymax = avgflowers + seflowers, color = trt_N, linetype = trt_water)) +
+  facet_grid(seed_sp~seed_density, scale = "free") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  scale_x_continuous("week", labels = as.character(week), breaks = week)
+
 ggplot(pler_phyt) + geom_point(aes(week, stalks_buds, color=trt_N), size = 1.5) +
   geom_line(aes(week,stalks_buds, color=trt_N, linetype=trt_water), size = 1) + 
   facet_grid(seed_sp~seed_density, scale = "free") 
