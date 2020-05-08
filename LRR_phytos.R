@@ -37,6 +37,18 @@ ggplot(LRR_pler) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
   geom_hline(yintercept=0,linetype="dashed") +
   ylab("Plantago phytometer seed production LRR")
 
+#Plantago phytomer seed production LRR with Bromus competition
+#(Michaela's figure)
+LRR_pler_brho <- LRR %>%
+  filter(phytometer=="PLER") %>%
+  filter(seed_sp=="BRHO")
+
+ggplot(LRR_pler_brho) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
+  facet_grid(seed_sp~seed_density,scale="free") + 
+  geom_hline(yintercept=0,linetype="dashed") +
+  ylab("Plantago phytometer seed production LRR")
+
+
 ##Layia phytometer seed production LRR
 LRR_lapl <- LRR %>%
   filter(phytometer=="LAPL")
@@ -45,6 +57,7 @@ ggplot(LRR_lapl) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
   facet_grid(seed_sp~seed_density,scale="free") + 
   geom_hline(yintercept=0,linetype="dashed")+
   ylab("Layia phytometer seed production LRR")
+
 
 ##Bromus phytometer seed production LRR
 LRR_brho <- LRR %>%
