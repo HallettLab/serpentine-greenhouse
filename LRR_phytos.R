@@ -67,3 +67,4 @@ ggplot(LRR_brho) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
   facet_grid(seed_sp~seed_density,scale="free") + 
   geom_hline(yintercept=0,linetype="dashed") +
   ylab("Bromus phytometer seed production LRR")
+
