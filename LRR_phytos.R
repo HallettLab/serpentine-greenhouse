@@ -7,7 +7,6 @@ library(tidyverse)
 
 ##read in data
 seeds_phyt <- read.csv(paste(datpath, "/seed_phytometers.csv", sep = "")) %>%
-  filter(!phytometer == "FEMI") %>%
   filter(!potential_seed == "NA") %>%
   select(-comment,-biomass_mg)
 seeds_phyt[seeds_phyt == 0] <- 0.01
@@ -28,22 +27,12 @@ comp <- seeds_phyt %>%
 LRR <- full_join(no_comp,comp) %>%
   mutate(LRR = log(comp_seed/nocomp_seed))
 
+
 ##Plantago phytometer seed production LRR
 LRR_pler <- LRR %>%
   filter(phytometer=="PLER")
 
 ggplot(LRR_pler) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
-  facet_grid(seed_sp~seed_density,scale="free") + 
-  geom_hline(yintercept=0,linetype="dashed") +
-  ylab("Plantago phytometer seed production LRR")
-
-#Plantago phytomer seed production LRR with Bromus competition
-#(Michaela's figure)
-LRR_pler_brho <- LRR %>%
-  filter(phytometer=="PLER") %>%
-  filter(seed_sp=="BRHO")
-
-ggplot(LRR_pler_brho) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
   facet_grid(seed_sp~seed_density,scale="free") + 
   geom_hline(yintercept=0,linetype="dashed") +
   ylab("Plantago phytometer seed production LRR")
@@ -68,3 +57,12 @@ ggplot(LRR_brho) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
   geom_hline(yintercept=0,linetype="dashed") +
   ylab("Bromus phytometer seed production LRR")
 
+
+##Festuca phytometer seed production LRR
+LRR_femi <- LRR %>%
+  filter(phytometer=="FEMI")
+
+ggplot(LRR_femi) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
+  facet_grid(seed_sp~seed_density,scale="free") + 
+  geom_hline(yintercept=0,linetype="dashed") +
+  ylab("Festuca phytometer seed production LRR")
