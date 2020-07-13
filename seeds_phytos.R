@@ -38,9 +38,19 @@ brho_phyt <- seeds_phyt %>%
   filter(!seed_sp == "none") %>%
   filter(!num_seeds == "NA")
 
+## graph to see if viable seed changes with treatment
 brho_phyt2 <- seeds_phyt %>%
   filter(phytometer == "BRHO") %>%
-  filter(!num_seeds == "NA")
+  filter(!num_seeds == "NA") %>%
+  mutate(p_viable = num_seeds/potential_seed) %>%
+  filter(!p_viable == "NaN")
+
+ggplot(brho_phyt2) + geom_boxplot(aes(trt_N, p_viable, fill = trt_water)) +
+  facet_grid(~block)
+
+ggplot(brho_phyt2) + geom_boxplot(aes(trt_N, p_viable, fill = trt_water)) +
+  facet_grid(seed_sp~seed_density, scale = "free")
+
 
 noseed_brho <- seeds_phyt %>%
   filter(phytometer == "BRHO") %>%

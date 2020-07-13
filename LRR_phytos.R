@@ -12,19 +12,32 @@ seeds_phyt <- read.csv(paste(datpath, "/seed_phytometers.csv", sep = "")) %>%
 seeds_phyt[seeds_phyt == 0] <- 0.01
 
 ##no competition phytometer seed production LRR data manipulation
-no_comp <- seeds_phyt %>%
+no_comp_pot <- seeds_phyt %>%
   filter(seed_sp == "none") %>%
   group_by(block,trt_water,trt_N,phytometer) %>%
   summarize(nocomp_seed = potential_seed) 
 
+no_comp_mat <- seeds_phyt %>%
+  filter(seed_sp == "none") %>%
+  group_by(block,trt_water,trt_N,phytometer) %>%
+  summarize(nocomp_seed = num_seeds)
+
 ##competition phytometer seed production LRR data manipulation
-comp <- seeds_phyt %>%
+comp_pot <- seeds_phyt %>%
   filter(!seed_sp == "none") %>%
   group_by(block,trt_water, trt_N,seed_sp,seed_density,phytometer) %>%
   summarize(comp_seed = potential_seed)
 
+comp_mat <- seeds_phyt %>%
+  filter(!seed_sp == "none") %>%
+  group_by(block,trt_water, trt_N,seed_sp,seed_density,phytometer) %>%
+  summarize(comp_seed = num_seeds)
+
 #join datasets for final LRR
-LRR <- full_join(no_comp,comp) %>%
+LRR_pot <- full_join(no_comp_pot,comp_pot) %>%
+  mutate(LRR = log(comp_seed/nocomp_seed))
+
+LRR_mat <- full_join(no_comp_mat,comp_mat) %>%
   mutate(LRR = log(comp_seed/nocomp_seed))
 
 
@@ -49,13 +62,21 @@ ggplot(LRR_lapl) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
 
 
 ##Bromus phytometer seed production LRR
-LRR_brho <- LRR %>%
+LRR_brho_pot <- LRR_pot %>%
   filter(phytometer=="BRHO")
 
-ggplot(LRR_brho) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
+LRR_brho_mat <- LRR_mat %>%
+  filter(phytometer=="BRHO")
+
+ggplot(LRR_brho_pot) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
   facet_grid(seed_sp~seed_density,scale="free") + 
   geom_hline(yintercept=0,linetype="dashed") +
-  ylab("Bromus phytometer seed production LRR")
+  ylab("Bromus phyto mature seed production LRR")
+
+ggplot(LRR_brho_mat) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
+  facet_grid(seed_sp~seed_density,scale="free") + 
+  geom_hline(yintercept=0,linetype="dashed") +
+  ylab("Bromus phyto all seed production LRR")
 
 
 ##Festuca phytometer seed production LRR
