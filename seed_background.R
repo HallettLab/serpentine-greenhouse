@@ -108,8 +108,8 @@ ggplot(mat_seeds_PLER, aes(seed_sp,seeds)) +
   geom_point(aes(color = type, shape = trt_water)) +
   facet_grid(seed_density~trt_N) 
 
-ggplot(all_seeds_PLER, aes(seed_sp,seeds)) +
-  geom_point(aes(color = type, shape = trt_water)) +
+ggplot(all_seeds_PLER, aes(seed_sp,seeds, group = interaction(type, trt_water))) +
+  geom_point(aes(color = type, shape = trt_water)) + geom_line(aes(color = type)) + 
   facet_grid(seed_density~trt_N) 
 
 
