@@ -94,14 +94,14 @@ PLER_no_comp_hi <- seeds_phyt %>%
 PLER_no_comp <- full_join(PLER_no_comp_hi,PLER_no_comp_lo)
 
 seeds_PLER <- full_join(BRHO_phyt,PLER_back) %>%
-  select(-seeds_in,-out_in,-seed_added,-recruit) %>%
+  select(-seed_added,-recruitment,-recruit) %>%
   mutate(PLER_ind = seeds_out/stem_density) %>%
   rename(BRHO_mat_seeds = num_seeds, BRHO_pot_seeds = potential_seed,
-         PLER_stems = stem_density, PLER_seeds = seeds_out) %>%
+         PLER_stems = stem_density, PLER_seeds = seeds_out, PLER_outin = out_in) %>%
   group_by(seed_density,seed_sp,trt_water,trt_N) %>%
   summarize(all_BRHO = mean(BRHO_mat_seeds),
             mature_BRHO = mean(BRHO_pot_seeds),
-            PLER = mean(PLER_ind)) %>%
+            PLER_stem = mean(PLER_ind),PLER_inout = mean(PLER_outin)) %>%
   pivot_longer(c("all_BRHO","mature_BRHO","PLER"),
                names_to = "type", values_to = "seeds")
 
@@ -115,13 +115,16 @@ mat_seeds_PLER <- seeds_PLER %>%
 all_seeds_PLER <- seeds_PLER %>%
   filter(!type == "mature_BRHO")
 
-ggplot(mat_seeds_PLER, aes(seed_sp,seeds)) +
-  geom_point(aes(color = type, shape = trt_water)) +
-  facet_grid(seed_density~trt_N) 
+ggplot(mat_seeds_PLER, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
+  geom_point(aes(color = type, shape = trt_water)) + geom_line(aes(color = type)) +
+  facet_grid(seed_density~trt_N, labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition")
 
 ggplot(all_seeds_PLER, aes(seed_sp,seeds, group = interaction(type, trt_water))) +
   geom_point(aes(color = type, shape = trt_water)) + geom_line(aes(color = type)) + 
-  facet_grid(seed_density~trt_N) 
+  facet_grid(seed_density~trt_N,labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition")
+
+n.labs <- c("high N", "int N", "low N")
+names(n.labs) <- c("hi","int", "lo")
 
 
 
