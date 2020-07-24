@@ -15,8 +15,19 @@ PLER_back <- seeds_back %>%
   filter(seed_sp == "PLER") %>%
   mutate(out_in = seeds_out/seeds_in)
 
-ggplot(seeds_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
+ggplot(PLER_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
   ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density)
+
+## Visualize recruitment of background
+stems_back <- stems_back %>%
+  filter(!stem_density == "NA") %>%
+  mutate(recruitment = stem_density/seed_added)
+
+ggplot(stems_back) + geom_boxplot(aes(trt_N,recruitment,fill=trt_water)) +
+  facet_grid(seed_sp~seed_density, scale="free", labeller = labeller(seed_density = density.labs))
+
+density.labs <- c("high seed density", "low seed density")
+names(density.labs) <- c("hi", "lo")
 
 
 ## Data manipulation BRHO phytometers in PLER background
