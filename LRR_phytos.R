@@ -42,13 +42,20 @@ LRR_mat <- full_join(no_comp_mat,comp_mat) %>%
 
 
 ##Plantago phytometer seed production LRR
-LRR_pler <- LRR %>%
-  filter(phytometer=="PLER")
+LRR_pler <- LRR_mat %>%
+  filter(phytometer=="PLER") %>%
+  filter(seed_sp == "BRHO")
 
 ggplot(LRR_pler) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
-  facet_grid(seed_sp~seed_density,scale="free") + 
+  facet_grid(seed_sp~seed_density,scale="free",labeller = labeller(seed_density = density.labs)) + 
   geom_hline(yintercept=0,linetype="dashed") +
-  ylab("Plantago phytometer seed production LRR")
+  ylab("Plantago phytometer seed production LRR") +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+LRR_pler$seed_density <- factor(LRR_pler$seed_density , levels = c("lo","hi"))
+LRR_pler$trt_N <- factor(LRR_pler$trt_N , levels = c("lo","int","hi"))
+LRR_pler$trt_water <- factor(LRR_pler$trt_water , levels = c("lo","hi"))
+
 
 
 ##Layia phytometer seed production LRR
@@ -63,20 +70,36 @@ ggplot(LRR_lapl) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
 
 ##Bromus phytometer seed production LRR
 LRR_brho_pot <- LRR_pot %>%
-  filter(phytometer=="BRHO")
+  filter(phytometer=="BRHO") %>%
+  filter(seed_sp == "PLER")
 
 LRR_brho_mat <- LRR_mat %>%
-  filter(phytometer=="BRHO")
+  filter(phytometer=="BRHO") %>%
+  filter(seed_sp == "PLER")
 
 ggplot(LRR_brho_pot) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
-  facet_grid(seed_sp~seed_density,scale="free") + 
+  facet_grid(seed_sp~seed_density,scale="free", labeller = labeller(seed_density = density.labs)) + 
   geom_hline(yintercept=0,linetype="dashed") +
-  ylab("Bromus phyto mature seed production LRR")
+  ylab("Bromus phyto all seed production LRR") +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+LRR_brho_pot$seed_density <- factor(LRR_brho_pot$seed_density , levels = c("lo","hi"))
+LRR_brho_pot$trt_N <- factor(LRR_brho_pot$trt_N , levels = c("lo","int","hi"))
+LRR_brho_pot$trt_water <- factor(LRR_brho_pot$trt_water , levels = c("lo","hi"))
+
+density.labs <- c("low seed density", "high seed density")
+names(density.labs) <- c("lo", "hi")
 
 ggplot(LRR_brho_mat) + geom_boxplot(aes(trt_N,LRR,fill=trt_water)) +
-  facet_grid(seed_sp~seed_density,scale="free") + 
+  facet_grid(seed_sp~seed_density,scale="free",labeller = labeller(seed_density = density.labs)) + 
   geom_hline(yintercept=0,linetype="dashed") +
-  ylab("Bromus phyto all seed production LRR")
+  ylab("Bromus phyto mature seed production LRR") +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+LRR_brho_mat$seed_density <- factor(LRR_brho_mat$seed_density , levels = c("lo","hi"))
+LRR_brho_mat$trt_N <- factor(LRR_brho_mat$trt_N , levels = c("lo","int","hi"))
+LRR_brho_mat$trt_water <- factor(LRR_brho_mat$trt_water , levels = c("lo","hi"))
+
 
 
 ##Festuca phytometer seed production LRR

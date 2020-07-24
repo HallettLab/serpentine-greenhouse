@@ -16,18 +16,35 @@ PLER_back <- seeds_back %>%
   mutate(out_in = seeds_out/seeds_in)
 
 ggplot(PLER_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
-  ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density)
+  ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density,,labeller = labeller(seed_density = density.labs)) +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+PLER_back$seed_density <- factor(PLER_back$seed_density , levels = c("lo","hi"))
+PLER_back$trt_N <- factor(PLER_back$trt_N , levels = c("lo","int","hi"))
+PLER_back$trt_water <- factor(PLER_back$trt_water , levels = c("lo","hi"))
+
 
 ## Visualize recruitment of background
 stems_back <- stems_back %>%
   filter(!stem_density == "NA") %>%
+  filter(seed_sp == "PLER" | seed_sp == "BRHO") %>%
   mutate(recruitment = stem_density/seed_added)
 
 ggplot(stems_back) + geom_boxplot(aes(trt_N,recruitment,fill=trt_water)) +
-  facet_grid(seed_sp~seed_density, scale="free", labeller = labeller(seed_density = density.labs))
+  facet_grid(seed_sp~seed_density, scale="free", labeller = labeller(seed_density = density.labs)) +
+  scale_fill_manual(values=c("azure3","azure4"))
+stems_back$seed_density <- factor(stems_back$seed_density , levels = c("lo","hi"))
+stems_back$trt_N <- factor(stems_back$trt_N , levels = c("lo","int","hi"))
+stems_back$trt_water <- factor(stems_back$trt_water , levels = c("lo","hi"))
 
-density.labs <- c("high seed density", "low seed density")
-names(density.labs) <- c("hi", "lo")
+
+density.labs <- c("low seed density", "high seed density")
+names(density.labs) <- c("lo", "hi")
+
+
+
+
+
 
 
 ## Data manipulation BRHO phytometers in PLER background
@@ -151,12 +168,22 @@ all_seeds_PLERoutin <- seeds_PLER_outin %>%
   filter(!type == "mature_BRHO")
 
 ggplot(mat_seeds_PLERoutin, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
-  geom_point(aes(color = type, shape = trt_water)) + geom_line(aes(color = type)) +
-  facet_grid(seed_density~trt_N, labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition")
+  geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) +
+  facet_grid(seed_density~trt_N, labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition") +
+  scale_shape_manual(values = c(1,16))
 
 ggplot(all_seeds_PLERoutin, aes(seed_sp,seeds, group = interaction(type, trt_water))) +
-  geom_point(aes(color = type, shape = trt_water)) + geom_line(aes(color = type)) + 
-  facet_grid(seed_density~trt_N,labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition")
+  geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) + 
+  facet_grid(seed_density~trt_N,labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition") +
+  scale_shape_manual(values = c(1,16))
+
+all_seeds_PLERoutin$seed_density <- factor(all_seeds_PLERoutin$seed_density , levels = c("lo","hi"))
+all_seeds_PLERoutin$trt_N <- factor(all_seeds_PLERoutin$trt_N , levels = c("lo","int","hi"))
+all_seeds_PLERoutin$trt_water <- factor(all_seeds_PLERoutin$trt_water , levels = c("lo","hi"))
+
+mat_seeds_PLERoutin$seed_density <- factor(mat_seeds_PLERoutin$seed_density , levels = c("lo","hi"))
+mat_seeds_PLERoutin$trt_N <- factor(mat_seeds_PLERoutin$trt_N , levels = c("lo","int","hi"))
+mat_seeds_PLERoutin$trt_water <- factor(mat_seeds_PLERoutin$trt_water , levels = c("lo","hi"))
 
 
 
