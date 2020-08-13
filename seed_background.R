@@ -36,7 +36,7 @@ BRHO_back$trt_water <- factor(BRHO_back$trt_water , levels = c("lo","hi"))
 ## Visualize PLER in/out
 PLER_back <- seeds_back %>%
   filter(seed_sp == "PLER") %>%
-  mutate(out_in = seeds_out/seeds_in)
+  mutate(out_in = seeds_mat/seeds_in)
 
 ggplot(PLER_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
   ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density,,labeller = labeller(seed_density = density.labs)) +
@@ -63,11 +63,6 @@ stems_back$trt_water <- factor(stems_back$trt_water , levels = c("lo","hi"))
 
 density.labs <- c("low seed density", "high seed density")
 names(density.labs) <- c("lo", "hi")
-
-
-
-
-
 
 
 ## Data manipulation BRHO phytometers in PLER background
@@ -209,7 +204,101 @@ mat_seeds_PLERoutin$trt_N <- factor(mat_seeds_PLERoutin$trt_N , levels = c("lo",
 mat_seeds_PLERoutin$trt_water <- factor(mat_seeds_PLERoutin$trt_water , levels = c("lo","hi"))
 
 
+## Data manipulation PLER phytometers in BRHO background
+PLER_phyt <- seeds_phyt %>%
+  filter(phytometer == "PLER") %>%
+  filter(seed_sp == "BRHO") %>%
+  filter(!num_seeds == "NA") %>%
+  select(-biomass_mg,-comment)
 
+BRHO_no_comp_hi <- seeds_phyt %>%
+  filter(seed_sp == "none") %>%
+  filter(phytometer == "BRHO") %>%
+  select(-biomass_mg,-comment,-seed_density) %>%
+  rename(BRHO_mat_seeds = num_seeds, BRHO_pot_seeds = potential_seed) %>%
+  group_by(seed_sp,trt_N,trt_water) %>%
+  summarize(mature_BRHO = mean(BRHO_mat_seeds),
+            all_BRHO = mean(BRHO_pot_seeds)) %>%
+  pivot_longer(c("mature_BRHO","all_BRHO"),
+               names_to = "type", values_to = "seeds") %>%
+  mutate(seed_density = "hi")
 
+BRHO_no_comp_lo <- seeds_phyt %>%
+  filter(seed_sp == "none") %>%
+  filter(phytometer == "BRHO") %>%
+  select(-biomass_mg,-comment,-seed_density) %>%
+  rename(BRHO_mat_seeds = num_seeds, BRHO_pot_seeds = potential_seed) %>%
+  group_by(seed_sp,trt_N,trt_water) %>%
+  summarize(mature_BRHO = mean(BRHO_mat_seeds),
+            all_BRHO = mean(BRHO_pot_seeds)) %>%
+  pivot_longer(c("mature_BRHO","all_BRHO"),
+               names_to = "type", values_to = "seeds") %>%
+  mutate(seed_density = "lo")
 
+BRHO_no_comp <- full_join(BRHO_no_comp_hi,BRHO_no_comp_lo)
 
+PLER_no_comp_lo <- seeds_phyt %>%
+  filter(seed_sp == "none") %>%
+  filter(phytometer == "PLER") %>%
+  select(-biomass_mg,-comment,-seed_density,-potential_seed) %>%
+  rename(phyt_PLER = num_seeds) %>%
+  group_by(seed_sp,trt_N,trt_water) %>%
+  summarize(PLER = mean(phyt_PLER)) %>%
+  pivot_longer(c("PLER"),
+               names_to = "type", values_to = "seeds") %>%
+  mutate(seed_density = "lo")
+
+PLER_no_comp_hi <- seeds_phyt %>%
+  filter(seed_sp == "none") %>%
+  filter(phytometer == "PLER") %>%
+  select(-biomass_mg,-comment,-seed_density) %>%
+  rename(phyt_PLER = num_seeds) %>%
+  group_by(seed_sp,trt_N,trt_water) %>%
+  summarize(PLER = mean(phyt_PLER)) %>%
+  pivot_longer(c("PLER"),
+               names_to = "type", values_to = "seeds") %>%
+  mutate(seed_density = "hi")
+
+PLER_no_comp <- full_join(PLER_no_comp_hi,PLER_no_comp_lo)
+
+## BRHO seeds in/out
+seeds_BRHO_outin <- full_join(PLER_phyt,BRHO_back) %>%
+  select(-potential_seed,-seeds_in, -seeds_mat,-seeds_immat,-empty_glumes,-seeds_total) %>%
+  rename(phyt_PLER = num_seeds, mature_BRHO = out_in_mat,
+         all_BRHO = out_in_total) %>%
+  group_by(seed_density,seed_sp,trt_water,trt_N) %>%
+  summarize(PLER = mean(phyt_PLER, na.rm = T),
+            mature_BRHO = mean(mature_BRHO),
+            all_BRHO = mean(all_BRHO)) %>%
+  pivot_longer(c("mature_BRHO","all_BRHO","PLER"),
+               names_to = "type", values_to = "seeds")
+
+seeds_BRHO_outin <- full_join(seeds_BRHO_outin,BRHO_no_comp)
+
+seeds_BRHO_outin <- full_join(seeds_BRHO_outin,PLER_no_comp)
+
+mat_seeds_PLERoutin <- seeds_BRHO_outin %>%
+  filter(!type == "all_BRHO")
+
+all_seeds_PLERoutin <- seeds_BRHO_outin %>%
+  filter(!type == "mature_BRHO")
+
+ggplot(mat_seeds_PLERoutin, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
+  geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) +
+  facet_grid(seed_density~trt_N, labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition") +
+  scale_shape_manual(values = c(1,16))
+
+ggplot(all_seeds_PLERoutin, aes(seed_sp,seeds, group = interaction(type, trt_water))) +
+  geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) + 
+  facet_grid(seed_density~trt_N,labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition") +
+  scale_shape_manual(values = c(1,16))
+
+all_seeds_PLERoutin$seed_density <- factor(all_seeds_PLERoutin$seed_density , levels = c("lo","hi"))
+all_seeds_PLERoutin$trt_N <- factor(all_seeds_PLERoutin$trt_N , levels = c("lo","int","hi"))
+all_seeds_PLERoutin$trt_water <- factor(all_seeds_PLERoutin$trt_water , levels = c("lo","hi"))
+all_seeds_PLERoutin$seed_sp <- factor(all_seeds_PLERoutin$seed_sp , levels = c("none","BRHO"))
+
+mat_seeds_PLERoutin$seed_density <- factor(mat_seeds_PLERoutin$seed_density , levels = c("lo","hi"))
+mat_seeds_PLERoutin$trt_N <- factor(mat_seeds_PLERoutin$trt_N , levels = c("lo","int","hi"))
+mat_seeds_PLERoutin$trt_water <- factor(mat_seeds_PLERoutin$trt_water , levels = c("lo","hi"))
+mat_seeds_PLERoutin$seed_sp <- factor(mat_seeds_PLERoutin$seed_sp , levels = c("none","BRHO"))
