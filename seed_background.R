@@ -10,6 +10,29 @@ seeds_back <- read.csv(paste(datpath, "/seed_background.csv", sep = ""))
 seeds_phyt <- read.csv(paste(datpath, "/seed_phytometers.csv", sep = ""))
 stems_back <- read.csv(paste(datpath, "/stems_background.csv", sep = ""))
 
+## Visualize BRHP in/out
+BRHO_back <- seeds_back %>%
+  filter(seed_sp == "BRHO") %>%
+  mutate(out_in_mat = seeds_mat/seeds_in) %>%
+  mutate(seeds_total = seeds_mat + seeds_immat) %>%
+  mutate(out_in_total = seeds_total/seeds_in)
+
+ggplot(BRHO_back) + geom_boxplot(aes(trt_N,out_in_mat,fill=trt_water)) +
+  ylab("Bromus seed produced/seed added") + facet_wrap(~seed_density,labeller = labeller(seed_density = density.labs)) +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+ggplot(BRHO_back) + geom_boxplot(aes(trt_N,out_in_total,fill=trt_water)) +
+  ylab("Bromus seed produced/seed added") + facet_wrap(~seed_density,labeller = labeller(seed_density = density.labs)) +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+ggplot(BRHO_back) + geom_boxplot(aes(trt_N,empty_glumes,fill=trt_water)) +
+  ylab("Bromus empty glumes") + facet_wrap(~seed_density,labeller = labeller(seed_density = density.labs)) +
+  scale_fill_manual(values=c("azure3","azure4"))
+
+BRHO_back$seed_density <- factor(BRHO_back$seed_density , levels = c("lo","hi"))
+BRHO_back$trt_N <- factor(BRHO_back$trt_N , levels = c("lo","int","hi"))
+BRHO_back$trt_water <- factor(BRHO_back$trt_water , levels = c("lo","hi"))
+
 ## Visualize PLER in/out
 PLER_back <- seeds_back %>%
   filter(seed_sp == "PLER") %>%
