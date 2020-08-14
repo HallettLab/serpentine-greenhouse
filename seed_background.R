@@ -10,12 +10,13 @@ seeds_back <- read.csv(paste(datpath, "/seed_background.csv", sep = ""))
 seeds_phyt <- read.csv(paste(datpath, "/seed_phytometers.csv", sep = ""))
 stems_back <- read.csv(paste(datpath, "/stems_background.csv", sep = ""))
 
-## Visualize BRHP in/out
+## Visualize BRHO in/out
 BRHO_back <- seeds_back %>%
   filter(seed_sp == "BRHO") %>%
   mutate(out_in_mat = seeds_mat/seeds_in) %>%
   mutate(seeds_total = seeds_mat + seeds_immat) %>%
-  mutate(out_in_total = seeds_total/seeds_in)
+  mutate(out_in_total = seeds_total/seeds_in) %>%
+  select(-seeds_in,-seeds_mat,-seeds_immat,-empty_glumes,-seeds_total)
 
 ggplot(BRHO_back) + geom_boxplot(aes(trt_N,out_in_mat,fill=trt_water)) +
   ylab("Bromus seed produced/seed added") + facet_wrap(~seed_density,labeller = labeller(seed_density = density.labs)) +
@@ -36,7 +37,8 @@ BRHO_back$trt_water <- factor(BRHO_back$trt_water , levels = c("lo","hi"))
 ## Visualize PLER in/out
 PLER_back <- seeds_back %>%
   filter(seed_sp == "PLER") %>%
-  mutate(out_in = seeds_mat/seeds_in)
+  mutate(out_in = seeds_mat/seeds_in) %>%
+  select(-seeds_in,-seeds_mat,-seeds_immat,-empty_glumes)
 
 ggplot(PLER_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
   ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density,,labeller = labeller(seed_density = density.labs)) +
@@ -45,6 +47,47 @@ ggplot(PLER_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
 PLER_back$seed_density <- factor(PLER_back$seed_density , levels = c("lo","hi"))
 PLER_back$trt_N <- factor(PLER_back$trt_N , levels = c("lo","int","hi"))
 PLER_back$trt_water <- factor(PLER_back$trt_water , levels = c("lo","hi"))
+
+##BRHO and PLER background and phytometers data manipulation
+BRHO_back <- BRHO_back %>%
+  mutate(background_comp = "BRHO")
+
+PLER_back <- PLER_back %>%
+  mutate(background_comp = "PLER")
+
+BRHO_PLER_background <- full_join(PLER_back,BRHO_back) %>%
+  select(-backgroun_comp)
+
+BRHO_phyt <- BRHO_phyt %>%
+  rename(individual = phytometer, out_in = potential_seed) %>%
+  mutate(background_comp = "PLER")
+
+PLER_phyt <- PLER_phyt %>%
+  select(-seed_sp) %>%
+  rename(individual = phytometer) %>%
+  mutate(background_comp = "BRHO")
+
+BRHO_PLER_phytos <- full_join(PLER_phyt,BRHO_phyt)
+
+BRHO_PLER_all <- full_join(BRHO_PLER_background,BRHO_PLER_phytos) %>%
+  group_by(seed_density,individual,trt_water,trt_N,background_comp) %>%
+  summarize(seeds = mean(out_in,na.rm = T))
+
+
+##BRHO PLER in each other's competition visualization
+ggplot(BRHO_PLER_all,aes(trt_N,seeds)) +
+  geom_point(aes(color = individual, shape = trt_water)) +
+  facet_grid(seed_density~background_comp) +
+  scale_shape_manual(values = c(16,1))
+
+BRHO_PLER_all$trt_N <- factor(BRHO_PLER_all$trt_N, levels = c("lo","int","hi"))
+BRHO_PLER_all$seed_density <- factor(BRHO_PLER_all$seed_density, levels = c("lo","hi"))
+
+
+ggplot(mat_seeds_PLERoutin, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
+  geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) +
+  facet_grid(seed_density~trt_N, labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition") +
+  scale_shape_manual(values = c(1,16))
 
 
 ## Visualize recruitment of background
