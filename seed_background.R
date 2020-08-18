@@ -16,17 +16,18 @@ BRHO_back <- seeds_back %>%
   mutate(out_in_mat = seeds_mat/seeds_in) %>%
   mutate(seeds_total = seeds_mat + seeds_immat) %>%
   mutate(out_in_total = seeds_total/seeds_in) %>%
-  select(-seeds_in,-seeds_mat,-seeds_immat,-empty_glumes,-seeds_total)
+  select(-seeds_mat,-seeds_immat,-empty_glumes,-out_in_mat) %>%
+  rename(seeds_out = seeds_total, out_in = out_in_total)
+
+BRHO_back <- BRHO_back %>%
+  mutate(background_comp = "BRHO") %>%
+  rename(individual = seed_sp) 
 
 PLER_back <- seeds_back %>%
   filter(seed_sp == "PLER") %>%
   mutate(out_in = seeds_mat/seeds_in) %>%
-  select(-seeds_in,-seeds_mat,-seeds_immat,-empty_glumes)
-
-BRHO_back <- BRHO_back %>%
-  mutate(background_comp = "BRHO") %>%
-  rename(individual = seed_sp, out_in = out_in_total) %>%
-  select(-out_in_mat)
+  select(-seeds_immat,-empty_glumes) %>%
+  rename(seeds_out = seeds_mat)
 
 PLER_back <- PLER_back %>%
   mutate(background_comp = "PLER") %>%
@@ -60,7 +61,8 @@ PLER_phyt <- PLER_phyt %>%
   rename(individual = phytometer, out_in = mat_seed) %>%
   mutate(background_comp = "BRHO")
 
-BRHO_PLER_phytos <- full_join(PLER_phyt,BRHO_phyt)
+BRHO_PLER_phytos <- full_join(PLER_phyt,BRHO_phyt) %>%
+  mutate(seeds_in = 1, seeds_out = out_in)
 
 #BRHO and PLER phytos with no competition data manipulation
 BRHO_phyt_none <- seeds_phyt %>%
@@ -88,7 +90,8 @@ PLER_phyt_none <- PLER_phyt_none %>%
   rename(individual = phytometer, out_in = mat_seed) %>%
   mutate(background_comp = "none")
 
-BRHO_PLER_none_phytos <- full_join(PLER_phyt_none,BRHO_phyt_none)
+BRHO_PLER_none_phytos <- full_join(PLER_phyt_none,BRHO_phyt_none) %>%
+  mutate(seeds_in = 1, seeds_out = out_in)
 
 #clean data frames
 BRHO_PLER <- full_join(BRHO_PLER_background,BRHO_PLER_phytos)
