@@ -105,13 +105,23 @@ BRHO_PLER <- BRHO_PLER %>%
   group_by(seed_density,individual,trt_water,trt_N,background_comp) %>%
   summarize(seeds = mean(out_in,na.rm = T))
 
-ggplot(BRHO_PLER,aes(trt_N,seeds)) +
-  geom_point(aes(color = individual, shape = trt_water)) +
-  facet_grid(seed_density~background_comp) +
-  scale_shape_manual(values = c(16,1))
+ggplot(BRHO_PLER,aes(trt_N,seeds, group = interaction(individual,trt_water))) +
+  geom_point(aes(color = individual, shape = trt_water),size=2.5) +
+  geom_line(aes(color = individual)) +
+  facet_grid(seed_density~background_comp, 
+             labeller = labeller(seed_density = density.labs, 
+                                 background_comp = background.labs)) +
+  scale_shape_manual(values = c(16,1)) +
+  ylab("per capita seed production")
 
-BRHO_PLER_all$trt_N <- factor(BRHO_PLER_all$trt_N, levels = c("lo","int","hi"))
-BRHO_PLER_all$seed_density <- factor(BRHO_PLER_all$seed_density, levels = c("lo","hi"))
+density.labs <- c("low seed density", "high seed density")
+names(density.labs) <- c("lo", "hi")
+
+background.labs <- c("Bromus background", "Plantago background")
+names(background.labs) <- c("BRHO", "PLER")
+
+BRHO_PLER$trt_N <- factor(BRHO_PLER$trt_N, levels = c("lo","int","hi"))
+BRHO_PLER$seed_density <- factor(BRHO_PLER$seed_density, levels = c("lo","hi"))
 
 #ggplot(mat_seeds_PLERoutin, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
   geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) +
