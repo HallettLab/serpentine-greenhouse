@@ -50,21 +50,24 @@ PLER_back$trt_water <- factor(PLER_back$trt_water , levels = c("lo","hi"))
 
 ##BRHO and PLER background and phytometers data manipulation
 BRHO_back <- BRHO_back %>%
-  mutate(background_comp = "BRHO")
+  mutate(background_comp = "BRHO") %>%
+  rename(individual = seed_sp, out_in = out_in_total) %>%
+  select(-out_in_mat)
 
 PLER_back <- PLER_back %>%
-  mutate(background_comp = "PLER")
+  mutate(background_comp = "PLER") %>%
+  rename(individual = seed_sp)
 
-BRHO_PLER_background <- full_join(PLER_back,BRHO_back) %>%
-  select(-backgroun_comp)
+BRHO_PLER_background <- full_join(PLER_back,BRHO_back)
 
 BRHO_phyt <- BRHO_phyt %>%
-  rename(individual = phytometer, out_in = potential_seed) %>%
-  mutate(background_comp = "PLER")
+  select(-seed_sp,-mat_seed,-immat_seed) %>%
+  rename(individual = phytometer, out_in = total_seed) %>%
+  mutate(background_comp = "PLER") 
 
 PLER_phyt <- PLER_phyt %>%
   select(-seed_sp) %>%
-  rename(individual = phytometer) %>%
+  rename(individual = phytometer, out_in = mat_seed) %>%
   mutate(background_comp = "BRHO")
 
 BRHO_PLER_phytos <- full_join(PLER_phyt,BRHO_phyt)
@@ -84,7 +87,7 @@ BRHO_PLER_all$trt_N <- factor(BRHO_PLER_all$trt_N, levels = c("lo","int","hi"))
 BRHO_PLER_all$seed_density <- factor(BRHO_PLER_all$seed_density, levels = c("lo","hi"))
 
 
-ggplot(mat_seeds_PLERoutin, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
+#ggplot(mat_seeds_PLERoutin, aes(seed_sp,seeds,group = interaction(type, trt_water))) +
   geom_point(aes(color = type, shape = trt_water),size=2.5) + geom_line(aes(color = type)) +
   facet_grid(seed_density~trt_N, labeller = labeller(seed_density = density.labs, trt_N = n.labs)) + ylab("seeds per individual") + xlab("background competition") +
   scale_shape_manual(values = c(1,16))
@@ -112,8 +115,12 @@ names(density.labs) <- c("lo", "hi")
 BRHO_phyt <- seeds_phyt %>%
   filter(phytometer == "BRHO") %>%
   filter(seed_sp == "PLER") %>%
-  filter(!num_seeds == "NA") %>%
-  select(-biomass_mg,-comment)
+  filter(!mat_seed == "NA") %>%
+  select(-biomass_mg,-comment,-potential_seed,-glumes) 
+BRHO_phyt[is.na(BRHO_phyt)] = 0
+BRHO_phyt <- BRHO_phyt %>%
+  mutate(total_seed = mat_seed + immat_seed)
+
 
 PLER_stems <- stems_back %>%
   filter(seed_sp == "PLER") %>%
@@ -251,9 +258,9 @@ mat_seeds_PLERoutin$trt_water <- factor(mat_seeds_PLERoutin$trt_water , levels =
 PLER_phyt <- seeds_phyt %>%
   filter(phytometer == "PLER") %>%
   filter(seed_sp == "BRHO") %>%
-  filter(!num_seeds == "NA") %>%
-  select(-biomass_mg,-comment)
-
+  filter(!mat_seed == "NA") %>%
+  select(-biomass_mg,-comment,-potential_seed,-glumes,-immat_seed)
+         
 BRHO_no_comp_hi <- seeds_phyt %>%
   filter(seed_sp == "none") %>%
   filter(phytometer == "BRHO") %>%
