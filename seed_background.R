@@ -6,8 +6,8 @@
 library(tidyverse)
 
 ## Load in data
-seeds_back <- read.csv(paste(datpath, "/seed_background.csv", sep = "")) 
-seeds_phyt <- read.csv(paste(datpath, "/seed_phytometers.csv", sep = ""))
+seeds_back <- read.csv(paste(datpath, "/seed_biomass_background.csv", sep = "")) 
+seeds_phyt <- read.csv(paste(datpath, "/seed_biomass_phytometers.csv", sep = ""))
 stems_back <- read.csv(paste(datpath, "/stems_background.csv", sep = ""))
 
 ##BRHO and PLER background data manipulation
@@ -159,7 +159,7 @@ PLER_back <- seeds_back %>%
     select(-seeds_in,-seeds_mat,-seeds_immat,-empty_glumes)
   
 ggplot(PLER_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) +
-    ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density,,labeller = labeller(seed_density = density.labs)) +
+    ylab("Plantago seed produced/seed added") + facet_wrap(~seed_density,labeller = labeller(seed_density = density.labs)) +
     scale_fill_manual(values=c("azure3","azure4"))
   
 PLER_back$seed_density <- factor(PLER_back$seed_density , levels = c("lo","hi"))
