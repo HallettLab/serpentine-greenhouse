@@ -9,25 +9,37 @@ back <- read.csv(paste(datpath, "/seed_biomass_background.csv", sep = ""))
 phyt <- read.csv(paste(datpath, "/seed_biomass_phytometers.csv", sep = ""))
 
 
-## FEMI background biomass and seed for block 1
-femi_back <- back %>%
+## FEMI background biomass and seed 
+femi_back_234 <- back %>%
   filter(seed_sp == "FEMI") %>%
-  select(-seedmass_g) %>%
-  mutate(total_seed = seeds_mat + seeds_immat) %>%
+  filter(block != 1) %>%
+  mutate(nodes = ((biomass_g*189.69)+16.47)) %>%
+  select(-seedmass_g,-glumemass_g)
+
+femi_back_1 <- back %>%
+  filter(seed_sp == "FEMI") %>%
   filter(block == 1) %>%
+  mutate(total_seed = seeds_mat + seeds_immat) %>%
   rename(nodes = empty_glumes) %>%
-  mutate(out_in = nodes/seeds_in)
+  mutate(out_in = nodes/seeds_in) %>%
+  mutate(total_mass = biomass_g + seedmass_g + glumemass_g) %>%
+  select(-biomass_g,-seedmass_g,-glumemass_g) %>%
+  rename(biomass_g = total_mass)
+  
+femi_back <- full_join(femi_back_1,femi_back_234)
 
-ggplot(femi_back) + geom_point(aes(biomass_g,nodes,shape=trt_water,color=trt_N)) +
-  scale_shape_manual(values = c(19,1)) + geom_smooth(aes(biomass_g,nodes),method="lm",se=F)
+femi_back <- femi_back %>%
+  mutate(out_in = nodes/seeds_in) %>%
+  #select(-seeds_mat,-seeds_immat,-total_seed,-empty_glumes) %>%
+  rename(seeds_out = nodes)
 
-ggplot(femi_back) + geom_point(aes(trt_N,biomass_g,color = trt_water)) +facet_wrap(~seed_density)
+write.csv(femi_back,"femi_background.csv")
 
-ggplot(femi_back) + geom_point(aes(trt_N,out_in,color = trt_water)) +facet_wrap(~seed_density)
+ggplot(femi_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) + facet_wrap(~seed_density)
 
-femi_lm_nodes <- lm(nodes~biomass_g,data=femi_back)
-summary(femi_lm_nodes)
-# estimated seeds (nodes) = (16.6*biomass_g) + 236.2
+ggplot(femi_back) + geom_boxplot(aes(trt_N,biomass_g,fill=trt_water)) + facet_wrap(~seed_density)
+
+# estimated seeds (nodes) = (189.69*biomass_g) + 16.47
 
 
 ## FEMI phytometer biomass and seed - 2 blocks
