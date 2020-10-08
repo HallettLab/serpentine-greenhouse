@@ -66,6 +66,34 @@ ggplot(brho_back) + geom_boxplot(aes(trt_N,totalmass_g,fill=trt_water)) +
 ggplot(brho_back) + geom_point(aes(totalmass_g,total_seed,shape=trt_water,color=trt_N)) +
   geom_smooth(aes(totalmass_g,total_seed),method = "lm",se=F) +
   scale_shape_manual(values = c(19,1))
+# After accounting for senescence
+brho_back_sen <- read.csv(paste(datpath, "/bromus_back_phen.csv", sep = ""))
+# Biomass senescence
+brho_back_bio <- brho_back_sen %>%
+  filter(senes_biomass == "yes") %>%
+  mutate(total_seed = seeds_mat + seeds_immat) %>%
+  mutate(totalmass_g = biomass_g + seedmass_g)
+
+ggplot(brho_back_bio) + geom_point(aes(totalmass_g,total_seed,shape=trt_water,color=trt_N)) +
+  geom_smooth(aes(totalmass_g,total_seed),method = "lm",se=F) +
+  scale_shape_manual(values = c(19,1))
+
+lm_brho_back_bio <- lm(total_seed~totalmass_g,dat=brho_back_bio)
+# estimated seeds = (110.33*biomass_g) - 27.14
+# taking out 10 samples/pots improved the linear relationship between seed production and biomass
+# data frame containing samples that were removed for best fit line
+brho_back_nosen <- brho_back_sen %>%
+  filter(senes_biomass == "no") 
+# mostly high N (9/10 samples), but 5 are high water and 4 are lo water, so water is probably not the biggest factor
+# 5/10 samples removed are from B3, it might be a block issue? 2 from B2 and 3 from B4
+# 1 int N sample, high water
+# Recalculate seed production based on linear equation
+brho_back_nosen <- brho_back_sen %>%
+  filter(senes_biomass == "no") %>%
+  mutate(total_seed = seeds_mat + seeds_immat) %>%
+  mutate(totalmass_g = biomass_g + seedmass_g) %>%
+  mutate(total_seed_new = (110.33*totalmass_g)-27.14)
+
 
 ## BRHO phytometer biomass and seed - all blocks
 brho_phyt <- phyt %>%
@@ -77,10 +105,22 @@ brho_phyt <- brho_phyt %>%
   mutate(total_seed = mat_seed + immat_seed)
 
 ggplot(brho_phyt) + geom_point(aes(biomass_g,total_seed,shape=trt_water,color=trt_N)) +
+  geom_smooth(aes(biomass_g,total_seed),method = "lm",se=F) +
   scale_shape_manual(values = c(19,1))
 
 brho_phyt_lm <- lm(total_seed~biomass_g,data=brho_phyt)
 summary(brho_phyt_lm)
+# After accounting for senescence
+brho_phyt_sen <- read.csv(paste(datpath, "/bromus_phytos_phen.csv", sep = "")) %>%
+  filter(senescence == "yes") %>%
+  mutate(total_seed = mat_seed + immat_seed)
 
+ggplot(brho_phyt_sen) + geom_point(aes(biomass_g,total_seed,shape=trt_water,color=trt_N)) +
+  geom_smooth(aes(biomass_g,total_seed),method = "lm",se=F) +
+  scale_shape_manual(values = c(19,1))
 
+lm_brho_back_bio <- lm(total_seed~totalmass_g,dat=brho_back_bio)
+# 27% (46/168 phytometers) of bromus phytometers senesced 50% before end of experiment
+# Accounting for senescence does not improve seed output as a function of biomass
+# But I counted all the seed, so no need to incorporate biomass
 
