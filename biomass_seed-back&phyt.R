@@ -8,38 +8,45 @@ library(tidyverse)
 back <- read.csv(paste(datpath, "/seed_biomass_background.csv", sep = "")) 
 phyt <- read.csv(paste(datpath, "/seed_biomass_phytometers.csv", sep = ""))
 
-
-## FEMI background biomass and seed 
-femi_back_234 <- back %>%
-  filter(seed_sp == "FEMI") %>%
-  filter(block != 1) %>%
-  mutate(nodes = ((biomass_g*189.69)+16.47)) %>%
-  select(-seedmass_g,-glumemass_g)
-
+## FEMI background biomass and seed - Block1
 femi_back_1 <- back %>%
   filter(seed_sp == "FEMI") %>%
   filter(block == 1) %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
-  rename(nodes = empty_glumes) %>%
-  mutate(out_in = nodes/seeds_in) %>%
-  mutate(total_mass = biomass_g + seedmass_g + glumemass_g) %>%
-  select(-biomass_g,-seedmass_g,-glumemass_g) %>%
-  rename(biomass_g = total_mass)
+  mutate(out_in_nodes = nodes/seeds_in) %>%
+  mutate(out_in_seeds = total_seed/seeds_in) %>%
+  mutate(total_mass_g = biomass_g + seedmass_g + glumemass_g) %>%
+  select(-biomass_g,-seedmass_g,-glumemass_g,-empty_glumes) 
+# Check out seeds vs nodes
+ggplot(femi_back_1) + geom_point(aes(trt_N,out_in_nodes,fill=trt_water)) +
+  facet_wrap(~seed_density)
+ggplot(femi_back_1) + geom_point(aes(trt_N,out_in_seeds,fill=trt_water)) +
+  facet_wrap(~seed_density)
+
+ggplot(femi_back_1) + geom_point(aes(total_mass_g,total_seed,shape=trt_water,color=trt_N)) +
+  geom_smooth(aes(total_mass_g,total_seed),method = "lm",se=F) +
+  scale_shape_manual(values = c(19,1))
+ggplot(femi_back_1) + geom_point(aes(total_mass_g,nodes,shape=trt_water,color=trt_N)) +
+  geom_smooth(aes(total_mass_g,nodes),method = "lm",se=F) +
+  scale_shape_manual(values = c(19,1))
+
+lm_femiback1_seed <- lm(total_seed~total_mass_g, dat=femi_back_1)
+#rsquared = 0.91
+lm_femiback1_nodes <- lm(nodes~total_mass_g,dat=femi_back_1)
+#rsquared = 0.962
+#intercept = 16.5; coefficient total_mass_g = 189.9
+# Conclusion: use nodes with the following linear equation:
+# nodes(seed) = (189.9*biomass_g) + 16.5
+# Note: seed fell during the experiment and sample collection process, 
+#       therefore, # of nodes are more reliable and also a better fit
+
+## FEMI background seed production calculated with biomass - Blocks 2,3,4
+femi_back_234 <- back %>%
+  filter(seed_sp == "FEMI") %>%
+  filter(block != 1) %>%
+  mutate(nodes = ((biomass_g*189.9)+16.5)) %>%
+  select(-seedmass_g,-glumemass_g,-seeds_mat,-seeds_immat,-empty_glumes) %>%
   
-femi_back <- full_join(femi_back_1,femi_back_234)
-
-femi_back <- femi_back %>%
-  mutate(out_in = nodes/seeds_in) %>%
-  #select(-seeds_mat,-seeds_immat,-total_seed,-empty_glumes) %>%
-  rename(seeds_out = nodes)
-
-write.csv(femi_back,"femi_background.csv")
-
-ggplot(femi_back) + geom_boxplot(aes(trt_N,out_in,fill=trt_water)) + facet_wrap(~seed_density)
-
-ggplot(femi_back) + geom_boxplot(aes(trt_N,biomass_g,fill=trt_water)) + facet_wrap(~seed_density)
-
-# estimated seeds (nodes) = (189.69*biomass_g) + 16.47
 
 
 ## FEMI phytometer biomass and seed - 2 blocks
