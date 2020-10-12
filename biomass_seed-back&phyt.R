@@ -8,7 +8,8 @@ library(tidyverse)
 back <- read.csv(paste(datpath, "/seed_biomass_background.csv", sep = "")) 
 phyt <- read.csv(paste(datpath, "/seed_biomass_phytometers.csv", sep = ""))
 
-## FEMI background biomass and seed - Block1
+## FEMI seed production based on biomass ##
+# FEMI background biomass and seed - Block1
 femi_back_1 <- back %>%
   filter(seed_sp == "FEMI") %>%
   filter(block == 1) %>%
@@ -17,7 +18,7 @@ femi_back_1 <- back %>%
   mutate(out_in_seeds = total_seed/seeds_in) %>%
   mutate(total_mass_g = biomass_g + seedmass_g + glumemass_g) %>%
   select(-biomass_g,-seedmass_g,-glumemass_g,-empty_glumes) 
-# Check out seeds vs nodes
+#Check out seeds vs nodes
 ggplot(femi_back_1) + geom_point(aes(trt_N,out_in_nodes,fill=trt_water)) +
   facet_wrap(~seed_density)
 ggplot(femi_back_1) + geom_point(aes(trt_N,out_in_seeds,fill=trt_water)) +
@@ -35,48 +36,51 @@ lm_femiback1_seed <- lm(total_seed~total_mass_g, dat=femi_back_1)
 lm_femiback1_nodes <- lm(nodes~total_mass_g,dat=femi_back_1)
 #rsquared = 0.962
 #intercept = 16.5; coefficient total_mass_g = 189.9
-# Conclusion: use nodes with the following linear equation:
-# nodes(seed) = (189.9*biomass_g) + 16.5
-# Note: seed fell during the experiment and sample collection process, 
+#Conclusion: estimate nodes with the following linear equation:
+#nodes(seed) = (189.9*biomass_g) + 16.5
+#Note: seed fell during the experiment and sample collection process, 
 #       therefore, # of nodes are more reliable and also a better fit
 
-## FEMI background seed production calculated with biomass - Blocks 2,3,4
+# FEMI background seed production calculated with biomass - Blocks 2,3,4
 femi_back_234 <- back %>%
   filter(seed_sp == "FEMI") %>%
   filter(block != 1) %>%
   mutate(nodes = ((biomass_g*189.9)+16.5)) %>%
   select(-seedmass_g,-glumemass_g,-seeds_mat,-seeds_immat,-empty_glumes) %>%
   
+# Join Block1 and Blocks 2,3,4 of FEMI background seed production
+femi_back1 <- femi_back_1 %>%
+  rename(biomass_g = total_mass_g)
+#clean up
+femi_back_clean <- full_join(femi_back1,femi_back_234) %>%
+  select(-seeds_mat,-seeds_immat,-total_seed,-out_in_seeds) %>%
+  rename(seeds_out = nodes, out_in = out_in_nodes) %>%
+  mutate(out_in = seeds_out/seeds_in)
 
 
-## FEMI phytometer biomass and seed - 2 blocks
-femi_phyt <- phyt %>%
-  filter(phytometer == "FEMI") %>%
-  rename(seed = potential_seed)
-
-ggplot(femi_phyt) + geom_point(aes(biomass_g,seed,color=trt_N,shape=trt_water))+
-  scale_shape_manual(values = c(19,1)) + geom_smooth(aes(biomass_g,seed),method="lm",se=F)
-
-femi_phyt_lm <- lm(seed~biomass_g,data=femi_phyt)
-summary(femi_phyt_lm)
-
-
-## BRHO background biomass and seed - all blocks
+## BRHO background seed production based on senescence ##
+# BRHO seed production vs. biomass
+#Look at data before filtering for senescence
 brho_back <- back %>%
   filter(seed_sp == "BRHO") %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
   mutate(totalmass_g = biomass_g + seedmass_g)
-  
+
 ggplot(brho_back) + geom_boxplot(aes(trt_N,totalmass_g,fill=trt_water)) +
   facet_wrap(~seed_density)
 
 ggplot(brho_back) + geom_point(aes(totalmass_g,total_seed,shape=trt_water,color=trt_N)) +
   geom_smooth(aes(totalmass_g,total_seed),method = "lm",se=F) +
   scale_shape_manual(values = c(19,1))
-# After accounting for senescence
-brho_back_sen <- read.csv(paste(datpath, "/bromus_back_phen.csv", sep = ""))
-# Biomass senescence
-brho_back_bio <- brho_back_sen %>%
+
+lm_brho_back <- lm(total_seed~totalmass_g,dat=brho_back)
+summary(lm_brho_back)
+#rsquared = 0.426
+
+# BRHO samples that senesced
+#Note: went back to samples to look at greenness
+#       samples that had more than 50% senescence are "yes" for senescence
+brho_back_bio <- brho_back %>%
   filter(senes_biomass == "yes") %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
   mutate(totalmass_g = biomass_g + seedmass_g)
@@ -86,22 +90,38 @@ ggplot(brho_back_bio) + geom_point(aes(totalmass_g,total_seed,shape=trt_water,co
   scale_shape_manual(values = c(19,1))
 
 lm_brho_back_bio <- lm(total_seed~totalmass_g,dat=brho_back_bio)
-# estimated seeds = (110.33*biomass_g) - 27.14
-# taking out 10 samples/pots improved the linear relationship between seed production and biomass
-# data frame containing samples that were removed for best fit line
-brho_back_nosen <- brho_back_sen %>%
-  filter(senes_biomass == "no") 
-# mostly high N (9/10 samples), but 5 are high water and 4 are lo water, so water is probably not the biggest factor
-# 5/10 samples removed are from B3, it might be a block issue? 2 from B2 and 3 from B4
-# 1 int N sample, high water
-# Recalculate seed production based on linear equation
-brho_back_nosen <- brho_back_sen %>%
-  filter(senes_biomass == "no") %>%
+summary(lm_brho_back_bio)
+#rsquared = .8839
+#estimated seeds = (110.33*biomass_g) - 27.14
+#taking out 10 samples/pots improved the linear relationship between seed production and biomass
+
+# BRHO samples that did not senesce
+brho_back_nosen <- brho_back %>%
+  filter(senescence == "no") 
+#mostly high N (9/10 samples), but 5 are high water and 4 are lo water, so water is probably not the biggest factor
+#5/10 samples removed are from B3, it might be a block issue? 2 from B2 and 3 from B4
+#1 int N sample, high water
+
+# Recalculate seed production for based on linear equation
+brho_back_nosen <- brho_back_nosen %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
   mutate(totalmass_g = biomass_g + seedmass_g) %>%
   mutate(total_seed_new = (110.33*totalmass_g)-27.14)
 
+# Join not senesced samples with senesced
+#Cleanup
+brho_back_sen <- brho_back %>%
+  filter(!pot_id %in% c(86,93,140,142,145,149,161,192,207,210)) %>%
+  select(-seeds_mat,-seeds_immat,-senescence,-seedmass_g,-biomass_g,-empty_glumes,-glumemass_g,-nodes) %>%
+  rename(biomass_g = totalmass_g, seeds_out = total_seed)
 
+brho_back_nosen2 <- brho_back_nosen %>%
+  select(-seeds_mat,-seeds_immat,-senescence,-seedmass_g,-biomass_g,-empty_glumes,-total_seed,-glumemass_g,-nodes) %>%
+  rename(biomass_g = totalmass_g, seeds_out = total_seed_new)
+#Join
+brho_back_clean <- full_join(brho_back_sen,brho_back_nosen2)
+
+  
 ## BRHO phytometer biomass and seed - all blocks
 brho_phyt <- phyt %>%
   filter(phytometer == "BRHO")
