@@ -81,7 +81,7 @@ summary(lm_brho_back)
 #Note: went back to samples to look at greenness
 #       samples that had more than 50% senescence are "yes" for senescence
 brho_back_bio <- brho_back %>%
-  filter(senes_biomass == "yes") %>%
+  filter(senescence == "yes") %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
   mutate(totalmass_g = biomass_g + seedmass_g)
 
