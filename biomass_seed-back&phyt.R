@@ -106,7 +106,7 @@ brho_back_nosen <- brho_back %>%
 brho_back_nosen <- brho_back_nosen %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
   mutate(totalmass_g = biomass_g + seedmass_g) %>%
-  mutate(total_seed_new = (110.33*totalmass_g)-27.14)
+  mutate(total_seed_new = trunc((110.33*totalmass_g)-27.14))
 
 # Join not senesced samples with senesced
 #Cleanup
@@ -118,7 +118,8 @@ brho_back_nosen2 <- brho_back_nosen %>%
   select(-seeds_mat,-seeds_immat,-senescence,-seedmass_g,-biomass_g,-empty_glumes,-total_seed,-glumemass_g,-nodes) %>%
   rename(biomass_g = totalmass_g, seeds_out = total_seed_new)
 #Join
-brho_back_clean <- full_join(brho_back_sen,brho_back_nosen2)
+brho_back_clean <- full_join(brho_back_sen,brho_back_nosen2) %>%
+  mutate(out_in = seeds_out/seeds_in)
 
   
 ## BRHO phytometer biomass and seed - all blocks
