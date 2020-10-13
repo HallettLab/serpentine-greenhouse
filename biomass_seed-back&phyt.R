@@ -39,21 +39,21 @@ lm_femiback1_nodes <- lm(nodes~total_mass_g,dat=femi_back_1)
 #Conclusion: estimate nodes with the following linear equation:
 #nodes(seed) = (189.9*biomass_g) + 16.5
 #Note: seed fell during the experiment and sample collection process, 
-#       therefore, # of nodes are more reliable and also a better fit
+#      therefore, # of nodes are more reliable and also a better fit
 
 # FEMI background seed production calculated with biomass - Blocks 2,3,4
 femi_back_234 <- back %>%
   filter(seed_sp == "FEMI") %>%
   filter(block != 1) %>%
   mutate(nodes = ((biomass_g*189.9)+16.5)) %>%
-  select(-seedmass_g,-glumemass_g,-seeds_mat,-seeds_immat,-empty_glumes) %>%
+  select(-seedmass_g,-glumemass_g,-seeds_mat,-seeds_immat,-empty_glumes)
   
 # Join Block1 and Blocks 2,3,4 of FEMI background seed production
 femi_back1 <- femi_back_1 %>%
   rename(biomass_g = total_mass_g)
 #clean up
 femi_back_clean <- full_join(femi_back1,femi_back_234) %>%
-  select(-seeds_mat,-seeds_immat,-total_seed,-out_in_seeds) %>%
+  select(-seeds_mat,-seeds_immat,-total_seed,-out_in_seeds,-senescence) %>%
   rename(seeds_out = nodes, out_in = out_in_nodes) %>%
   mutate(out_in = seeds_out/seeds_in)
 
@@ -91,7 +91,7 @@ ggplot(brho_back_bio) + geom_point(aes(totalmass_g,total_seed,shape=trt_water,co
 
 lm_brho_back_bio <- lm(total_seed~totalmass_g,dat=brho_back_bio)
 summary(lm_brho_back_bio)
-#rsquared = .8839
+#rsquared = 0.8839
 #estimated seeds = (110.33*biomass_g) - 27.14
 #taking out 10 samples/pots improved the linear relationship between seed production and biomass
 
@@ -102,7 +102,7 @@ brho_back_nosen <- brho_back %>%
 #5/10 samples removed are from B3, it might be a block issue? 2 from B2 and 3 from B4
 #1 int N sample, high water
 
-# Recalculate seed production for based on linear equation
+# Recalculate seed production for brho background based on linear equation
 brho_back_nosen <- brho_back_nosen %>%
   mutate(total_seed = seeds_mat + seeds_immat) %>%
   mutate(totalmass_g = biomass_g + seedmass_g) %>%
@@ -110,8 +110,7 @@ brho_back_nosen <- brho_back_nosen %>%
 
 # Join not senesced samples with senesced
 #Cleanup
-brho_back_sen <- brho_back %>%
-  filter(!pot_id %in% c(86,93,140,142,145,149,161,192,207,210)) %>%
+brho_back_sen <- brho_back_bio %>%
   select(-seeds_mat,-seeds_immat,-senescence,-seedmass_g,-biomass_g,-empty_glumes,-glumemass_g,-nodes) %>%
   rename(biomass_g = totalmass_g, seeds_out = total_seed)
 
@@ -124,12 +123,9 @@ brho_back_clean <- full_join(brho_back_sen,brho_back_nosen2)
   
 ## BRHO phytometer biomass and seed - all blocks
 brho_phyt <- phyt %>%
-  filter(phytometer == "BRHO")
-brho_phyt$immat_seed[is.na(brho_phyt$immat_seed)] = 0
-
-brho_phyt <- brho_phyt %>%
-  select(-glumes,-comment) %>%
-  mutate(total_seed = mat_seed + immat_seed)
+  filter(phytometer == "BRHO") %>%
+  select(-nodes,-comment) %>%
+  mutate(total_seed = seeds_mat + seeds_immat)
 
 ggplot(brho_phyt) + geom_point(aes(biomass_g,total_seed,shape=trt_water,color=trt_N)) +
   geom_smooth(aes(biomass_g,total_seed),method = "lm",se=F) +
@@ -137,17 +133,37 @@ ggplot(brho_phyt) + geom_point(aes(biomass_g,total_seed,shape=trt_water,color=tr
 
 brho_phyt_lm <- lm(total_seed~biomass_g,data=brho_phyt)
 summary(brho_phyt_lm)
-# After accounting for senescence
-brho_phyt_sen <- read.csv(paste(datpath, "/bromus_phytos_phen.csv", sep = "")) %>%
-  filter(senescence == "yes") %>%
-  mutate(total_seed = mat_seed + immat_seed)
+#rsquared really low, very bad linear fit
+
+# After accounting for senescence and presence of reproductive parts
+brho_phyt_sen <- brho_phyt %>%
+  filter(empty_glumes == 0, total_seed !=0)
+#the filter above keeps samples that fully developed seed (no empty glumes)
+#and samples that developed reproductive parts
 
 ggplot(brho_phyt_sen) + geom_point(aes(biomass_g,total_seed,shape=trt_water,color=trt_N)) +
   geom_smooth(aes(biomass_g,total_seed),method = "lm",se=F) +
   scale_shape_manual(values = c(19,1))
 
-lm_brho_back_bio <- lm(total_seed~totalmass_g,dat=brho_back_bio)
-# 27% (46/168 phytometers) of bromus phytometers senesced 50% before end of experiment
-# Accounting for senescence does not improve seed output as a function of biomass
-# But I counted all the seed, so no need to incorporate biomass
+lm_brho_phyt_sen <- lm(total_seed~biomass_g,dat=brho_phyt_sen)
+summary(lm_brho_phyt_sen)
+#rsquared = 0.8855
+#estimated seeds = (180.198*biomass_g) - 0.02739
+
+# Recalculate seed production for brho phytometers based on linear equation
+brho_phyt_nosen <- setdiff(brho_phyt,brho_phyt_sen) %>%
+  mutate(total_seed_new = (180.198*biomass_g)-0.02739)
+
+# Join "not senesced" samples with "senesced"
+#Cleanup
+brho_phyt_sen2 <- brho_phyt_sen %>%
+  select(-seeds_mat,-seeds_immat,-empty_glumes,-potential_seed) %>%
+  rename(out_in = total_seed)
+
+brho_phyt_nosen2 <- brho_phyt_nosen %>%
+  select(-seeds_mat,-seeds_immat,-empty_glumes,-potential_seed,-total_seed) %>%
+  rename(out_in = total_seed_new)
+#Join
+brho_phyt_clean <- full_join(brho_phyt_sen2,brho_phyt_nosen2)
+
 
