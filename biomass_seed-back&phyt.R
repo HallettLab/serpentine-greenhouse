@@ -45,7 +45,7 @@ lm_femiback1_nodes <- lm(nodes~total_mass_g,dat=femi_back_1)
 femi_back_234 <- back %>%
   filter(seed_sp == "FEMI") %>%
   filter(block != 1) %>%
-  mutate(nodes = ((biomass_g*189.9)+16.5)) %>%
+  mutate(nodes = trunc((biomass_g*189.9)+16.5)) %>%
   select(-seedmass_g,-glumemass_g,-seeds_mat,-seeds_immat,-empty_glumes)
   
 # Join Block1 and Blocks 2,3,4 of FEMI background seed production
