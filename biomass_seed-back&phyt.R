@@ -136,8 +136,15 @@ summary(brho_phyt_lm)
 #rsquared really low, very bad linear fit
 
 # After accounting for senescence and presence of reproductive parts
-brho_phyt_sen <- brho_phyt %>%
-  filter(empty_glumes == 0, total_seed !=0)
+brho_phyt_sen_a <- brho_phyt %>%
+  filter(potential_seed>0,empty_glumes>0,total_seed>0)
+
+brho_phyt_sen_b <- brho_phyt %>%
+  filter(empty_glumes == 0, potential_seed > 0)
+
+brho_phyt_sen <- full_join(brho_phyt_sen_a,brho_phyt_sen_b) %>%
+  filter(pot_id != 97)
+#took out outlier pot 97
 #the filter above keeps samples that fully developed seed (no empty glumes)
 #and samples that developed reproductive parts
 
@@ -147,12 +154,12 @@ ggplot(brho_phyt_sen) + geom_point(aes(biomass_g,total_seed,shape=trt_water,colo
 
 lm_brho_phyt_sen <- lm(total_seed~biomass_g,dat=brho_phyt_sen)
 summary(lm_brho_phyt_sen)
-#rsquared = 0.8855
-#estimated seeds = (180.198*biomass_g) - 0.02739
+#rsquared = 0.8898
+#estimated seeds = (180.7284*biomass_g) - 0.2494
 
 # Recalculate seed production for brho phytometers based on linear equation
 brho_phyt_nosen <- setdiff(brho_phyt,brho_phyt_sen) %>%
-  mutate(total_seed_new = (180.198*biomass_g)-0.02739)
+  mutate(total_seed_new = trunc((180.7284*biomass_g)-0.2494))
 
 # Join "not senesced" samples with "senesced"
 #Cleanup
