@@ -5,6 +5,7 @@ library(nlstools)
 ##read in data
 cleandat <- read_csv(paste(datpath, "/clean_seed_dat.csv", sep = ""))
 
+# spread the data to wide format so that seeds in/out by species are there own column
 seeddat <- cleandat %>%
   select(block:seeds_out, background_comp) %>%
   pivot_longer(seeds_in:seeds_out, "measure", "value") %>%
@@ -13,6 +14,8 @@ seeddat <- cleandat %>%
   pivot_wider(names_from = measure2, values_from = value) %>%
   mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_"))
 
+# subset to just plerbrho for now 
+# note: might want to jump straight into a 4-spp model 
 plerbrho <- seeddat %>%
   filter(background_comp%in%c("BRHO", "PLER", "none"))
 
@@ -41,9 +44,10 @@ bg <- .98 # gulmon
 # 4) Competition from Bromus individuals (competition term: aiB; the number of Bromus seeds added is multiplied by the germination fraction, bg)
 m1P <- as.formula(log(PLER_seeds_out +1) ~  log(pg*(PLER_seeds_in+1)*exp(log(lambda)-log((1+aiP*(PLER_seeds_in+1)*pg+aiB*(BRHO_seeds_in+1)*bg)))))
 
-
+# identify the unique treatments
 treatments <- unique(plerbrho$waterN_treatment)
 
+# run the model for each treatment
 Poutput <- as.data.frame(matrix(nrow = 0, ncol = 7))
 names(Poutput) = c("estimate", "se", "t", "p", "params", "treatment", "species")
 for (i in 1:length(treatments)){
@@ -71,8 +75,10 @@ m1B <- as.formula(log(BRHO_seeds_out +1) ~  log(bg*(BRHO_seeds_in+1)*exp(log(lam
 # old model (same model but not log transformed)
 #m1 <- as.formula(log(AVseedout +1) ~  log(AVseedin*ag +1)*((lambda)/(1+aiE*log(ERseedin*eg + 1) + aiA*log(AVseedin*ag + 1))))
 
+# identify the unique treatments
 treatments <- unique(togdat$treatment)
 
+# run the model for each treatment
 Boutput <- as.data.frame(matrix(nrow = 0, ncol = 7))
 names(Boutput) = c("estimate", "se", "t", "p", "params", "treatment", "species")
 for (i in 1:length(treatments)){
@@ -96,11 +102,7 @@ model.dat <- rbind(Poutput, Boutput) %>%
   dplyr::select(estimate, params, treatment, species) %>%
   spread(params, estimate)
 
-model.dat
- # ggplot(model.dat, aes(x=treatment, y=aiB)) + geom_bar(stat="identity") + facet_wrap(~species)
- # ggplot(model.dat, aes(x=treatment, y=aiP)) + geom_bar(stat="identity") + facet_wrap(~species)
-
-
+# have a look at the parameter table (with error bars)
 parameter_table <- rbind(Poutput, Boutput) %>%
   tbl_df() %>%
   mutate_if(is.numeric, round, 2) %>%

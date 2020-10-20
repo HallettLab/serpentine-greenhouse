@@ -1,3 +1,4 @@
+# Initial functions from Lauren Shoemaker (avena-erodium paper)
 
 # ------------------------------------------------------------------------------------
 # Functions for use in coexistence calcualtions
@@ -28,9 +29,11 @@ pop.resident <- function (N0, resident, s, g, a_intra, a_inter, lambda) {
 # first determine resident equilibrium abundances and low density growth rates
 # without partitioning coexistence
 
+# subset the data by species
 bromus <- subset(model.dat, species=="Bromus")
 plantago <- subset(model.dat, species=="Plantago")
 
+# identify the unique treatments
 treatments <- unique(plerbrho$waterN_treatment)
 
 ## Set germination and survival fractions from the literature
@@ -39,12 +42,15 @@ pg <- .92 # gulmon
 bs <- .2 # lauren guess
 bg <- .98 # gulmon
 
+# set starting abundance
 N0 <- 100
+
+# set number of timesteps
 time <- 120
 # N_bromus <- rep(NA, time)
 # N_bromus[1] <- N0
 
-
+# caculate resident abundance and grwr for each species/treatment
 grwrdat <- data.frame(waterN_treatment = as.character(), bromus_epsilon_0 = as.numeric(), plantago_epsilon_0 = as.numeric(), resident_bromus_epsilon_0 = as.numeric(), 
                       resident_plantago_epsilon_0 = as.numeric(), plantago_grwrChesson = as.numeric(), bromus_grwrChesson = as.numeric(),
                       plantago_resident = as.numeric(), bromus_resident = as.numeric())
@@ -99,23 +105,27 @@ plantago_resident_no_var_next <- pop.resident(N0=1, resident=plantago_no_var[tim
 
 plantago_resident_no_var <- plantago_no_var[time]/plantago_resident_no_var_next
 
+# extract all the relevant coefficients
 bromus_epsilon_0 <- log(bromus_invade_no_var)
 plantago_epsilon_0 <- log(plantago_invade_no_var)
 resident_bromus_epsilon_0 <- log(bromus_resident_no_var)
 resident_plantago_epsilon_0 <- log(plantago_resident_no_var)
 plantago_resident=plantago_no_var[time]
 bromus_resident=bromus_no_var[time]
-
-
 plantago_grwrChesson = plantago_epsilon_0-resident_bromus_epsilon_0
 bromus_grwrChesson = bromus_epsilon_0-resident_plantago_epsilon_0
 waterN_treatment = bromus$treatment[i]
+
+# put the coefficients together 
 tempout <- data.frame(waterN_treatment, bromus_epsilon_0, plantago_epsilon_0, 
                       resident_bromus_epsilon_0, resident_plantago_epsilon_0, plantago_grwrChesson, bromus_grwrChesson,
                       plantago_resident, bromus_resident)
+
+# bind the treatment i to the full dataset
 grwrdat <- rbind(grwrdat, tempout)
 }
 
+# clean up the data to graph grwr (here using the Chesson version of invader growth rate - resident growth rate)
 grwrgraph <- grwrdat %>%
   select(waterN_treatment, plantago_grwrChesson, bromus_grwrChesson) %>%
   separate(waterN_treatment, c("water", "N"), sep = "_") %>%
@@ -130,7 +140,7 @@ ggplot(grwrgraph, aes(x = N, y = grwrChesson, fill = water)) +
   geom_bar(stat = "identity", position = "dodge") + facet_wrap(~species)
 
 
-
+# clean up the data to graph the resident abundance
 residentgraph <- grwrdat %>%
   select(waterN_treatment, plantago_resident, bromus_resident) %>%
   separate(waterN_treatment, c("water", "N"), sep = "_") %>%
