@@ -16,7 +16,7 @@ calcSE<-function(x){
 }
 
 ## Data manipulation
-dat <- seed_dat %>%
+seed_dat <- seed_dat %>%
   group_by(block,seed_density,individual,background_comp,trt_water,trt_N) %>%
   summarize(out_in = out_in)
 
@@ -116,10 +116,14 @@ plot_grid(p1,p2,labels=c("A","B"),label_size = 13,
           rel_widths = c(3,1))
 
 ## All species graphs
+seed_dat <- seed_dat %>%
+  group_by(seed_density,individual,background_comp,trt_water,trt_N) %>%
+  summarize(mean_out_in = mean(out_in, na.rm = T),se_out_in = calcSE(out_in))
+
 dat_exc_none <- dat_exc_none %>%
   group_by(seed_density,individual,background_comp,trt_water,trt_N) %>%
   summarize(mean_out_in = mean(out_in, na.rm = T),se_out_in = calcSE(out_in)) %>%
-  filter(background_comp != "none")
+  filter(background_comp != "none") 
   
 dat_none <- dat_none %>%
   group_by(seed_density,individual,background_comp,trt_water,trt_N) %>%
