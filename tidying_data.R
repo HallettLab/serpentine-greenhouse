@@ -10,6 +10,7 @@ brho_back <- read.csv(paste(datpath, "/brho_back.csv", sep = ""))
 brho_phyt <- read.csv(paste(datpath, "/brho_phyt.csv", sep = ""))
 back <- read.csv(paste(datpath, "/seed_biomass_background.csv", sep = "")) 
 phyt <- read.csv(paste(datpath, "/seed_biomass_phytometers.csv", sep = ""))
+dens <- read.csv(paste(datpath, "/seed_density.csv", sep = ""))
 
 ## BRHO phytometer and background seed/biomass production
 brho_back <- brho_back %>%
@@ -21,7 +22,8 @@ brho_back <- brho_back %>%
 brho_phyt <- brho_phyt %>%
   rename(species = phytometer, background = seed_sp, seeds_out = out_in) %>%
   select(-X,-biomass_g) %>%
-  mutate(BRHO_seeds_in = 1, PLER_seeds_in = 0, LAPL_seeds_in = 0, FEMI_seeds_in = 0, waterN_treatment = paste(trt_water, trt_N, sep = "_"))
+  mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) %>%
+  inner_join(dens)
 
 ## FEMI phytometer and background seed/biomass production
 femi_back <- femi_back %>%
@@ -34,7 +36,8 @@ femi_phyt <- phyt %>%
   rename(seeds_out = seeds_mat) %>%
   select(-seeds_immat,-potential_seed,-empty_glumes,-comment,-nodes,-biomass_g) %>%
   rename(species = phytometer, background = seed_sp) %>%
-  mutate(FEMI_seeds_in = 1, PLER_seeds_in = 0, BRHO_seeds_in = 0, LAPL_seeds_in = 0, waterN_treatment = paste(trt_water, trt_N, sep = "_"))
+  mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) %>%
+  inner_join(dens)
 
 ## PLER phytometer and background seed/biomass production
 pler_back <- back %>%
@@ -49,7 +52,8 @@ pler_phyt <- phyt %>%
   rename(seeds_out = seeds_mat) %>%
   select(-seeds_immat,-potential_seed,-empty_glumes,-comment,-nodes,-biomass_g) %>%
   rename(species = phytometer, background = seed_sp) %>%
-  mutate(PLER_seeds_in = 1, BRHO_seeds_in = 0, LAPL_seeds_in = 0, FEMI_seeds_in = 0, waterN_treatment = paste(trt_water, trt_N, sep = "_"))
+  mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) %>%
+  inner_join(dens)
 
 ## LAPL phytometer and and background seed/biomass production
 lapl_back <- back %>%
@@ -64,7 +68,8 @@ lapl_phyt <- phyt %>%
   mutate(seeds_out = seeds_mat + seeds_immat) %>%
   select(-seeds_mat,-biomass_g,-seeds_immat,-potential_seed,-empty_glumes,-comment,-nodes) %>%
   rename(species = phytometer, background = seed_sp) %>%
-  mutate(LAPL_seeds_in = 1, PLER_seeds_in = 0, BRHO_seeds_in = 0, FEMI_seeds_in = 0, waterN_treatment = paste(trt_water, trt_N, sep = "_"))
+  mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) %>%
+  inner_join(dens)
 
 ## Join all species
 brho_dat <- full_join(brho_back,brho_phyt)
@@ -79,7 +84,7 @@ join1 <- full_join(brho_dat,femi_dat)
 
 join2 <- full_join(pler_dat,lapl_dat)
 
-seed_dat <- full_join(join1,join2)
+model_dat <- full_join(join1,join2)
 
 
 
