@@ -41,3 +41,11 @@ none_dens <- ggplot(subset(seed_dat, seed_density %in% "none"), aes(trt_N,mean_o
   facet_grid(individual~trt_water,scale = "free") + ylab("Per capita seed production") 
 
 ggsave("none_dens.png")
+
+seed_pler <- seed_dat %>%
+  filter(individual == "PLER", seed_density == "hi")  %>%
+  filter(background_comp == "BRHO" | background_comp == "LAPL")
+  
+ggplot(seed_pler, aes(trt_N,mean_out_in,group = interaction(background_comp, seed_density))) + 
+  geom_point(aes(color = background_comp, shape = seed_density),size=2.5) + geom_line(aes(color = background_comp)) +
+  facet_grid(individual~trt_water,scale = "free") + ylab("Per capita seed production") 

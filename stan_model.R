@@ -5,7 +5,7 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 ## Read in data
-data <- read.csv(paste(datpath, "/model_dat.csv", sep = "")) %>%
+data <- read.csv(paste(datpath, "/model_dat4.csv", sep = "")) %>%
   select(-X)
 data[is.na(data)] <- 0
 
@@ -15,8 +15,8 @@ initials <- list(lambda=exp(10), alpha_pler=exp(0.03), alpha_brho=exp(0.03), alp
 initials1<- list(initials, initials, initials)
 
 ## Subset data for competitor and treatment of interest
-dat <- subset(data, species == "PLER")
-dat <- subset(dat, waterN_treatment == "lo_lo")
+dat <- subset(data, species == "BRHO")
+dat <- subset(dat, waterN_treatment == "hi_lo")
 
 ## Create model variables for our data
 ### Set Fecundity as the seeds out from our focal species
@@ -32,22 +32,22 @@ femi <- as.integer(dat$FEMI_seeds_in)
 N <- as.integer(length(Fecundity))
 
 ### Set intra-specific species
-intra <- pler
+intra <- brho
 
 ## Fit model
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
-no_dist_seeds_pler_lo_lo <- stan(file = "Four_species_BH_model.stan", data = c("N", "Fecundity", "intra", "pler", "brho",
-                                                                             "lapl", "femi"),
-                               iter = 40000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 10),
-                               init = initials1)
+no_dist_seeds_brho_hi_lo <- stan(file = "Four_species_BH_model.stan", data = c("N", "Fecundity", "intra", "pler", "brho",
+                                                                               "lapl", "femi"),
+                                 iter = 40000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 10),
+                                 init = initials1)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_int, file = "pler_lo_int_posteriors.rdata")
+save(no_dist_seeds_pler_lo_lo, file = "pler_lo_lo_posteriors.rdata")
 
 ## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
+stan_dens(no_dist_seeds_pler_lo_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
 
 ## Extract all parameter estimates
-pler_lo_int <- rstan::extract(no_dist_seeds_pler_lo_int)
+pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
 
