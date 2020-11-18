@@ -8,6 +8,8 @@ library(tidyverse)
 femi_back <- read.csv(paste(datpath, "/femi_back.csv", sep = "")) 
 brho_back <- read.csv(paste(datpath, "/brho_back.csv", sep = ""))
 brho_phyt <- read.csv(paste(datpath, "/brho_phyt.csv", sep = ""))
+brho_back2 <- read.csv(paste(datpath, "/brho_back2.csv", sep = ""))
+brho_phyt2 <- read.csv(paste(datpath, "/brho_phyt2.csv", sep = ""))
 back <- read.csv(paste(datpath, "/seed_biomass_background.csv", sep = "")) 
 phyt <- read.csv(paste(datpath, "/seed_biomass_phytometers.csv", sep = ""))
 dens <- read.csv(paste(datpath, "/seed_density.csv", sep = ""))
@@ -19,9 +21,21 @@ brho_back <- brho_back %>%
   select(-X, -biomass_g, -out_in) %>%
   mutate(PLER_seeds_in = 0, LAPL_seeds_in = 0, FEMI_seeds_in = 0, waterN_treatment = paste(trt_water, trt_N, sep = "_"))
 
+brho_back2 <- brho_back2 %>%
+  select(-X, -biomass_g, -seeds_out) %>%
+  rename(species = seed_sp, seeds_out=seeds_out_new, BRHO_seeds_in = seeds_in) %>%
+  mutate(background = "BRHO") %>%
+  mutate(PLER_seeds_in = 0, LAPL_seeds_in = 0, FEMI_seeds_in = 0, waterN_treatment = paste(trt_water, trt_N, sep = "_"))
+
 brho_phyt <- brho_phyt %>%
   rename(species = phytometer, background = seed_sp, seeds_out = out_in) %>%
   select(-X,-biomass_g) %>%
+  mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) %>%
+  inner_join(dens)
+
+brho_phyt2 <- brho_phyt2 %>%
+  rename(species = phytometer, background = seed_sp) %>%
+  select(-X,-seeds_in) %>%
   mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) %>%
   inner_join(dens)
 
@@ -74,6 +88,8 @@ lapl_phyt <- phyt %>%
 ## Join all species
 brho_dat <- full_join(brho_back,brho_phyt)
 
+brho_dat2 <- full_join(brho_back2,brho_phyt2)
+
 femi_dat <- full_join(femi_back,femi_phyt)
 
 pler_dat <- full_join(pler_back,pler_phyt)
@@ -82,9 +98,13 @@ lapl_dat <- full_join(lapl_back,lapl_phyt)
 
 join1 <- full_join(brho_dat,femi_dat)
 
+join1a <- full_join(brho_dat2,femi_dat)
+
 join2 <- full_join(pler_dat,lapl_dat)
 
 model_dat <- full_join(join1,join2)
+
+model_dat2 <- full_join(join1a,join2)
 
 
 
