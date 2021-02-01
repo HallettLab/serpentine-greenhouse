@@ -42,7 +42,7 @@ no_dist_seeds_brho_hi_lo <- stan(file = "Four_species_BH_model.stan", data = c("
                                  init = initials1)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_hi_hi, file = "brho_hi_lo_posteriors.rdata")
+save(no_dist_seeds_brho_hi_lo, file = "brho_hi_lo_posteriors.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_hi_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
