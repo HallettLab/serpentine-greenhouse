@@ -31,9 +31,7 @@ summary(lm_brho_back)
 #Note: went back to samples to look at greenness
 #       samples that had more than 50% senescence are "yes" for senescence
 brho_back_bio <- brho_back %>%
-  filter(senescence == "yes") %>%
-  mutate(total_seed = seeds_mat + seeds_immat) %>%
-  mutate(totalmass_g = biomass_g + seedmass_g)
+  filter(senescence == "yes") 
 
 ggplot(brho_back_bio) + geom_point(aes(totalmass_g,total_seed,shape=trt_water,color=trt_N)) +
   geom_smooth(aes(totalmass_g,total_seed),method = "lm",se=F) +
@@ -58,8 +56,10 @@ brho_back_adj <- brho_back %>%
 brho_back_adj$seeds_out_new[brho_back_adj$seeds_out_new < 0] <- 0
 
 brho_back_adj <- brho_back_adj %>%
-  select(-total_seed,-seeds_mat,-seeds_immat,-senescence,-seedmass_g,-biomass_g,-totalmass_g,-empty_glumes,-glumemass_g,-nodes) %>%
-  rename(seeds_out = seeds_out_new)
+  select(-seeds_mat,-seeds_immat,-senescence,-seedmass_g,-biomass_g,-empty_glumes,-glumemass_g,-nodes) %>%
+  rename(seeds_out = total_seed)
+
+write.csv(brho_back_adj, "brho_back2.csv")
   
 ## BRHO phytometer biomass and seed - all blocks
 brho_phyt <- phyt %>%
@@ -100,6 +100,8 @@ summary(lm_brho_phyt_sen)
 # Recalculate seed production for brho phytometers based on linear equation
 brho_phyt_adj <- brho_phyt %>%
   mutate(seeds_out_new = trunc((180.7284*biomass_g)-0.2494), seeds_in=1) %>%
-  select(-seeds_mat,-seeds_immat,-potential_seed,-biomass_g,-empty_glumes,-total_seed) %>%
-  rename(seeds_out = seeds_out_new) 
+  select(-seeds_mat,-seeds_immat,-potential_seed,-empty_glumes,) %>%
+  rename(seeds_out = total_seed)
+
+write.csv(brho_phyt_adj, "brho_phyt2.csv")
 
