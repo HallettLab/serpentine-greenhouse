@@ -18,16 +18,16 @@ dens2 <- read.csv(paste(datpath, "/seed_density2.csv", sep = ""))
 ################################
 
 # BRHO phytometer and background seed/biomass production
-brho_backadj1 <- brho_backadj1 %>%
+brho_back_adj1 <- brho_back_adj1 %>%
   mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_"))
 
-brho_phytadj1 <- brho_phytadj1 %>%
+brho_phyt_adj1 <- brho_phyt_adj1 %>%
   mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_"))
 
-brho_backadj2 <- brho_backadj2 %>%
-  mutate(background = "BRHO", waterN_treatment = paste(trt_water, trt_N, sep = "_"))
+brho_back_adj2 <- brho_back_adj2 %>%
+  mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_"))
 
-brho_phytadj2 <- brho_phytadj2 %>%
+brho_phyt_adj2 <- brho_phyt_adj2 %>%
   mutate(waterN_treatment = paste(trt_water, trt_N, sep = "_")) 
 
 # FEMI phytometer and background seed/biomass production
@@ -81,14 +81,17 @@ join1 <- full_join(brho_dat1,femi_dat)
 join1a <- full_join(brho_dat2,femi_dat)
 join2 <- full_join(pler_dat,lapl_dat)
 
+# Clean_dat1 consists of bromus phyt and back "not senensced" corrected samples
 clean_dat1 <- full_join(join1,join2) %>%
   mutate(out_in = seeds_out/seeds_in)
 
+# Clean_dat2 consists of bromus phyt and back all corrected samples
 clean_dat2 <- full_join(join1a,join2) %>%
   mutate(out_in = seeds_out/seeds_in)
 
 # CSV file
-write.csv (clean_dat, "clean_dat.csv")
+write.csv (clean_dat1, "clean_dat1.csv")
+write.csv(clean_dat1, "clean_dat2.csv")
 
 ## Clean up for models
 #BRHO phytometer and background seed/biomass production
