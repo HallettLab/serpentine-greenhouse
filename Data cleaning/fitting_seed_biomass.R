@@ -59,9 +59,9 @@ femi_back1 <- femi_back_1 %>%
 
 # Data frame femi_back_adj contains all samples from Block 1 and Blocks 2,3,4
 femi_back_adj <- full_join(femi_back1,femi_back_234) %>%
-  select(-seeds_mat,-seeds_immat,-total_seed,-out_in_seeds,-senescence) %>%
-  rename(seeds_out = nodes, out_in = out_in_nodes) %>%
-  mutate(out_in = seeds_out/seeds_in, background = "FEMI")
+  select(-seeds_mat,-seeds_immat,-total_seed,-out_in_seeds,-senescence, -out_in_nodes) %>%
+  rename(seeds_out = nodes, species=seed_sp) %>%
+  mutate(background = "FEMI")
 
 
 #########################################################
