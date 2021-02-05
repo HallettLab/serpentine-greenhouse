@@ -4,6 +4,8 @@
 
 library(tidyverse)
 
+source("fitting_seed_biomass2.R")
+
 ## Read in data
 femi_back <- read.csv(paste(datpath, "/femi_back.csv", sep = "")) 
 brho_back <- read.csv(paste(datpath, "/brho_back.csv", sep = ""))
