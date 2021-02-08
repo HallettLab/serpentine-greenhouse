@@ -208,7 +208,4 @@ brho_phyt_adj2 <- brho_phyt %>%
   select(-seeds_mat,-seeds_immat,-potential_seed,-empty_glumes,-total_seed) %>%
   rename(species = phytometer, background = seed_sp)
 
-
-
-
-
+rm(brho_back_bio,brho_back_nosen,brho_back_nosen2,brho_back_sen,brho_phyt_lm,brho_phyt_nosen,brho_phyt_nosen2,brho_phyt_sen,brho_phyt_sen_a,brho_phyt_sen_b,brho_phyt_sen2,femi_back_234,femi_back_1,lm_brho_back,lm_brho_back_bio,lm_brho_phyt_sen,lm_femiback1_nodes,lm_femiback1_seed,femi_back1)
