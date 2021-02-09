@@ -3,6 +3,7 @@
 ####################################
 
 library(tidyverse)
+library(ggtext)
 
 ## Read in data
 seed_biomass_dat <- read.csv(paste(datpath, "/clean_dat2.csv", sep = ""))
@@ -48,6 +49,7 @@ back_biomass <- full_join(femi_pler_back,brho_lapl_back) %>%
 ## Reorder and rename factors
 back_biomass$trt_water <- factor(back_biomass$trt_water , levels = c("lo","hi"))
 back_biomass$trt_N <- factor(back_biomass$trt_N , levels = c("lo","int","hi"))
+back_biomass$background <- factor(back_biomass$background , levels = c("PLER","LAPL","FEMI","BRHO"))
 
 water.labs <- c("Dry", "Wet")
 names(water.labs) <- c("lo", "hi")
@@ -59,6 +61,7 @@ dens.labs <- c("Low seed addition", "High seed addition")
 names(dens.labs) <- c("lo", "hi")
 
 ## Data visualization
+# V1
 ggplot(back_biomass) + geom_boxplot(aes(trt_N,biomass_g,fill=trt_water)) + 
   facet_grid(seed_density~background,
              labeller = labeller(background=sp.labs,seed_density=dens.labs)) +
@@ -67,7 +70,20 @@ ggplot(back_biomass) + geom_boxplot(aes(trt_N,biomass_g,fill=trt_water)) +
                     values=c("grey80","grey40")) +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   theme(strip.text.x = element_text(face = "italic"))
-  
+
+# V2
+ggplot(back_biomass) + geom_boxplot(aes(trt_N,biomass_g,fill=background)) + 
+  facet_grid(seed_density~trt_water,
+             labeller = labeller(trt_water=water.labs,seed_density=dens.labs)) +
+  ylab("Biomass (g)") + xlab("Nitrogen treatments") + 
+  scale_fill_manual(name="Background species", labels = c("*Plantago erecta*",
+                                                          "*Layia platyglossa*",
+                                                          "*Festuca microstachys*",
+                                                          "*Bromus hordeaceus*"), 
+                    values=c("white","grey85","grey42","grey3")) +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  theme(legend.text = element_markdown())
+
 #################################
 ## Background stem/recruitment ##
 #################################
@@ -81,9 +97,11 @@ rec_dat <- stems_dat %>%
 ## Reorder and rename factors
 rec_dat$trt_water <- factor(rec_dat$trt_water , levels = c("lo","hi"))
 rec_dat$trt_N <- factor(rec_dat$trt_N , levels = c("lo","int","hi"))
+rec_dat$background <- factor(rec_dat$background , levels = c("PLER","LAPL","FEMI","BRHO"))
 
 ## Data visualization
 # Recruitment
+# V1
 ggplot(rec_dat) + geom_boxplot(aes(trt_N,recruitment,fill=trt_water)) + 
   facet_grid(seed_density~background,
              labeller = labeller(background=sp.labs,seed_density=dens.labs)) +
@@ -93,7 +111,21 @@ ggplot(rec_dat) + geom_boxplot(aes(trt_N,recruitment,fill=trt_water)) +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   theme(strip.text.x = element_text(face = "italic"))
 
+# V2
+ggplot(rec_dat) + geom_boxplot(aes(trt_N,recruitment,fill=background)) + 
+  facet_grid(seed_density~trt_water,
+             labeller = labeller(trt_water=water.labs,seed_density=dens.labs)) +
+  ylab("Recruitment(%)") + xlab("Nitrogen treatments") + 
+  scale_fill_manual(name="Background species", labels = c("*Plantago erecta*",
+                                                          "*Layia platyglossa*",
+                                                          "*Festuca microstachys*",
+                                                          "*Bromus hordeaceus*"), 
+                    values=c("white","grey85","grey42","grey3")) +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  theme(legend.text = element_markdown())
+
 # Stem density
+# V1
 ggplot(rec_dat) + geom_boxplot(aes(trt_N,stem_density,fill=trt_water)) + 
   facet_grid(seed_density~background,
              labeller = labeller(background=sp.labs,seed_density=dens.labs), 
@@ -104,3 +136,32 @@ ggplot(rec_dat) + geom_boxplot(aes(trt_N,stem_density,fill=trt_water)) +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   theme(strip.text.x = element_text(face = "italic"))
 
+# V2
+ggplot(rec_dat) + geom_boxplot(aes(trt_N,stem_density,fill=background)) + 
+  facet_grid(seed_density~trt_water,
+             labeller = labeller(trt_water=water.labs,seed_density=dens.labs),
+             scale = "free") +
+  ylab("Stem density") + xlab("Nitrogen treatments") + 
+  scale_fill_manual(name="Background species", labels = c("*Plantago erecta*",
+                                                          "*Layia platyglossa*",
+                                                          "*Festuca microstachys*",
+                                                          "*Bromus hordeaceus*"), 
+                    values=c("white","grey85","grey42","grey3")) +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  theme(legend.text = element_markdown())
+
+################################
+## Per capita seed production ##
+################################
+
+## Data manipulation
+seed_dat <- seed_biomass_dat %>%
+  select(-X,-biomass_g) 
+
+## Reorder and rename factors
+seed_dat$trt_water <- factor(seed_dat$trt_water , levels = c("lo","hi"))
+seed_dat$trt_N <- factor(seed_dat$trt_N , levels = c("lo","int","hi"))
+
+## Data
+
+  
