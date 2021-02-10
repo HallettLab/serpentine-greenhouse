@@ -4,6 +4,12 @@
 
 library(tidyverse)
 library(ggtext)
+library(ggplotify)
+library(gridExtra)
+library(grid)
+library(lattice)
+library(gtable)
+library(cowplot)
 
 ## Read in data
 seed_biomass_dat <- read.csv(paste(datpath, "/clean_dat2.csv", sep = ""))
@@ -156,12 +162,104 @@ ggplot(rec_dat) + geom_boxplot(aes(trt_N,stem_density,fill=background)) +
 
 ## Data manipulation
 seed_dat <- seed_biomass_dat %>%
-  select(-X,-biomass_g) 
+  filter(seed_density != "none") %>%
+  select(-X,-biomass_g) %>%
+  group_by(species,background,seed_density,trt_N,trt_water) %>%
+  summarize(mean_out_in = mean(out_in,na.rm = T),se_out_in=calcSE(out_in))
+
+seed_dat_none <- seed_biomass_dat %>%
+  filter(seed_density == "none") %>%
+  select(-X,-biomass_g) %>%
+  group_by(species,background,seed_density,trt_N,trt_water) %>%
+  summarize(mean_out_in = mean(out_in,na.rm=T),se_out_in=calcSE(out_in))
 
 ## Reorder and rename factors
 seed_dat$trt_water <- factor(seed_dat$trt_water , levels = c("lo","hi"))
 seed_dat$trt_N <- factor(seed_dat$trt_N , levels = c("lo","int","hi"))
+seed_dat$background <- factor(seed_dat$background , levels = c("PLER","LAPL","FEMI","BRHO"))
+seed_dat$species <- factor(seed_dat$species , levels = c("PLER","LAPL","FEMI","BRHO"))
 
-## Data
+seed_dat_none$trt_water <- factor(seed_dat_none$trt_water , levels = c("lo","hi"))
+seed_dat_none$trt_N <- factor(seed_dat_none$trt_N , levels = c("lo","int","hi"))
+seed_dat_none$background <- factor(seed_dat_none$background , levels = c("PLER","LAPL","FEMI","BRHO"))
+seed_dat_none$species <- factor(seed_dat_none$species , levels = c("PLER","LAPL","FEMI","BRHO"))
 
-  
+## Data visualization
+#For jittering
+pd <- position_dodge(0.3)
+
+# Graph of background competition
+p <- ggplot(seed_dat, aes(trt_N,mean_out_in,group = interaction(species, trt_water))) +
+  geom_point(aes(color = species, shape = trt_water),size=2.5,position=pd) + 
+  geom_line(aes(color = species),position=pd) +
+  facet_grid(seed_density~background,
+             labeller = labeller(background = sp.labs,
+                                 seed_density = dens.labs),scale = "free") + 
+  ylab("Per capita seed production") +
+  scale_shape_manual(values = c(1,16), name="Water treatments", 
+                     labels = c("Dry","Wet")) + xlab("Nitrogen treatments") + 
+  theme(strip.text.x = element_text(face = "italic"),legend.text = element_markdown()) +
+  scale_x_discrete(labels = c("Low","Interm","High")) + 
+  scale_color_manual(name = "Phytometer species",labels = c("*Plantago erecta*",
+                                                             "*Layia platyglossa*",
+                                                             "*Festuca microstachys*",
+                                                             "*Bromus hordeaceus*"),
+                       values=c("grey80","grey65","grey50","black")) #+
+  #geom_errorbar(aes(x = trt_N, y = mean_out_in, 
+                    #ymin = mean_out_in - se_out_in, ymax = mean_out_in + se_out_in, 
+                    #color = species),position=pd)
+
+# Graph of no background competition
+p2 <- ggplot(seed_dat_none, aes(trt_N,mean_out_in,group = interaction(species, trt_water))) +
+  geom_point(aes(color = species, shape = trt_water),size=2.5,position=pd) + 
+  geom_line(aes(color = species),position=pd) +
+  facet_grid(seed_density~background,scale = "free") + 
+  ylab("Per capita seed production") +
+  scale_shape_manual(values = c(1,16), name="Water treatments", 
+                     labels = c("Dry","Wet")) + xlab("Nitrogen treatments") + 
+  theme(strip.text.x = element_blank(),strip.text.y = element_blank(),
+        legend.text = element_markdown(),legend.position = "none") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) + 
+  ggtitle("No background competition") +
+  theme(plot.title = element_text(hjust = 0.5,face="bold")) +
+  scale_color_manual(values=c("grey80","grey65","grey50","black")) #+
+  #geom_errorbar(aes(x = trt_N, y = mean_out_in, 
+                    #ymin = mean_out_in - se_out_in, ymax = mean_out_in + se_out_in, 
+                    #color = species),position=pd)
+
+## New edition
+labelT = "Background species competition"
+
+z <- ggplotGrob(p)
+
+# Get the positions of the strips in the gtable: t = top, l = left, ...
+posT <- subset(z$layout, grepl("strip-t", name), select = t:r)
+
+# Add a new column to the right of current right strips, 
+# and a new row on top of current top strips
+height <- z$heights[min(posT$t)]  # height of current top strips
+
+ 
+z <- gtable_add_rows(z, height, min(posT$t)-1)
+
+# Construct the new strip grobs
+stripT <- gTree(name = "Strip_top", children = gList(
+  rectGrob(gp = gpar(col = NA)),
+  textGrob(labelT, gp = gpar(fontsize = 14, col = "black",fontface="bold"))))
+
+# Position the grobs in the gtable
+z <- gtable_add_grob(z, stripT, t = min(posT$t), l = min(posT$l), r = max(posT$r), name = "strip-top")
+
+# Add small gaps between strips
+z <- gtable_add_rows(z, unit(1/5, "line"), min(posT$t))
+
+# Draw it
+grid.newpage()
+grid.draw(z)
+
+p1 <- as.ggplot(z)
+
+plot_grid(p1,p2,labels=c("A","B"),label_size = 13,
+          rel_widths = c(3,1))
+
+ggsave("per_capita_seed.png")
