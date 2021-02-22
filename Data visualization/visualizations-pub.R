@@ -263,3 +263,61 @@ plot_grid(p1,p2,labels=c("A","B"),label_size = 13,
           rel_widths = c(3,1))
 
 ggsave("per_capita_seed.png")
+
+#####################################################
+## Per capita seed production other visualizations ##
+#####################################################
+
+## Data manipulation
+seed_dat <- seed_biomass_dat %>%
+  filter(seed_density != "none") %>%
+  select(-X,-biomass_g) %>%
+  group_by(seed_density,species,background,trt_N,trt_water) %>%
+  summarize(mean_out_in = mean(out_in,na.rm=T), se_out_in = calcSE(out_in))
+
+seed_dat_none <- seed_biomass_dat %>%
+  filter(seed_density == "none") %>%
+  select(-X,-biomass_g) %>% 
+  mutate(background = species) %>%
+  group_by(species,background,seed_density,trt_N,trt_water) %>%
+  summarize(mean_out_in = mean(out_in,na.rm=T),se_out_in=calcSE(out_in))
+
+seed_dat <- full_join(seed_dat,seed_dat_none)
+
+## Reorder and rename factors
+seed_dat$trt_water <- factor(seed_dat$trt_water , levels = c("lo","hi"))
+seed_dat$trt_N <- factor(seed_dat$trt_N , levels = c("lo","int","hi"))
+seed_dat$background <- factor(seed_dat$background , levels = c("PLER","LAPL","FEMI","BRHO"))
+seed_dat$species <- factor(seed_dat$species,levels = c("PLER","LAPL","FEMI","BRHO"))
+seed_dat$seed_density <- factor(seed_dat$seed_density,levels = c("none","lo","hi"))
+
+water.labs <- c("Dry", "Wet")
+names(water.labs) <- c("lo", "hi")
+n.labs <- c("Low","Intermediate","High")
+names(n.labs) <- c("lo","int","hi")
+sp.labs <- c("Plantago erecta","Layia platyglossa","Festuca microstachys","Bromus hordeaceus")
+names(sp.labs) <- c("PLER","LAPL","FEMI","BRHO")
+dens.labs <- c("None", "Low","High")
+names(dens.labs) <- c("none","lo", "hi")
+
+## Data visualization
+ggplot(seed_dat, aes(trt_N,mean_out_in,group = interaction(species, trt_water))) +
+  geom_point(aes(color = species, shape = trt_water),size=2.5,position=pd) + 
+  geom_line(aes(color = species),position=pd) +
+  facet_grid(seed_density~background,
+             labeller = labeller(background = sp.labs,
+                                 seed_density = dens.labs),scale = "free") + 
+  ylab("Per capita seed production") +
+  scale_shape_manual(values = c(1,16), name="Water treatments", 
+                     labels = c("Dry","Wet")) + xlab("N treatments") + 
+  theme(strip.text.x = element_text(face = "italic"),legend.text = element_markdown()) +
+  #scale_x_discrete(labels = c("Low","Interm","High")) + 
+  #scale_color_manual(name = "Background species",labels = c("*Plantago erecta*",
+                                                            "*Layia platyglossa*",
+                                                            "*Festuca microstachys*",
+                                                            "*Bromus hordeaceus*"),
+                     values=c("grey80","grey65","grey50","black")) #+
+#geom_errorbar(aes(x = trt_N, y = mean_out_in, 
+#ymin = mean_out_in - se_out_in, ymax = mean_out_in + se_out_in, 
+#color = species),position=pd)
+

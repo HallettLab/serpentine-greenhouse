@@ -37,10 +37,10 @@ model{
   // set priors
   sigma ~ gamma(0.001, 0.001);
   epsilon ~ gamma(sigma, sigma);
-  alpha_pler ~ normal(0, 3);
-  alpha_brho ~ normal(0, 3);
-  alpha_lapl ~ normal(0, 3);
-  alpha_femi ~ normal(0, 3);
+  alpha_pler ~ normal(0, 10);
+  alpha_brho ~ normal(0, 10);
+  alpha_lapl ~ normal(0, 10);
+  alpha_femi ~ normal(0, 10);
   //lambda ~ normal(0, 1000);
   lambda ~ gamma(0.001, 0.001);
 
