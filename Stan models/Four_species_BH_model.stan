@@ -41,8 +41,7 @@ model{
   alpha_brho ~ normal(0, 1000);
   alpha_lapl ~ normal(0, 1000);
   alpha_femi ~ normal(0, 1000);
-  //lambda ~ normal(0, 1000);
-  lambda ~ gamma(0.001, 0.001);
+  lambda ~ normal(0, 100);
 
 
 
