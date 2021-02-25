@@ -1,0 +1,21 @@
+﻿species,param,hi water hi N,hi water int N,hi water lo N,lo water hi N,lo water int N,lo water lo N
+Plantago,lambda,15.777,4.745,1.634,29.544,7.811,2.043
+Plantago,alpha_plantago,0.1,0.078,0.013,0.21,0.1,0.029
+Plantago,alpha_bromus,0.144,0.09,0.006,0.263,0.062,0.029
+Plantago,alpha_lapl,0.027,0.033,0.007,0.079,0.022,0.004
+Plantago,alpha_femi,0.1,0.019,0.005,0.094,0.036,0.013
+Bromus,lambda,234.743,52.13,9.301,366.26,25.318,0.28
+Bromus,alpha_plantago,0.219,0.161,0.123,0.491,0.082,0.018
+Bromus,alpha_bromus,1.09,0.832,0.472,3.09,0.576,0.003
+Bromus,alpha_lapl,0.236,0.187,0.058,0.403,0.044,-0.001
+Bromus,alpha_femi,0.318,0.367,0.395,0.404,0.067,0.135
+Festuca,lambda,148.601,13.661,2.011,64.149,24.518,1.346
+Festuca,alpha_plantago,0.105,0.013,0.001,0.028,0.07,0.008
+Festuca,alpha_bromus,0.352,0.073,0.027,0.158,0.136,0.006
+Festuca,alpha_lapl,0.087,0.014,0.002,0.024,0.013,-0.0003
+Festuca,alpha_femi,0.311,0.059,0.009,0.236,0.164,0.008
+Layia,alpha_plantago,0.388,0.546,,0.23,7.601,
+Layia,alpha_bromus,10.369,7.404,,2.352,7.631,
+Layia,alpha_lapl,1.381,5.664,,0.836,4.845,
+Layia,alpha_femi,7.787,6.328,,1.014,6.522,
+Laya,lambda,198.594,68.131,0,82.143,81.701,
