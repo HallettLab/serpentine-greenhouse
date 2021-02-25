@@ -14,15 +14,67 @@ run.invader <- function(surv, germ, lambda, alpha_inter, resid_abund, invader_ab
 }
 
 ## Set germination and survival rates estimated from lit
-avfa_dry$germ <- .78
-avfa_wet$germ <- .78
-avfa_dry$surv <- .01
-avfa_wet$surv <- .01
+# Gulmon (germ) and LaForgia (surv)
+pler_hi_hi$germ <- .92
+pler_hi_int$germ <- .92
+pler_hi_lo$germ <- .92
+pler_lo_hi$germ <- .92
+pler_lo_int$germ <- .92
+pler_lo_lo$germ <- .92
+pler_hi_hi$surv <- .75
+pler_hi_int$surv <- .75
+pler_hi_lo$surv <- .75
+pler_lo_hi$surv <- .75
+pler_lo_int$surv <- .75
+pler_lo_lo$surv <- .75
+
+# Gulmon (germ) and Andrew's code (surv)
+brho_hi_hi$germ <- .98
+brho_hi_int$germ <- .98
+brho_hi_lo$germ <- .98
+brho_lo_hi$germ <- .98
+brho_lo_int$germ <- .98
+brho_lo_lo$germ <- .98
+brho_hi_hi$surv <- .013
+brho_hi_int$surv <- .013
+brho_hi_lo$surv <- .013
+brho_lo_hi$surv <- .013
+brho_lo_int$surv <- .013
+brho_lo_lo$surv <- .013
+
+# Rossington M.S. thesis (germ and surv)
+lapl_hi_hi$germ <- .32
+lapl_hi_int$germ <- .32
+lapl_hi_lo$germ <- .32
+lapl_lo_hi$germ <- .32
+lapl_lo_int$germ <- .32
+lapl_lo_lo$germ <- .32
+lapl_hi_hi$surv <- .32
+lapl_hi_int$surv <- .15
+lapl_hi_lo$surv <- .15
+lapl_lo_hi$surv <- .15
+lapl_lo_int$surv <- .15
+#lapl_lo_lo$surv <- .15
+
+# Gulmon (germ) and X (surv)
+#FEMI surv based on BRHO surv
+femi_hi_hi$germ <- .83
+femi_hi_int$germ <- .83
+femi_hi_lo$germ <- .83
+femi_lo_hi$germ <- .83
+femi_lo_int$germ <- .83
+femi_lo_lo$germ <- .83
+femi_hi_hi$surv <- .013
+femi_hi_int$surv <- .013
+femi_hi_lo$surv <- .013
+femi_lo_hi$surv <- .013
+femi_lo_int$surv <- .013
+femi_lo_lo$surv <- .013
 
 ## Run to equilibrium each species alone in each treatment
-all_datset <- list(avfa_dry, avfa_wet, brho_dry, brho_wet, vumy_dry, vumy_wet, laca_dry, laca_wet, esca_dry, esca_wet) # set which dataset we want to do
-all_intra <- c("alpha_avfa", "alpha_avfa", "alpha_brho", "alpha_brho", "alpha_vumy", 
-               "alpha_vumy", "alpha_laca", "alpha_laca", "alpha_esca", "alpha_esca")
+all_datset <- list(pler_hi_hi,pler_hi_int,pler_hi_lo,pler_lo_hi,pler_lo_int,pler_lo_lo,
+                   brho_hi_hi, brho_hi_int, brho_hi_lo, brho_lo_hi,brho_lo_int,brho_lo_lo) # set which dataset we want to do
+all_intra <- c("alpha_pler", "alpha_pler", "alpha_brho", "alpha_brho")
 options <- length(all_intra)
 
 time <- 200
@@ -50,11 +102,25 @@ for (x in 1:options) {
 }
 
 ## Split into two objects, one for wet and one for dry treatments, and add labels
-residents_dry <-  data.frame(N[1,,200], N[3,,200], N[5,,200], N[7,,200], N[9,,200])
-names(residents_dry) <- c("AVFA", "BRHO", "VUMY", "LACA", "ESCA")
+residents_hi_hi <-  data.frame(N[1,,200], N[3,,200], N[5,,200], N[7,,200], N[9,,200])
+names(residents_dry) <- c("PLER", "BRHO")
 
-residents_wet <-  data.frame(N[2,,200], N[4,,200], N[6,,200], N[8,,200], N[10,,200])
-names(residents_wet) <- c("AVFA", "BRHO", "VUMY", "LACA", "ESCA")
+residents_hi_int <-  data.frame(N[1,,200], N[3,,200], N[5,,200], N[7,,200], N[9,,200])
+names(residents_wet) <- c("PLER", "BRHO")
+
+residents_hi_lo <-  data.frame(N[1,,200], N[3,,200], N[5,,200], N[7,,200], N[9,,200])
+names(residents_dry) <- c("PLER", "BRHO")
+
+residents_lo_hi <-  data.frame(N[1,,200], N[3,,200], N[5,,200], N[7,,200], N[9,,200])
+names(residents_wet) <- c("PLER", "BRHO")
+
+residents_lo_int <-  data.frame(N[1,,200], N[3,,200], N[5,,200], N[7,,200], N[9,,200])
+names(residents_dry) <- c("PLER", "BRHO")
+
+residents_lo_lo <-  data.frame(N[2,,200], N[4,,200], N[6,,200], N[8,,200], N[10,,200])
+names(residents_wet) <- c("PLER", "BRHO")
+
+
 
 ## Set up objects to store results of Avena invasions into each other species in the dry treatment 
 reps <- 200
