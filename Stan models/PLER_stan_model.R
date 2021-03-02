@@ -18,7 +18,7 @@ data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "PLER")
-dat <- subset(dat, waterN_treatment == "lo_int")
+dat <- subset(dat, waterN_treatment == "lo_lo")
 
 ## Create model variables for our data
 ### Set Fecundity as the seeds out from our focal species
@@ -39,8 +39,8 @@ intra <- pler
 
 Plot <- dat$block
 # high high initials
-initials <- list(lambda=15.71, alpha_pler=0.10, alpha_brho=0.14, alpha_lapl=0.03,
-                 alpha_femi=0.10, epsilon=rep(1,P), sigma = 12.84)
+initials <- list(lambda=15.7, alpha_pler=0.10, alpha_brho=0.14, alpha_lapl=0.03,
+                 alpha_femi=0.10, epsilon=rep(1,P), sigma = 12.6)
 initials1<- list(initials, initials, initials)
 
 ## Fit high high high model
@@ -56,7 +56,7 @@ traceplot(no_dist_seeds_pler_hi_hi, pars="lambda")
 pairs(no_dist_seeds_pler_hi_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_hi_hi, file = "no_dist_seeds_pler_hi_hi")
+save(no_dist_seeds_pler_hi_hi, file = "no_dist_seeds_pler_hi_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_pler_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -68,8 +68,8 @@ acf(pler_hi_hi$lambda)
 #############################################################
 
 # High intermediate initials
-initials <- list(lambda=4.71, alpha_pler=0.08, alpha_brho=0.09, alpha_lapl=0.03,
-                 alpha_femi=0.02, epsilon=rep(1,P), sigma = 21.67)
+initials <- list(lambda=4.8, alpha_pler=0.08, alpha_brho=0.09, alpha_lapl=0.03,
+                 alpha_femi=0.02, epsilon=rep(1,P), sigma = 21.9)
 initials1<- list(initials, initials, initials)
 
 ## Fit high high high model
@@ -78,14 +78,14 @@ initials1<- list(initials, initials, initials)
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
 no_dist_seeds_pler_hi_int <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999999999, max_treedepth =50),
+                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                  init = initials1)
 
 traceplot(no_dist_seeds_pler_hi_int, pars="lambda")
 pairs(no_dist_seeds_pler_hi_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_hi_int, file = "no_dist_seeds_pler_hi_int")
+save(no_dist_seeds_pler_hi_int, file = "no_dist_seeds_pler_hi_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_pler_hi_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -96,20 +96,20 @@ acf(pler_hi_int$lambda)
 
 ######################################################
 # High low initials
-initials <- list(lambda=1.66, alpha_pler=0.01, alpha_brho=0.005, alpha_lapl=0.007,
+initials <- list(lambda=1.7, alpha_pler=0.01, alpha_brho=0.005, alpha_lapl=0.007,
                  alpha_femi=0.004, epsilon=rep(1,P), sigma = 4.7)
 initials1<- list(initials, initials, initials)
 
 no_dist_seeds_pler_hi_lo <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
                                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
-                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999999999999999, max_treedepth =50),
+                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                   init = initials1)
 
 traceplot(no_dist_seeds_pler_hi_lo, pars="lambda")
 pairs(no_dist_seeds_pler_hi_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_hi_lo, file = "no_dist_seeds_pler_hi_lo")
+save(no_dist_seeds_pler_hi_lo, file = "no_dist_seeds_pler_hi_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_pler_hi_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -120,20 +120,20 @@ acf(pler_hi_lo$lambda)
 
 ########################################################
 # Low high initials
-initials <- list(lambda=29.7, alpha_pler=0.21, alpha_brho=0.27, alpha_lapl=0.08,
-                 alpha_femi=0.09, epsilon=rep(1,P), sigma = 6.41)
+initials <- list(lambda=29.8, alpha_pler=0.21, alpha_brho=0.27, alpha_lapl=0.08,
+                 alpha_femi=0.09, epsilon=rep(1,P), sigma = 6.3)
 initials1<- list(initials, initials, initials)
 
 no_dist_seeds_pler_lo_hi <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999999999, max_treedepth =50),
+                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999999999999999, max_treedepth =50),
                                  init = initials1)
 
 traceplot(no_dist_seeds_pler_lo_hi, pars="lambda")
 pairs(no_dist_seeds_pler_lo_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_hi, file = "no_dist_seeds_pler_lo_hi")
+save(no_dist_seeds_pler_lo_hi, file = "no_dist_seeds_pler_lo_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_pler_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -145,8 +145,8 @@ acf(pler_lo_hi$lambda)
 ######################################################
 
 # Low intermediate initials
-initials <- list(lambda=7.99, alpha_pler=0.1, alpha_brho=0.06, alpha_lapl=0.02,
-                 alpha_femi=0.04, epsilon=rep(1,P), sigma = 3.24)
+initials <- list(lambda=7.9, alpha_pler=0.1, alpha_brho=0.06, alpha_lapl=0.02,
+                 alpha_femi=0.04, epsilon=rep(1,P), sigma = 3.2)
 initials1<- list(initials, initials, initials)
 
 no_dist_seeds_pler_lo_int <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
@@ -158,7 +158,7 @@ traceplot(no_dist_seeds_pler_lo_int, pars="lambda")
 pairs(no_dist_seeds_pler_lo_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_int, file = "no_dist_seeds_pler_lo_int")
+save(no_dist_seeds_pler_lo_int, file = "no_dist_seeds_pler_lo_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_pler_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -183,7 +183,7 @@ traceplot(no_dist_seeds_pler_lo_lo, pars="lambda")
 pairs(no_dist_seeds_pler_lo_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_lo, file = "no_dist_seeds_pler_lo_lo")
+save(no_dist_seeds_pler_lo_lo, file = "no_dist_seeds_pler_lo_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_pler_lo_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))

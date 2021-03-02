@@ -18,7 +18,7 @@ data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "LAPL")
-dat <- subset(dat, waterN_treatment == "lo_lo") %>%
+dat <- subset(dat, waterN_treatment == "lo_hi") %>%
   na.omit()
 
 ## Create model variables for our data
@@ -60,7 +60,7 @@ traceplot(no_dist_seeds_lapl_hi_hi, pars="lambda")
 pairs(no_dist_seeds_lapl_hi_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_lapl_hi_hi, file = "no_dist_seeds_lapl_hi_hi")
+save(no_dist_seeds_lapl_hi_hi, file = "no_dist_seeds_lapl_hi_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_lapl_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -89,7 +89,7 @@ traceplot(no_dist_seeds_lapl_hi_int, pars="lambda")
 pairs(no_dist_seeds_lapl_hi_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_lapl_hi_int, file = "no_dist_seeds_lapl_hi_int")
+save(no_dist_seeds_lapl_hi_int, file = "no_dist_seeds_lapl_hi_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_lapl_hi_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -143,7 +143,7 @@ traceplot(no_dist_seeds_lapl_lo_hi, pars="lambda")
 pairs(no_dist_seeds_lapl_lo_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_lapl_lo_hi, file = "no_dist_seeds_lapl_lo_hi")
+save(no_dist_seeds_lapl_lo_hi, file = "no_dist_seeds_lapl_lo_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_lapl_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -168,7 +168,7 @@ traceplot(no_dist_seeds_lapl_lo_int, pars="lambda")
 pairs(no_dist_seeds_lapl_lo_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_lapl_lo_int, file = "no_dist_seeds_lapl_lo_int")
+save(no_dist_seeds_lapl_lo_int, file = "no_dist_seeds_lapl_lo_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_lapl_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))

@@ -59,7 +59,7 @@ traceplot(no_dist_seeds_femi_hi_hi, pars="lambda")
 pairs(no_dist_seeds_femi_hi_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_femi_hi_hi, file = "no_dist_seeds_femi_hi_hi")
+save(no_dist_seeds_femi_hi_hi, file = "no_dist_seeds_femi_hi_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_femi_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -88,7 +88,7 @@ traceplot(no_dist_seeds_femi_hi_int, pars="lambda")
 pairs(no_dist_seeds_femi_hi_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_femi_hi_int, file = "no_dist_seeds_femi_hi_int")
+save(no_dist_seeds_femi_hi_int, file = "no_dist_seeds_femi_hi_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_femi_hi_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -117,7 +117,7 @@ traceplot(no_dist_seeds_femi_hi_lo, pars="lambda")
 pairs(no_dist_seeds_femi_hi_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_femi_hi_lo, file = "no_dist_seeds_femi_hi_lo")
+save(no_dist_seeds_femi_hi_lo, file = "no_dist_seeds_femi_hi_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_femi_hi_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -142,7 +142,7 @@ traceplot(no_dist_seeds_femi_lo_hi, pars="lambda")
 pairs(no_dist_seeds_femi_lo_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_femi_lo_hi, file = "no_dist_seeds_femi_lo_hi")
+save(no_dist_seeds_femi_lo_hi, file = "no_dist_seeds_femi_lo_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_femi_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -167,7 +167,7 @@ traceplot(no_dist_seeds_femi_lo_int, pars="lambda")
 pairs(no_dist_seeds_femi_lo_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_femi_lo_int, file = "no_dist_seeds_femi_lo_int")
+save(no_dist_seeds_femi_lo_int, file = "no_dist_seeds_femi_lo_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_femi_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -192,7 +192,7 @@ traceplot(no_dist_seeds_femi_lo_lo, pars="lambda")
 pairs(no_dist_seeds_femi_lo_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_femi_lo_lo, file = "no_dist_seeds_femi_lo_lo")
+save(no_dist_seeds_femi_lo_lo, file = "no_dist_seeds_femi_lo_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_femi_lo_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))

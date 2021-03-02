@@ -18,7 +18,7 @@ data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "BRHO")
-dat <- subset(dat, waterN_treatment == "lo_hi")
+dat <- subset(dat, waterN_treatment == "lo_lo")
 
 ## Create model variables for our data
 ### Set Fecundity as the seeds out from our focal species
@@ -59,7 +59,7 @@ traceplot(no_dist_seeds_brho_hi_hi, pars="lambda")
 pairs(no_dist_seeds_brho_hi_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_hi_hi, file = "no_dist_seeds_brho_hi_hi")
+save(no_dist_seeds_brho_hi_hi, file = "no_dist_seeds_brho_hi_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -88,7 +88,7 @@ traceplot(no_dist_seeds_brho_hi_int, pars="lambda")
 pairs(no_dist_seeds_brho_hi_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_hi_int, file = "no_dist_seeds_brho_hi_int")
+save(no_dist_seeds_brho_hi_int, file = "no_dist_seeds_brho_hi_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_hi_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -117,7 +117,7 @@ traceplot(no_dist_seeds_brho_hi_lo, pars="lambda")
 pairs(no_dist_seeds_brho_hi_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_hi_lo, file = "no_dist_seeds_brho_hi_lo")
+save(no_dist_seeds_brho_hi_lo, file = "no_dist_seeds_brho_hi_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_hi_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -142,7 +142,7 @@ traceplot(no_dist_seeds_brho_lo_hi, pars="lambda")
 pairs(no_dist_seeds_brho_lo_hi)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_lo_hi, file = "no_dist_seeds_brho_lo_hi")
+save(no_dist_seeds_brho_lo_hi, file = "no_dist_seeds_brho_lo_hi.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -167,7 +167,7 @@ traceplot(no_dist_seeds_brho_lo_int, pars="lambda")
 pairs(no_dist_seeds_brho_lo_int)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_lo_int, file = "no_dist_seeds_brho_lo_int")
+save(no_dist_seeds_brho_lo_int, file = "no_dist_seeds_brho_lo_int.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
@@ -179,11 +179,11 @@ acf(brho_lo_int$lambda)
 ######################################################
 
 # low low initials
-initials <- list(lambda=0.28, alpha_pler=0.02, alpha_brho=0.003, alpha_lapl=-0.001,
-                 alpha_femi=0.12, epsilon=rep(1,P), sigma = 136)
+initials <- list(lambda=0.27, alpha_pler=0.01, alpha_brho=0.003, alpha_lapl=-0.001,
+                 alpha_femi=0.13, epsilon=rep(1,P), sigma = 132)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_brho_lo_lo <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
+no_dist_seeds_brho_lo_lo <- stan(file = "Constrained_rplot_four_species_BH_model2.stan", 
                                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
                                   iter = 12000, chains = 3, thin = 5, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                   init = initials1)
@@ -192,7 +192,7 @@ traceplot(no_dist_seeds_brho_lo_lo, pars="lambda")
 pairs(no_dist_seeds_brho_lo_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_brho_lo_lo, file = "no_dist_seeds_brho_lo_lo")
+save(no_dist_seeds_brho_lo_lo, file = "no_dist_seeds_brho_lo_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_lo_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
