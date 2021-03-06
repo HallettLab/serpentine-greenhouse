@@ -1,6 +1,6 @@
 library(tidyverse)
 library(gridExtra)
-dat <- read.csv("Stan models/parameters.csv")
+dat <- read.csv("parameters.csv")
 
 ## Data manipulation
 model.dat <- dat 
@@ -132,15 +132,51 @@ lo_lo_grwr <- grwr(lo_lo, t) %>%
 consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
   mutate(treatment = as.factor(treatment))
 
-
 consistent.grwr.out <- consistent.out %>%
   dplyr::select(invader, grwr, treatment, Cgrwc) %>%
   unique()  %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
-p1 <- ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~invader)
+## GRWR graph
+consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
+
+ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~invader) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+## Equilibrium graph
+# Data manipulation
+consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
+  mutate(treatment = as.factor(treatment)) %>%
+  separate(treatment, c("water", "delete", "N", "delete2")) %>%
+  select(-delete,-delete2) %>%
+  pivot_longer(c("Nb","Np"),names_to="species",values_to = "abundance")
+
+consistent.out$N <- factor(consistent.out$N, levels = c("lo","int","hi"))
+consistent.out$water <- factor(consistent.out$water, levels = c("lo","hi"))
+consistent.out$invader <- factor(consistent.out$invader, levels = c("Plantago","Bromus"))
+consistent.out$species <- factor(consistent.out$species, levels = c("Np","Nb"))
+cond.labs <- c("*Plantago* starting condition","*Bromus* starting condition")
+names(cond.labs) <- c("Plantago","Bromus")
+N.labs<- c("Low N","Intermediate N","High N")
+names(N.labs) <- c("lo","int","hi")
+
+# Graph
+ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) + 
+  geom_line(aes(color=water,linetype=species),size=1) + 
+  facet_grid(invader~N,labeller = labeller(invader = cond.labs,N=N.labs)) +
+  scale_linetype_discrete(name = "Species", labels = c("*Plantago*","*Bromus*")) +
+  scale_color_manual(name = "Water treatments",labels=c("Dry","Wet"),
+                       values=c("grey80","grey40")) +
+  xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
+  theme(legend.text = element_markdown(),strip.text.y = element_markdown())
 
 
 ###################################
@@ -260,8 +296,46 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
-p2 <- ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~invader)
+## GRWR graph
+consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
+
+ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~invader) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+## Equilibrium graph
+# Data manipulation
+consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
+  mutate(treatment = as.factor(treatment)) %>%
+  separate(treatment, c("water", "delete", "N", "delete2")) %>%
+  select(-delete,-delete2) %>%
+  pivot_longer(c("Nf","Nb"),names_to="species",values_to = "abundance")
+
+consistent.out$N <- factor(consistent.out$N, levels = c("lo","int","hi"))
+consistent.out$water <- factor(consistent.out$water, levels = c("lo","hi"))
+consistent.out$invader <- factor(consistent.out$invader, levels = c("Festuca","Bromus"))
+consistent.out$species <- factor(consistent.out$species, levels = c("Nf","Nb"))
+cond.labs <- c("*Festuca* starting condition","*Bromus* starting condition")
+names(cond.labs) <- c("Festuca","Bromus")
+N.labs<- c("Low N","Intermediate N","High N")
+names(N.labs) <- c("lo","int","hi")
+
+# Graph
+ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) + 
+  geom_line(aes(color=water,linetype=species),size=1) + 
+  facet_grid(invader~N,labeller = labeller(invader = cond.labs,N=N.labs)) +
+  scale_linetype_discrete(name = "Species", labels = c("*Festuca*","*Bromus*")) +
+  scale_color_manual(name = "Water treatments",labels=c("Dry","Wet"),
+                     values=c("grey80","grey40")) +
+  xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
+  theme(legend.text = element_markdown(),strip.text.y = element_markdown())
+
 
 ###################################
 ####### Bromus and Layia ##########
@@ -380,8 +454,47 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
-p3 <- ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~invader)
+
+## GRWR graph
+consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
+
+ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~invader) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+## Equilibrium graph
+# Data manipulation
+consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
+  mutate(treatment = as.factor(treatment)) %>%
+  separate(treatment, c("water", "delete", "N", "delete2")) %>%
+  select(-delete,-delete2) %>%
+  pivot_longer(c("Nb","Nl"),names_to="species",values_to = "abundance")
+
+consistent.out$N <- factor(consistent.out$N, levels = c("lo","int","hi"))
+consistent.out$water <- factor(consistent.out$water, levels = c("lo","hi"))
+consistent.out$invader <- factor(consistent.out$invader, levels = c("Layia","Bromus"))
+consistent.out$species <- factor(consistent.out$species, levels = c("Nl","Nb"))
+cond.labs <- c("*Layia* starting condition","*Bromus* starting condition")
+names(cond.labs) <- c("Layia","Bromus")
+N.labs<- c("Low N","Intermediate N","High N")
+names(N.labs) <- c("lo","int","hi")
+
+# Graph
+ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) + 
+  geom_line(aes(color=water,linetype=species),size=1) + 
+  facet_grid(invader~N,labeller = labeller(invader = cond.labs,N=N.labs)) +
+  scale_linetype_discrete(name = "Species", labels = c("*Layia*","*Bromus*")) +
+  scale_color_manual(name = "Water treatments",labels=c("Dry","Wet"),
+                     values=c("grey80","grey40")) +
+  xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
+  theme(legend.text = element_markdown(),strip.text.y = element_markdown())
+
 
 
 ###################################
@@ -501,8 +614,47 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
-p4 <- ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~invader)
+
+## GRWR graph
+consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
+
+ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~invader) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+## Equilibrium graph
+# Data manipulation
+consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
+  mutate(treatment = as.factor(treatment)) %>%
+  separate(treatment, c("water", "delete", "N", "delete2")) %>%
+  select(-delete,-delete2) %>%
+  pivot_longer(c("Nf","Np"),names_to="species",values_to = "abundance")
+
+consistent.out$N <- factor(consistent.out$N, levels = c("lo","int","hi"))
+consistent.out$water <- factor(consistent.out$water, levels = c("lo","hi"))
+consistent.out$invader <- factor(consistent.out$invader, levels = c("Plantago","Festuca"))
+consistent.out$species <- factor(consistent.out$species, levels = c("Np","Nf"))
+cond.labs <- c("*Plantago* starting condition","*Festuca* starting condition")
+names(cond.labs) <- c("Plantago","Festuca")
+N.labs<- c("Low N","Intermediate N","High N")
+names(N.labs) <- c("lo","int","hi")
+
+# Graph
+ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) + 
+  geom_line(aes(color=water,linetype=species),size=1) + 
+  facet_grid(invader~N,labeller = labeller(invader = cond.labs,N=N.labs)) +
+  scale_linetype_discrete(name = "Species", labels = c("*Plantago*","*Festuca*")) +
+  scale_color_manual(name = "Water treatments",labels=c("Dry","Wet"),
+                     values=c("grey80","grey40")) +
+  xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
+  theme(legend.text = element_markdown(),strip.text.y = element_markdown())
+
 
 
 ###################################
@@ -622,8 +774,46 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
-p5 <- ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~invader)
+## GRWR graph
+consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
+
+ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~invader) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+## Equilibrium graph
+# Data manipulation
+consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
+  mutate(treatment = as.factor(treatment)) %>%
+  separate(treatment, c("water", "delete", "N", "delete2")) %>%
+  select(-delete,-delete2) %>%
+  pivot_longer(c("Nl","Np"),names_to="species",values_to = "abundance")
+
+consistent.out$N <- factor(consistent.out$N, levels = c("lo","int","hi"))
+consistent.out$water <- factor(consistent.out$water, levels = c("lo","hi"))
+consistent.out$invader <- factor(consistent.out$invader, levels = c("Plantago","Layia"))
+consistent.out$species <- factor(consistent.out$species, levels = c("Np","Nl"))
+cond.labs <- c("*Plantago* starting condition","*Layia* starting condition")
+names(cond.labs) <- c("Plantago","Layia")
+N.labs<- c("Low N","Intermediate N","High N")
+names(N.labs) <- c("lo","int","hi")
+
+# Graph
+ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) + 
+  geom_line(aes(color=water,linetype=species),size=1) + 
+  facet_grid(invader~N,labeller = labeller(invader = cond.labs,N=N.labs)) +
+  scale_linetype_discrete(name = "Species", labels = c("*Plantago*","*Layia*")) +
+  scale_color_manual(name = "Water treatments",labels=c("Dry","Wet"),
+                     values=c("grey80","grey40")) +
+  xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
+  theme(legend.text = element_markdown(),strip.text.y = element_markdown())
+
 
 
 ###################################
@@ -743,5 +933,42 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
-p6 <- ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~invader)
+## GRWR graph
+consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
+
+ggplot(consistent.grwr.out, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~invader) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+## Equilibrium graph
+# Data manipulation
+consistent.out <- rbind(hi_hi_grwr, hi_int_grwr, hi_lo_grwr, lo_hi_grwr, lo_int_grwr, lo_lo_grwr) %>%
+  mutate(treatment = as.factor(treatment)) %>%
+  separate(treatment, c("water", "delete", "N", "delete2")) %>%
+  select(-delete,-delete2) %>%
+  pivot_longer(c("Nf","Nl"),names_to="species",values_to = "abundance")
+
+consistent.out$N <- factor(consistent.out$N, levels = c("lo","int","hi"))
+consistent.out$water <- factor(consistent.out$water, levels = c("lo","hi"))
+consistent.out$invader <- factor(consistent.out$invader, levels = c("Festuca","Layia"))
+consistent.out$species <- factor(consistent.out$species, levels = c("Nf","Nl"))
+cond.labs <- c("*Festuca* starting condition","*Layia* starting condition")
+names(cond.labs) <- c("Festuca","Layia")
+N.labs<- c("Low N","Intermediate N","High N")
+names(N.labs) <- c("lo","int","hi")
+
+# Graph
+ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) + 
+  geom_line(aes(color=water,linetype=species),size=1) + 
+  facet_grid(invader~N,labeller = labeller(invader = cond.labs,N=N.labs)) +
+  scale_linetype_discrete(name = "Species", labels = c("*Festuca*","*Layia*")) +
+  scale_color_manual(name = "Water treatments",labels=c("Dry","Wet"),
+                     values=c("grey80","grey40")) +
+  xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
+  theme(legend.text = element_markdown(),strip.text.y = element_markdown())
