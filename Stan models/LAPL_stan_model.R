@@ -18,7 +18,7 @@ data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "LAPL")
-dat <- subset(dat, waterN_treatment == "lo_hi") %>%
+dat <- subset(dat, waterN_treatment == "lo_int") %>%
   na.omit()
 
 ## Create model variables for our data
@@ -40,10 +40,12 @@ intra <- lapl
 
 Plot <- dat$block
 
+lg <- 0.32
+
 ######################################################
 
 # high high initials
-initials <- list(lambda=207, alpha_pler=0.39, alpha_brho=10, alpha_lapl=1.38,
+initials <- list(lambda=587, alpha_pler=0.39, alpha_brho=10, alpha_lapl=1.3,
                  alpha_femi=8, epsilon=rep(1,P), sigma = 4.6)
 initials1<- list(initials, initials, initials)
 
@@ -51,8 +53,8 @@ initials1<- list(initials, initials, initials)
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_lapl_hi_hi <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_lapl_hi_hi <- stan(file = "LAPL_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","lg"),
                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999999999, max_treedepth =50),
                                  init = initials1)
 
@@ -72,7 +74,7 @@ acf(lapl_hi_hi$lambda)
 ######################################################
 
 # high intermediate initials
-initials <- list(lambda=67, alpha_pler=0.5, alpha_brho=7, alpha_lapl=5,
+initials <- list(lambda=190, alpha_pler=0.5, alpha_brho=7, alpha_lapl=5,
                  alpha_femi=6, epsilon=rep(1,P), sigma =2)
 initials1<- list(initials, initials, initials)
 
@@ -80,8 +82,8 @@ initials1<- list(initials, initials, initials)
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_lapl_hi_int <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_lapl_hi_int <- stan(file = "LAPL_Constrained_rplot_four_species_BH_model.stan", 
+                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","lg"),
                                   iter = 14000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                   init = initials1)
 
@@ -109,8 +111,8 @@ initials1<- list(initials, initials, initials)
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_lapl_hi_lo <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_lapl_hi_lo <- stan(file = "LAPL_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","lg"),
                                  iter = 10000, chains = 3, thin = 5, control = list(adapt_delta = 0.9999999999999, max_treedepth =50),
                                  init = initials1)
 
@@ -130,12 +132,12 @@ acf(lapl_hi_lo$lambda)
 ######################################################
 
 # low high initials
-initials <- list(lambda=82, alpha_pler=0.23, alpha_brho=2.3, alpha_lapl=0.8,
+initials <- list(lambda=254, alpha_pler=0.23, alpha_brho=2.3, alpha_lapl=0.8,
                  alpha_femi=1, epsilon=rep(1,P), sigma = 17)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_lapl_lo_hi <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_lapl_lo_hi <- stan(file = "LAPL_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","lg"),
                                  iter = 5000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth =50),
                                  init = initials1)
 
@@ -155,12 +157,12 @@ acf(lapl_lo_hi$lambda)
 ######################################################
 
 # low intermediate initials
-initials <- list(lambda=80, alpha_pler=7.5, alpha_brho=7.6, alpha_lapl=4.8,
+initials <- list(lambda=227, alpha_pler=7.5, alpha_brho=7.6, alpha_lapl=4.8,
                  alpha_femi=6.5, epsilon=rep(1,P), sigma = 1.8)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_lapl_lo_int <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_lapl_lo_int <- stan(file = "LAPL_Constrained_rplot_four_species_BH_model.stan", 
+                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","lg"),
                                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                   init = initials1)
 
