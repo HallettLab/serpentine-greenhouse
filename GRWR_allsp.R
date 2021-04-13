@@ -22,6 +22,13 @@ fg <- .83
 ls <- .15
 lg <- .32
 
+theme_set(theme_bw())
+theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+              strip.background = element_blank(),
+              text = element_text(size = 12),
+              strip.text= element_text(size = 12),
+              axis.text = element_text(size = 12))
+
 ###################################
 ####### Bromus and Plantago #######
 ###################################

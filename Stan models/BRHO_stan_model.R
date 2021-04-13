@@ -5,7 +5,7 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 ## Read in data
-data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
+data <- read.csv(paste(datpath, "/model_dat1.csv", sep = "")) %>%
   select(-X)
 
 #data <- read.csv("model_dat_0.csv", sep = ",") %>%
@@ -39,6 +39,8 @@ intra <- brho
 
 Plot <- dat$block
 
+bg <- 0.98
+
 ######################################################
 
 # high high initials
@@ -50,8 +52,8 @@ initials1<- list(initials, initials, initials)
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_brho_hi_hi <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_brho_hi_hi <- stan(file = "BRHO_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999999999, max_treedepth =50),
                                  init = initials1)
 
@@ -79,8 +81,8 @@ initials1<- list(initials, initials, initials)
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_brho_hi_int <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_brho_hi_int <- stan(file = "BRHO_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999999999, max_treedepth =50),
                                  init = initials1)
 
@@ -100,17 +102,17 @@ acf(brho_hi_int$lambda)
 ######################################################
 
 # high low initials
-initials <- list(lambda=9.5, alpha_pler=0.1, alpha_brho=0.5, alpha_lapl=0.05,
-                 alpha_femi=0.4, epsilon=rep(1,P), sigma = 200)
+initials <- list(lambda=12.5, alpha_pler=0.1, alpha_brho=0.5, alpha_lapl=0.05,
+                 alpha_femi=0.4, epsilon=rep(1,P), sigma = 205)
 initials1<- list(initials, initials, initials)
 
 ## Fit model
 ### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
 ### thinning constant (2 or 3 is usually fine), 
 # NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_brho_hi_lo <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999, max_treedepth =50),
+no_dist_seeds_brho_hi_lo <- stan(file = "BRHO_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
+                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                  init = initials1)
 
 traceplot(no_dist_seeds_brho_hi_lo, pars="lambda")
@@ -133,8 +135,8 @@ initials <- list(lambda=372, alpha_pler=0.5, alpha_brho=3.1, alpha_lapl=0.4,
                  alpha_femi=0.4, epsilon=rep(1,P), sigma = 569)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_brho_lo_hi <- stan(file = "Rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_brho_lo_hi <- stan(file = "BRHO_Rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth =50),
                                  init = initials1)
 
@@ -158,8 +160,8 @@ initials <- list(lambda=25, alpha_pler=0.08, alpha_brho=0.57, alpha_lapl=0.04,
                  alpha_femi=0.07, epsilon=rep(1,P), sigma = 18)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_brho_lo_int <- stan(file = "Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_brho2_lo_int <- stan(file = "BRHO_Constrained_rplot_four_species_BH_model.stan", 
+                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
                                  iter = 10000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999, max_treedepth =50),
                                  init = initials1)
 
@@ -180,11 +182,11 @@ acf(brho_lo_int$lambda)
 
 # low low initials
 initials <- list(lambda=0.27, alpha_pler=0.01, alpha_brho=0.003, alpha_lapl=-0.001,
-                 alpha_femi=0.13, epsilon=rep(1,P), sigma = 132)
+                 alpha_femi=0.1, epsilon=rep(1,P), sigma = 7.9)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_brho_lo_lo <- stan(file = "Constrained_rplot_four_species_BH_model2.stan", 
-                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot"),
+no_dist_seeds_brho2_lo_lo <- stan(file = "BRHO_Constrained_rplot_four_species_BH_model2.stan", 
+                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
                                   iter = 12000, chains = 3, thin = 5, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
                                   init = initials1)
 
