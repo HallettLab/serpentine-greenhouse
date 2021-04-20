@@ -1,7 +1,7 @@
 library(tidyverse)
 
 ## Read in data
-datpath <- "C:/Users/ehernan2/Dropbox (University Of Oregon)/Thesis/"
+datpath <- "C:/Users/eliza/Dropbox (University Of Oregon)/Thesis/"
 params <- read.csv(paste(datpath, "params.csv", sep = ""))
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) 
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
@@ -105,6 +105,9 @@ params_dat$w_trt[params_dat$w_trt == "lo."] <- "Dry"
 
 params_dat <- params_dat %>%
   unite(treatments,c(w_trt,n_trt),sep = ".")
+
+trt <- trt %>%
+  unite(treatments,c(type_year,n_trt),sep=".",remove=FALSE)
 
 trt2 <- trt %>%
   unite(treatments,c("type_year","n_trt"),sep=".",remove=FALSE)%>%
