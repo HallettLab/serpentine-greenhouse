@@ -61,7 +61,7 @@ N0 <- 54
 time <- length(precipt$type_year)
 N_festuca <- rep(NA, time)
 N_festuca[1] <- N0
-fs <- 0.0.13
+fs <- 0.013
 fg <- 0.83
 
 for (t in 1:time) {
