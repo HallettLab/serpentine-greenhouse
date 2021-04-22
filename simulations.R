@@ -1,12 +1,13 @@
 library(tidyverse)
 
 ## Read in data
-datpath <- "C:/Users/eliza/Dropbox (University Of Oregon)/Thesis/"
-params <- read.csv(paste(datpath, "params.csv", sep = ""))
+params2 <- read.csv(paste(datpath, "params2.csv", sep = ""))
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) 
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
 
 ## Determine equilibrium conditions for each species in isolation
+params_dat <- params2
+
 pop.equilibrium <- function (N0, s, g, a_intra, lambda) {
   # to run for only a single timestep
   N <- s*(1-g)*N0 + N0*(lambda*g)/(1+a_intra*N0)
@@ -73,32 +74,16 @@ for (t in 1:time) {
 plot(seq(1:(time+1)), N_festuca, type="l")
 N_festuca
 
-## Equilibrium abundances
+
+## Data manipulation for starting conditions
+# Equilibrium abundances
 brho_eq <- 215
 pler_eq <- 157
 lapl_eq <- 152
 femi_eq <- 485
 
-
-## Data manipulation for starting conditions
-params_dat <-params
-
-params_dat$germ[params_dat$species == "Bromus"] <- 0.98
-params_dat$germ[params_dat$species == "Festuca"] <- 0.83
-params_dat$germ[params_dat$species == "Plantago"] <- 0.92
-params_dat$germ[params_dat$species == "Layia"] <- 0.32
-params_dat$surv[params_dat$species == "Bromus"] <- 0.013
-params_dat$surv[params_dat$species == "Festuca"] <- 0.013
-params_dat$surv[params_dat$species == "Plantago"] <- 0.75
-params_dat$surv[params_dat$species == "Layia"] <- 0.15
-names(params_dat)[3] <- "alpha_Bromus"
-names(params_dat)[4] <- "alpha_Festuca"
-names(params_dat)[5] <- "alpha_Layia"
-names(params_dat)[6] <- "alpha_Plantago"
-
-params_dat <- params_dat %>%
-  separate(treatments,c("w_trt","n_trt"),sep="water.") %>%
-  filter(species != "Bromus2")
+params_dat <-params_dat %>%
+  separate(treatments,c("w_trt","n_trt"),sep="water.")
 
 params_dat$w_trt[params_dat$w_trt == "hi."] <- "Wet"
 params_dat$w_trt[params_dat$w_trt == "lo."] <- "Dry"
@@ -108,32 +93,60 @@ params_dat <- params_dat %>%
 
 trt <- trt %>%
   unite(treatments,c(type_year,n_trt),sep=".",remove=FALSE)
-
-trt2 <- trt %>%
-  unite(treatments,c("type_year","n_trt"),sep=".",remove=FALSE)%>%
-  filter(year!=1983) %>%
-  slice(rep(1:n(), each = 4))
-
-species<-as.data.frame(rep(c("Bromus","Layia","Plantago","Festuca"),times=36))
-colnames(species) = "species"
-
-trt3 <-trt2 %>%
-cbind(species)
+trt$n_trt[trt$n_trt == "lo.N"] <- "int.N"
 
 cover_dat <- cover %>%
   filter(species == "BRMO" | species == "PLER" | species == "LAPL" | species == "VUMI") %>%
   group_by(year, species) %>%
   summarize(mean_cover = mean(cover)) %>%
   filter(year == 1983) %>%
-  mutate(species = c("Bromus","Layia","Plantago","Festuca"))
+  mutate(species = c("Bromus","Layia","Plantago","Festuca")) %>%
+  mutate(abundance = mean_cover*(c(brho_eq,lapl_eq,pler_eq,femi_eq)/100))%>%
+  select(-mean_cover) %>%
+  pivot_wider(names_from = species, values_from = abundance)
 
 cov_trt <- left_join(cover_dat,trt)
 cov_trt_params <- left_join(cov_trt,params_dat)
-trt_params <- left_join(trt3,params_dat)
+trt_params <- left_join(trt,params_dat)
 
-start_dat <- full_join(cov_trt_params,trt_params) %>%
-  mutate(abundance = mean_cover*(c(brho_eq,lapl_eq,pler_eq,femi_eq)/100))
-start_dat <- start_dat[,c(1,2,3,15,4,5,6,7,8,9,10,11,12,13,14)]
+start_dat <- full_join(cov_trt_params,trt_params) 
 
-write.csv(start_dat,"start_sim.csv")
+#####################################
+########## Simulation ###############
+#####################################
 
+start_dat <- start_dat %>%
+  filter(year !=1983) %>%
+  select(-Bromus,-Layia,-Plantago,-Festuca)
+
+bg <- 0.98
+bs <- 0.013
+pg <- 0.92
+ps <- 0.75
+lg <- 0.32
+ls <- 0.15
+fg <- 0.83
+fs <- 0.013
+
+year <- length(1983:2019)
+
+N = as.data.frame(matrix(NA, nrow=year, ncol=4))
+colnames(N) = c("Nb", "Np", "Nf","Nl")
+N[1,] =c(7.838542, 38.18153,27.31493,1.414444)
+
+
+growth = function(N, start_dat,year){
+  for (i in (year-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab*bg*N$Nb[i] + start_dat$baf[i]*fg*N$Nf[i] + start_dat$bal[i]*lg*N$Nl[i]))
+    
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]+ start_dat$paf[i]*fg*N$Nf[i] + start_dat$pal[i]*lg*N$Nl[i]))
+    
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$laf[i]*fg*N$Nf[i] + start_dat$lab[i]*bg*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
+    
+    N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fal[i]*lg*N$Nl[i] + start_dat$fab[i]*bg*N$Nb[i] + start_dat$fap[i]*pg*N$Np[i]))
+    
+  }
+  return(N)
+}
+
+growth(N,start_dat,year)
