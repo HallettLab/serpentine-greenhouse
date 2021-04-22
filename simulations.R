@@ -82,7 +82,7 @@ pler_eq <- 157
 lapl_eq <- 152
 femi_eq <- 485
 
-params_dat <-params_dat %>%
+params_dat <-params2 %>%
   separate(treatments,c("w_trt","n_trt"),sep="water.")
 
 params_dat$w_trt[params_dat$w_trt == "hi."] <- "Wet"
