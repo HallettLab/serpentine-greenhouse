@@ -93,7 +93,6 @@ params_dat <- params_dat %>%
 
 trt <- trt %>%
   unite(treatments,c(type_year,n_trt),sep=".",remove=FALSE)
-trt$n_trt[trt$n_trt == "lo.N"] <- "int.N"
 
 cover_dat <- cover %>%
   filter(species == "BRMO" | species == "PLER" | species == "LAPL" | species == "VUMI") %>%
