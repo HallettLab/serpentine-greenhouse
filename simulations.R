@@ -118,6 +118,8 @@ start_dat <- start_dat %>%
   filter(year !=1983) %>%
   select(-Bromus,-Layia,-Plantago,-Festuca)
 
+write.csv(start_dat,"start_dat.csv")
+
 bg <- 0.98
 bs <- 0.013
 pg <- 0.92
@@ -129,14 +131,15 @@ fs <- 0.013
 
 year <- length(1983:2019)
 
-N = as.data.frame(matrix(NA, nrow=year, ncol=4))
+N = as.data.frame(matrix(NA, nrow=37, ncol=4))
 colnames(N) = c("Nb", "Np", "Nf","Nl")
-N[1,] =c(7.838542, 38.18153,27.31493,1.414444)
+N[1,] =c(7.838542, 38.18153,0,1.414444)
 
+# Nf: 27.31493
 
 growth = function(N, start_dat,year){
-  for (i in (year-1)){
-    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab*bg*N$Nb[i] + start_dat$baf[i]*fg*N$Nf[i] + start_dat$bal[i]*lg*N$Nl[i]))
+  for (i in 1:(year-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*bg*N$Nb[i] + start_dat$baf[i]*fg*N$Nf[i] + start_dat$bal[i]*lg*N$Nl[i]))
     
     N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]+ start_dat$paf[i]*fg*N$Nf[i] + start_dat$pal[i]*lg*N$Nl[i]))
     
@@ -145,7 +148,16 @@ growth = function(N, start_dat,year){
     N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fal[i]*lg*N$Nl[i] + start_dat$fab[i]*bg*N$Nb[i] + start_dat$fap[i]*pg*N$Np[i]))
     
   }
+
   return(N)
 }
 
-growth(N,start_dat,year)
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Nb"] <- "Bromus"
+N$species[N$species == "Np"] <- "Plantago"
+N$species[N$species == "Nf"] <- "Festuca"
+N$species[N$species == "Nl"] <- "Layia"
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line()
