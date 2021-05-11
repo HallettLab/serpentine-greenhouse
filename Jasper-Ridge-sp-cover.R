@@ -6,9 +6,18 @@ calcSE<-function(x){
   sd(x)/sqrt(length(x))
 }
 
-dat <- read.csv("JR_cover_1mplot.csv") %>%
+#all species
+dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
+  filter(treatment == "c") %>%
   filter(species == "PLER" | species == "VUMI" | species == "BRMO" | species == "LAPL") %>%
-  group_by(year,species,treatment) %>%
+  group_by(year,species) %>%
+  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
+
+#BRHO, PLER, and LAPL
+dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
+  filter(treatment == "c") %>%
+  filter(species == "PLER" | species == "BRMO" | species == "LAPL") %>%
+  group_by(year,species) %>%
   summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
 
 theme_set(theme_bw())
@@ -21,6 +30,7 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 spp.labs <- c("Bromus", "Layia", "Plantago", "Festuca")
 names(spp.labs) <- c("BRMO","LAPL","PLER","VUMI")
 
+#graph with species and treatments
 ggplot(dat, aes(year,mean_cov,group=interaction(species,treatment))) + 
   geom_point(aes(color=treatment,shape=treatment),size=2) + 
   geom_line(aes(color=treatment,linetype=treatment),size=1) +
@@ -36,7 +46,30 @@ ggplot(dat, aes(year,mean_cov,group=interaction(species,treatment))) +
                             labeller = labeller(species = spp.labs)) +  
   ylab(expression(Percent~cover~(m^{"2"}))) +
   theme(strip.text = element_text(face = "italic"))
+
+#graph with only species 
+ggplot(dat, aes(year,mean_cov,color=species,linetype=species)) + 
+  geom_line(size=1) +
+  geom_point(size=1) +
+  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
+  xlab("Year") +  
+  ylab(expression(Percent~cover~(m^{"2"}))) +
+  theme(legend.text = element_text(face="italic")) +
+  scale_linetype_manual(values=c("solid","solid","dashed","solid"),name = "Species", 
+                     labels = c("Bromus", "Layia", "Plantago", "Festuca")) +
+  scale_color_manual(values=c("gray8","gray47","gray63","gray80"),name = "Species", 
+                     labels = c("Bromus", "Layia", "Plantago", "Festuca"))
+#without femi
+ggplot(dat, aes(year,mean_cov,color=species,linetype=species)) + 
+  geom_line(size=1) +
+  geom_point(size=1) +
+  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
+  xlab("Year") +  
+  ylab(expression(Percent~cover~(m^{"2"}))) +
+  theme(legend.text = element_text(face="italic")) +
+  scale_linetype_manual(values=c("solid","solid","dashed"),name = "Species", 
+                        labels = c("Bromus", "Layia", "Plantago", "Festuca")) +
+  scale_color_manual(values=c("gray8","gray80","gray47"),name = "Species", 
+                     labels = c("Bromus", "Layia", "Plantago"))
+                      
                                                                             
-
-
-  
