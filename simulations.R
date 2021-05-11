@@ -118,7 +118,7 @@ start_dat <- start_dat %>%
   filter(year !=1983) %>%
   select(-Bromus,-Layia,-Plantago,-Festuca)
 
-write.csv(start_dat,"start_dat.csv")
+#write.csv(start_dat,"start_dat.csv")
 
 bg <- 0.98
 bs <- 0.013
@@ -133,7 +133,7 @@ year <- length(1983:2019)
 
 N = as.data.frame(matrix(NA, nrow=37, ncol=4))
 colnames(N) = c("Nb", "Np", "Nf","Nl")
-N[1,] =c(7.838542, 38.18153,0,1.414444)
+N[1,] =c(7.838542, 38.18153,27.31493,1.414444)
 
 # Nf: 27.31493
 
@@ -161,3 +161,141 @@ N$species[N$species == "Nf"] <- "Festuca"
 N$species[N$species == "Nl"] <- "Layia"
 
 ggplot(N,aes(year,abundance,color=species)) + geom_line()
+
+## Pairwise simulations
+#BRHO and PLER
+N = as.data.frame(matrix(NA, nrow=37, ncol=2))
+colnames(N) = c("Nb", "Np")
+N[1,] =c(7.838542, 38.18153)
+
+
+growth = function(N, start_dat,year){
+  for (i in 1:(year-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*bg*N$Nb[i]))
+    
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]))
+    
+  }
+  
+  return(N)
+}
+
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Nb"] <- "Bromus"
+N$species[N$species == "Np"] <- "Plantago"
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line()
+
+#PLER and LAPL
+N = as.data.frame(matrix(NA, nrow=37, ncol=2))
+colnames(N) = c("Np", "Nl")
+N[1,] =c(38.18153,1.414444)
+
+#Nl: 1.414444
+
+growth = function(N, start_dat,year){
+  for (i in 1:(year-1)){
+    
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pal[i]*lg*N$Nl[i]))
+    
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lap[i]*pg*N$Np[i]))
+    
+  }
+  
+  return(N)
+}
+
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Np"] <- "Plantago"
+N$species[N$species == "Nl"] <- "Layia"
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line()
+
+#BRHO, PLER, and LAPL
+N = as.data.frame(matrix(NA, nrow=37, ncol=3))
+colnames(N) = c("Nb", "Np","Nl")
+N[1,] =c(7.838542, 38.18153,1.414444)
+
+#Nl:1.414444
+
+growth = function(N, start_dat,year){
+  for (i in 1:(year-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*bg*N$Nb[i] + start_dat$bal[i]*lg*N$Nl[i]))
+    
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]+ start_dat$pal[i]*lg*N$Nl[i]))
+    
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lab[i]*bg*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
+    
+
+  }
+  
+  return(N)
+}
+
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Nb"] <- "Bromus"
+N$species[N$species == "Np"] <- "Plantago"
+N$species[N$species == "Nl"] <- "Layia"
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line()
+
+#FEMI and PLER
+N = as.data.frame(matrix(NA, nrow=37, ncol=2))
+colnames(N) = c("Np", "Nf")
+N[1,] =c(38.18153,27.31493)
+
+# Nf: 27.31493
+
+growth = function(N, start_dat,year){
+  for (i in 1:(year-1)){
+
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$paf[i]*fg*N$Nf[i]))
+  
+    N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fap[i]*pg*N$Np[i]))
+    
+  }
+  
+  return(N)
+}
+
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Np"] <- "Plantago"
+N$species[N$species == "Nf"] <- "Festuca"
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line()
+
+#FEMI and BRHO
+N = as.data.frame(matrix(NA, nrow=37, ncol=2))
+colnames(N) = c("Nb","Nf")
+N[1,] =c(7.838542,27.31493)
+
+# Nf: 27.31493
+
+growth = function(N, start_dat,year){
+  for (i in 1:(year-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bab[i]*bg*N$Nb[i] + start_dat$baf[i]*fg*N$Nf[i]))
+    
+    N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fab[i]*bg*N$Nb[i]))
+    
+  }
+  
+  return(N)
+}
+
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Nb"] <- "Bromus"
+N$species[N$species == "Nf"] <- "Festuca"
+
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line()
+
