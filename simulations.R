@@ -1,4 +1,5 @@
 library(tidyverse)
+library(ggtext)
 
 ## Read in data
 params2 <- read.csv(paste(datpath, "params2.csv", sep = ""))
@@ -80,7 +81,10 @@ N_festuca
 brho_eq <- 215
 pler_eq <- 157
 lapl_eq <- 152
-femi_eq <- 485
+#femi_eq <- 485
+
+
+trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) 
 
 params_dat <-params2 %>%
   separate(treatments,c("w_trt","n_trt"),sep="water.")
@@ -95,12 +99,12 @@ trt <- trt %>%
   unite(treatments,c(type_year,n_trt),sep=".",remove=FALSE)
 
 cover_dat <- cover %>%
-  filter(species == "BRMO" | species == "PLER" | species == "LAPL" | species == "VUMI") %>%
+  filter(species == "BRMO" | species == "PLER" | species == "LAPL") %>%
   group_by(year, species) %>%
   summarize(mean_cover = mean(cover)) %>%
   filter(year == 1983) %>%
-  mutate(species = c("Bromus","Layia","Plantago","Festuca")) %>%
-  mutate(abundance = mean_cover*(c(brho_eq,lapl_eq,pler_eq,femi_eq)/100))%>%
+  mutate(species = c("Bromus","Layia","Plantago")) %>%
+  mutate(abundance = mean_cover*(c(brho_eq,lapl_eq,pler_eq)/100))%>%
   select(-mean_cover) %>%
   pivot_wider(names_from = species, values_from = abundance)
 
@@ -116,7 +120,7 @@ start_dat <- full_join(cov_trt_params,trt_params)
 
 start_dat <- start_dat %>%
   filter(year !=1983) %>%
-  select(-Bromus,-Layia,-Plantago,-Festuca)
+  select(-Bromus,-Layia,-Plantago)
 
 #write.csv(start_dat,"start_dat.csv")
 
@@ -126,8 +130,8 @@ pg <- 0.92
 ps <- 0.75
 lg <- 0.32
 ls <- 0.15
-fg <- 0.83
-fs <- 0.013
+#fg <- 0.83
+#fs <- 0.013
 
 year <- length(1983:2019)
 
@@ -135,7 +139,7 @@ N = as.data.frame(matrix(NA, nrow=37, ncol=4))
 colnames(N) = c("Nb", "Np", "Nf","Nl")
 N[1,] =c(7.838542, 38.18153,27.31493,1.414444)
 
-# Nf: 27.31493
+# Nf: 27.31493, half: 13.65747, quarter: 6.828733
 
 growth = function(N, start_dat,year){
   for (i in 1:(year-1)){
@@ -144,6 +148,8 @@ growth = function(N, start_dat,year){
     N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]+ start_dat$paf[i]*fg*N$Nf[i] + start_dat$pal[i]*lg*N$Nl[i]))
     
     N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$laf[i]*fg*N$Nf[i] + start_dat$lab[i]*bg*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
+   
+     N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
     
     N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fal[i]*lg*N$Nl[i] + start_dat$fab[i]*bg*N$Nb[i] + start_dat$fap[i]*pg*N$Np[i]))
     
@@ -172,6 +178,7 @@ N[1,] =c(7.838542, 38.18153)
 growth = function(N, start_dat,year){
   for (i in 1:(year-1)){
     N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*bg*N$Nb[i]))
+    N$Nb[i+1] = ifelse(N$Nb[i+1]<0.1,0.1,N$Nb[i+1])
     
     N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]))
     
@@ -186,7 +193,10 @@ N <- growth(N,start_dat,year) %>%
 N$species[N$species == "Nb"] <- "Bromus"
 N$species[N$species == "Np"] <- "Plantago"
 
-ggplot(N,aes(year,abundance,color=species)) + geom_line()
+ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1.5) + ylab("Abundance") + xlab("Year") +
+  theme(legend.text = element_markdown()) +
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Plantago*"),
+                     values=c("grey80","black"))
 
 #PLER and LAPL
 N = as.data.frame(matrix(NA, nrow=37, ncol=2))
@@ -201,6 +211,7 @@ growth = function(N, start_dat,year){
     N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pal[i]*lg*N$Nl[i]))
     
     N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lap[i]*pg*N$Np[i]))
+    N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
     
   }
   
@@ -213,9 +224,15 @@ N <- growth(N,start_dat,year) %>%
 N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
-ggplot(N,aes(year,abundance,color=species)) + geom_line()
-
+ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1.5) + ylab("Abundance") + xlab("Year") +
+  theme(legend.text = element_markdown()) +
+  scale_color_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
+                     values=c("grey50","black"))
 #BRHO, PLER, and LAPL
+brho_bg <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98)
+start_dat_brho <- start_dat %>%
+  cbind(bg = brho_bg)
+
 N = as.data.frame(matrix(NA, nrow=37, ncol=3))
 colnames(N) = c("Nb", "Np","Nl")
 N[1,] =c(7.838542, 38.18153,1.414444)
@@ -224,11 +241,13 @@ N[1,] =c(7.838542, 38.18153,1.414444)
 
 growth = function(N, start_dat,year){
   for (i in 1:(year-1)){
-    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*bg*N$Nb[i] + start_dat$bal[i]*lg*N$Nl[i]))
+    N$Nb[i+1] = bs*(1-start_dat_brho$bg[i])*N$Nb[i]  + start_dat_brho$bg[i]*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*start_dat_brho$bg[i]*N$Nb[i] + start_dat$bal[i]*lg*N$Nl[i]))
+    N$Nb[i+1] = ifelse(N$Nb[i+1]<0.1,0.1,N$Nb[i+1])
     
-    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i]+ start_dat$pal[i]*lg*N$Nl[i]))
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*start_dat_brho$bg[i]*N$Nb[i]+ start_dat$pal[i]*lg*N$Nl[i]))
     
-    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lab[i]*bg*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lab[i]*start_dat_brho$bg[i]*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
+    N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
     
 
   }
@@ -241,6 +260,37 @@ N <- growth(N,start_dat,year) %>%
   pivot_longer(!year,names_to="species",values_to ="abundance")
 N$species[N$species == "Nb"] <- "Bromus"
 N$species[N$species == "Np"] <- "Plantago"
+N$species[N$species == "Nl"] <- "Layia"
+
+ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1.5) + ylab("Abundance") + xlab("Year") +
+  theme(legend.text = element_markdown()) +
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("grey80","grey50","black"))
+# Bromus and Layia
+N = as.data.frame(matrix(NA, nrow=37, ncol=2))
+colnames(N) = c("Nb","Nl")
+N[1,] =c(7.838542,1.414444)
+
+#Nl:1.414444
+
+growth = function(N, start_dat,year){
+  for (i in 1:(year-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bab[i]*bg*N$Nb[i] + start_dat$bal[i]*lg*N$Nl[i]))
+    N$Nb[i+1] = ifelse(N$Nb[i+1]<0.1,0.1,N$Nb[i+1])
+    
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lab[i]*bg*N$Nb[i]))
+    N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
+    
+    
+  }
+  
+  return(N)
+}
+
+N <- growth(N,start_dat,year) %>%
+  mutate(year = 1983:2019) %>%
+  pivot_longer(!year,names_to="species",values_to ="abundance")
+N$species[N$species == "Nb"] <- "Bromus"
 N$species[N$species == "Nl"] <- "Layia"
 
 ggplot(N,aes(year,abundance,color=species)) + geom_line()
@@ -257,7 +307,7 @@ growth = function(N, start_dat,year){
 
     N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$paf[i]*fg*N$Nf[i]))
   
-    N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fap[i]*pg*N$Np[i]))
+    N$Nf[i+1] = (fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fap[i]*pg*N$Np[i])))/3
     
   }
   
@@ -283,7 +333,7 @@ growth = function(N, start_dat,year){
   for (i in 1:(year-1)){
     N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bab[i]*bg*N$Nb[i] + start_dat$baf[i]*fg*N$Nf[i]))
     
-    N$Nf[i+1] = fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fab[i]*bg*N$Nb[i]))
+    N$Nf[i+1] = (fs*(1-fg)*N$Nf[i] + fg*N$Nf[i]*(start_dat$flambda[i]/(1 + start_dat$faf[i]*fg*N$Nf[i] + start_dat$fab[i]*bg*N$Nb[i])))/2
     
   }
   
