@@ -60,16 +60,13 @@ ggplot(dat, aes(year,mean_cov,color=species,linetype=species)) +
   scale_color_manual(values=c("gray8","gray47","gray63","gray80"),name = "Species", 
                      labels = c("Bromus", "Layia", "Plantago", "Festuca"))
 #without femi
-ggplot(dat, aes(year,mean_cov,color=species,linetype=species)) + 
-  geom_line(size=1) +
-  geom_point(size=1) +
+ggplot(dat, aes(year,mean_cov,color=species)) + 
+  geom_line(size=1.5) +
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   xlab("Year") +  
   ylab(expression(Percent~cover~(m^{"2"}))) +
   theme(legend.text = element_text(face="italic")) +
-  scale_linetype_manual(values=c("solid","solid","dashed"),name = "Species", 
-                        labels = c("Bromus", "Layia", "Plantago", "Festuca")) +
-  scale_color_manual(values=c("gray8","gray80","gray47"),name = "Species", 
+  scale_color_manual(values=c("grey80","grey50","black"),name = "Species", 
                      labels = c("Bromus", "Layia", "Plantago"))
                       
                                                                             
