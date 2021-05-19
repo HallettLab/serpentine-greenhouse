@@ -23,9 +23,9 @@ dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
 theme_set(theme_bw())
 theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
               strip.background = element_blank(),
-              text = element_text(size = 12),
-              strip.text= element_text(size = 12),
-              axis.text = element_text(size = 12))
+              text = element_text(size = 13),
+              strip.text= element_text(size = 13),
+              axis.text = element_text(size = 13))
 
 spp.labs <- c("Bromus", "Layia", "Plantago", "Festuca")
 names(spp.labs) <- c("BRMO","LAPL","PLER","VUMI")
@@ -61,7 +61,7 @@ ggplot(dat, aes(year,mean_cov,color=species,linetype=species)) +
                      labels = c("Bromus", "Layia", "Plantago", "Festuca"))
 #without femi
 ggplot(dat, aes(year,mean_cov,color=species)) + 
-  geom_line(size=1.5) +
+  geom_line(size=1) + geom_point(size=1.3) +
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   xlab("Year") +  
   ylab(expression(Percent~cover~(m^{"2"}))) +

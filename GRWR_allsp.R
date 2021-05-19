@@ -1,33 +1,27 @@
 library(tidyverse)
 library(gridExtra)
-dat <- read.csv("parameters.csv")
+params <- read.csv(paste(datpath, "params.csv", sep = ""))
 
 ## Data manipulation
-model.dat <- dat 
-colnames(model.dat)[1] <- "species"
-model.dat$species[which(model.dat$species == "Laya")] <- "Layia"
-model.dat <- model.dat%>%
-  pivot_longer(hi.water.hi.N:lo.water.lo.N, names_to ="treatment", values_to="values") %>%
-  spread(param, values) 
-colnames(model.dat)[2] <- "treatments"
-model.dat[is.na(model.dat)] <- 0
+model.dat <- params %>%
+  filter(species == "Bromus" | species == "Layia" | species == "Plantago")
 
 ## Set germination and survival fractions from the literature
-ps <- .75 # lauren guess
+ps <- .75 # gulmon
 pg <- .92 # gulmon
-bs <- .013 # lauren guess
+bs <- .013 # andrew
 bg <- .98 # gulmon
-fs <- .013
-fg <- .83
-ls <- .15
-lg <- .32
+#fs <- .013
+#fg <- .83
+ls <- .15 # ms thesis from Cal Poly SLO
+lg <- .32 # ms thesis from Cal Poly SLO
 
 theme_set(theme_bw())
 theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
               strip.background = element_blank(),
-              text = element_text(size = 12),
-              strip.text= element_text(size = 12),
-              axis.text = element_text(size = 12))
+              text = element_text(size = 13),
+              strip.text= element_text(size = 13),
+              axis.text = element_text(size = 13))
 
 ###################################
 ####### Bromus and Plantago #######
@@ -144,6 +138,8 @@ consistent.grwr.out <- consistent.out %>%
   unique()  %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
+
+brho_pler_dat <- consistent.grwr.out
 
 ## GRWR graph
 consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
@@ -462,6 +458,7 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
+brho_lapl_dat <- consistent.grwr.out 
 
 ## GRWR graph
 consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
@@ -785,6 +782,8 @@ consistent.grwr.out <- consistent.out %>%
   mutate(grwrChesson = log(grwr)-log(Cgrwc)) %>%
   separate(treatment, c("water", "delete", "N", "delete2"))
 
+lapl_pler_dat <- consistent.grwr.out
+
 ## GRWR graph
 consistent.grwr.out$N <- factor(consistent.grwr.out$N, levels = c("lo","int","hi"))
 consistent.grwr.out$water <- factor(consistent.grwr.out$water, levels = c("lo","hi"))
@@ -985,3 +984,34 @@ ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) +
                      values=c("grey80","grey40")) +
   xlab("Year") + ylab(expression(Count~(individuals~per~100~cm^{"2"}))) +
   theme(legend.text = element_markdown(),strip.text.y = element_markdown())
+
+################################
+### Coexistence Visualization###
+################################
+join <- full_join(brho_lapl_dat,brho_pler_dat)
+brho_lapl_pler <- full_join(join,lapl_pler_dat)
+
+pairwise <- c("a","a","a","a","a","a","a","a","a","a","a","a","b","b","b","b","b","b","b","b","b","b","b","b","c","c","c","c","c","c","c","c","c","c","c","c")
+
+brho_lapl_pler <- brho_lapl_pler %>%
+  cbind(paircomb = pairwise)
+
+brho_lapl_pler <- brho_lapl_pler %>%
+  unite(inv_pair,invader,paircomb,sep = "_",remove = FALSE)
+
+brho_lapl_pler$N <- factor(brho_lapl_pler$N, levels = c("lo","int","hi"))
+brho_lapl_pler$water <- factor(brho_lapl_pler$water, levels = c("lo","hi"))
+brho_lapl_pler$inv_pair <- factor(brho_lapl_pler$inv_pair, levels = c("Bromus_b","Plantago_b","Plantago_c","Layia_c","Bromus_a","Layia_a"))
+
+sp.labs<- c("Bromus","Plantago","Plantago","Layia","Bromus","Layia")
+names(sp.labs) <- c("Bromus_b","Plantago_b","Plantago_c","Layia_c","Bromus_a","Layia_a")
+
+ggplot(brho_lapl_pler, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~inv_pair,ncol=2, labeller = labeller(inv_pair=sp.labs, scale="free")) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Interm","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("grey80","grey40")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)

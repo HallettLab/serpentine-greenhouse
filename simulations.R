@@ -104,7 +104,7 @@ cover_dat <- cover %>%
   summarize(mean_cover = mean(cover)) %>%
   filter(year == 1983) %>%
   mutate(species = c("Bromus","Layia","Plantago")) %>%
-  mutate(abundance = mean_cover*(c(brho_eq,lapl_eq,pler_eq)/100))%>%
+  mutate(abundance = mean_cover*c(brho_eq,lapl_eq,pler_eq)/100)%>%
   select(-mean_cover) %>%
   pivot_wider(names_from = species, values_from = abundance)
 
@@ -189,12 +189,14 @@ growth = function(N, start_dat,year){
 
 N <- growth(N,start_dat,year) %>%
   mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")
+  pivot_longer(!year,names_to="species",values_to ="abundance") %>%
+  mutate(cover = abundance/c(brho_eq/100,pler_eq/100))
 N$species[N$species == "Nb"] <- "Bromus"
 N$species[N$species == "Np"] <- "Plantago"
 
-ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1.5) + ylab("Abundance") + xlab("Year") +
+ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1) + geom_point(size=1.3) + xlab("Year") +
   theme(legend.text = element_markdown()) +
+  ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Plantago*"),
                      values=c("grey80","black"))
 
@@ -220,14 +222,16 @@ growth = function(N, start_dat,year){
 
 N <- growth(N,start_dat,year) %>%
   mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")
+  pivot_longer(!year,names_to="species",values_to ="abundance")%>%
+  mutate(cover = abundance/c(lapl_eq/100,pler_eq/100))
 N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
-ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1.5) + ylab("Abundance") + xlab("Year") +
+ggplot(N,aes(year,cover,color=species)) + geom_line(size = 1) + geom_point(size=1.3) + xlab("Year") +
   theme(legend.text = element_markdown()) +
+  ylab(expression(Percent~cover~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
-                     values=c("grey50","black"))
+                     values=c("grey80","black"))
 #BRHO, PLER, and LAPL
 brho_bg <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98)
 start_dat_brho <- start_dat %>%
@@ -257,13 +261,15 @@ growth = function(N, start_dat,year){
 
 N <- growth(N,start_dat,year) %>%
   mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")
+  pivot_longer(!year,names_to="species",values_to ="abundance")%>%
+  mutate(cover = abundance/c(lapl_eq/100,pler_eq/100))
 N$species[N$species == "Nb"] <- "Bromus"
 N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
-ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1.5) + ylab("Abundance") + xlab("Year") +
+ggplot(N,aes(year,abundance,color=species)) + geom_line(size = 1) + geom_point(size=1.3) + xlab("Year") +
   theme(legend.text = element_markdown()) +
+  ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("grey80","grey50","black"))
 # Bromus and Layia
