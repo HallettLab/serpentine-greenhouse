@@ -1001,17 +1001,27 @@ brho_lapl_pler <- brho_lapl_pler %>%
 
 brho_lapl_pler$N <- factor(brho_lapl_pler$N, levels = c("lo","int","hi"))
 brho_lapl_pler$water <- factor(brho_lapl_pler$water, levels = c("lo","hi"))
-brho_lapl_pler$inv_pair <- factor(brho_lapl_pler$inv_pair, levels = c("Bromus_b","Plantago_b","Plantago_c","Layia_c","Bromus_a","Layia_a"))
+brho_lapl_pler$inv_pair <- factor(brho_lapl_pler$inv_pair, levels = c("Plantago_c","Layia_c","Bromus_b","Plantago_b","Bromus_a","Layia_a"))
+brho_lapl_pler$paircomb <- factor(brho_lapl_pler$paircomb, levels = c("c","b","a"))
 
-sp.labs<- c("Bromus","Plantago","Plantago","Layia","Bromus","Layia")
-names(sp.labs) <- c("Bromus_b","Plantago_b","Plantago_c","Layia_c","Bromus_a","Layia_a")
+sp.labs<- c("Plantago","Layia","Plantago","Bromus","Layia","Bromus")
+names(sp.labs) <- c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Bromus_a")
 
-ggplot(brho_lapl_pler, aes(x=N, y=grwrChesson, fill = water)) + 
+
+p<-ggplot(brho_lapl_pler, aes(x=N, y=grwrChesson, fill = water)) + 
   geom_bar(stat="identity", position = "dodge") + 
-  facet_wrap(~inv_pair,ncol=2, labeller = labeller(inv_pair=sp.labs, scale="free")) +
+  facet_wrap(~inv_pair,labeller = labeller(inv_pair=sp.labs),ncol=2) +
   ylab("Growth rate when rare") + xlab("N treatments") +
-  scale_x_discrete(labels = c("Low","Interm","High")) +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
                     values=c("grey80","grey40")) +
   theme(strip.text = element_text(face = "italic")) +
   geom_hline(yintercept = 0)
+
+
+g <- grid.arrange(p,left = textGrob(c("a)","b)","c)"), x =c(2.5,2.5,2.5), 
+                                    y = c(.96,.66,.36), gp = gpar(fontface = "bold", fontsize = 13)))
+grid.newpage()
+grid.draw(g)
+
+
