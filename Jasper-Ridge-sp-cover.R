@@ -6,12 +6,9 @@ calcSE<-function(x){
   sd(x)/sqrt(length(x))
 }
 
-#all species
-dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
-  filter(treatment == "c") %>%
-  filter(species == "PLER" | species == "VUMI" | species == "BRMO" | species == "LAPL") %>%
-  group_by(year,species) %>%
-  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
+#rainfall
+ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
+  filter(year != 1982)
 
 #BRHO, PLER, and LAPL
 dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
@@ -30,43 +27,25 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 spp.labs <- c("Bromus", "Layia", "Plantago", "Festuca")
 names(spp.labs) <- c("BRMO","LAPL","PLER","VUMI")
 
-#graph with species and treatments
-ggplot(dat, aes(year,mean_cov,group=interaction(species,treatment))) + 
-  geom_point(aes(color=treatment,shape=treatment),size=2) + 
-  geom_line(aes(color=treatment,linetype=treatment),size=1) +
-  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov,
-  #color = treatment)) +
-  scale_linetype_manual(values = c("solid","dashed","longdash"),name="Exclosure treatments", 
-                        labels = c("Control","Gopher","Rabbit"))+
-  scale_color_manual(values = c("grey40","grey75","black"),name="Exclosure treatments", 
-                     labels = c("Control","Gopher","Rabbit")) +
-  scale_shape_manual(values = c(16,17,15),name="Exclosure treatments", 
-                     labels = c("Control","Gopher","Rabbit")) +
-  xlab("Year") + facet_grid(species~.,scale= "free",
-                            labeller = labeller(species = spp.labs)) +  
-  ylab(expression(Percent~cover~(m^{"2"}))) +
-  theme(strip.text = element_text(face = "italic"))
-
-#graph with only species 
-ggplot(dat, aes(year,mean_cov,color=species,linetype=species)) + 
-  geom_line(size=1) +
-  geom_point(size=1) +
-  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
-  xlab("Year") +  
-  ylab(expression(Percent~cover~(m^{"2"}))) +
-  theme(legend.text = element_text(face="italic")) +
-  scale_linetype_manual(values=c("solid","solid","dashed","solid"),name = "Species", 
-                     labels = c("Bromus", "Layia", "Plantago", "Festuca")) +
-  scale_color_manual(values=c("gray8","gray47","gray63","gray80"),name = "Species", 
-                     labels = c("Bromus", "Layia", "Plantago", "Festuca"))
-#without femi
+#graph with species 
 jr <- ggplot(dat, aes(year,mean_cov,color=species)) + 
   geom_line(size=.8) + geom_point(size=1.3) +
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
-  xlab("Year") +  
   ylab(expression(Percent~cover~(m^{"2"}))) +
-  theme(legend.text = element_text(face="italic")) +
+  theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank()) +
   scale_color_manual(values=c("grey80","grey50","grey30"),name = "Species", 
                      labels = c("Bromus", "Layia", "Plantago"))
-                      
-                                                                            
+
+p <- ggplot(ppt, aes(year,growing_season_ppt)) + 
+  geom_line(size=.8,lty=2) + geom_point(size=1.3) +
+  xlab("Year") +  
+  ylab("Precipitation (mm)") 
+
+
+gjr <- ggplotGrob(jr)
+gp <- ggplotGrob(p)
+maxWidth = grid::unit.pmax(gjr$widths[2:5], gp$widths[2:5])
+gjr$widths[2:5] <- as.list(maxWidth)
+gp$widths[2:5] <- as.list(maxWidth)
+grid.arrange(gjr,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7), 
+                                    y = c(.91,.51), gp = gpar(fontface = "bold", fontsize = 13)))
