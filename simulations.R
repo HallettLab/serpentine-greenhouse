@@ -264,6 +264,12 @@ N$species[N$species == "Nb"] <- "Bromus"
 N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
+blp <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3)  +
+  theme(legend.text = element_markdown(),legend.position = "top",axis.title.x = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("grey80","grey50","grey30"))
+
 blp <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
   theme(legend.text = element_markdown()) +
   ylab(expression(Abundance~(m^{"2"})))+
@@ -310,6 +316,12 @@ blp2 <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geo
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("grey80","grey50","grey30"))
 
+blp2 <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
+  theme(legend.position= "none") +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("grey80","grey50","grey30"))
+
 # Bromus and Layia
 N = as.data.frame(matrix(NA, nrow=37, ncol=2))
 colnames(N) = c("Nb","Nl")
@@ -347,4 +359,31 @@ bl <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_
 ggarrange(lp,jr,bp,blp,bl,blp2,
           labels = c("a)", "d)", "b)","e)","c)","f)"),
           ncol = 2, nrow = 3)
+
+ggarrange(blp,blp2,
+          labels = c("a)", "b)"),
+          ncol = 1, nrow = 2)
+
+#two plots of simulations
+Nblp <- Nblp %>%
+  rename(sim1=abundance) %>%
+  select(-cover)
+Nblp2 <- Nblp2 %>%
+  rename(sim2=abundance)%>%
+  select(-cover)
+blp <- inner_join(Nblp,Nblp2) %>%
+  pivot_longer(3:4,names_to = "sim",values_to = "abundance")
+
+p <- ggplot(blp,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
+  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines")) +
+  facet_wrap(~sim,ncol=1)+
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("grey80","grey50","grey30"))
+
+g <- grid.arrange(p,left = textGrob(c("a)","b)"), x =c(2.8,2.8), 
+                                    y = c(.99,.51), gp = gpar(fontface = "bold", fontsize = 13)))
+grid.newpage()
+grid.draw(g)
+
 

@@ -1020,7 +1020,7 @@ p<-ggplot(brho_lapl_pler, aes(x=N, y=grwrChesson, fill = water)) +
 
 
 g <- grid.arrange(p,left = textGrob(c("a)","b)","c)"), x =c(2.5,2.5,2.5), 
-                                    y = c(.96,.66,.36), gp = gpar(fontface = "bold", fontsize = 13)))
+                                    y = c(.97,.66,.355), gp = gpar(fontface = "bold", fontsize = 11)))
 grid.newpage()
 grid.draw(g)
 
