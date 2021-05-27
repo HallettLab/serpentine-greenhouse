@@ -1,5 +1,8 @@
 library(tidyverse)
 library(gridExtra)
+library(grid)
+library(ggtext)
+
 params <- read.csv(paste(datpath, "params.csv", sep = ""))
 
 ## Data manipulation
@@ -1001,7 +1004,7 @@ brho_lapl_pler <- brho_lapl_pler %>%
 
 brho_lapl_pler$N <- factor(brho_lapl_pler$N, levels = c("lo","int","hi"))
 brho_lapl_pler$water <- factor(brho_lapl_pler$water, levels = c("lo","hi"))
-brho_lapl_pler$inv_pair <- factor(brho_lapl_pler$inv_pair, levels = c("Plantago_c","Layia_c","Bromus_b","Plantago_b","Bromus_a","Layia_a"))
+brho_lapl_pler$inv_pair <- factor(brho_lapl_pler$inv_pair, levels = c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Bromus_a"))
 brho_lapl_pler$paircomb <- factor(brho_lapl_pler$paircomb, levels = c("c","b","a"))
 
 sp.labs<- c("Plantago","Layia","Plantago","Bromus","Layia","Bromus")
