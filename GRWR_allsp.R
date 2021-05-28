@@ -1017,7 +1017,7 @@ p<-ggplot(brho_lapl_pler, aes(x=N, y=grwrChesson, fill = water)) +
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
-                    values=c("grey80","grey40")) +
+                    values=c("azure3","azure4")) +
   theme(strip.text = element_text(face = "italic")) +
   geom_hline(yintercept = 0)
 

@@ -1,5 +1,7 @@
 library(tidyverse)
 library(ggtext)
+library(cowplot)
+library(grid)
 
 ## Read in data
 params2 <- read.csv(paste(datpath, "params2.csv", sep = ""))
@@ -227,11 +229,12 @@ N <- growth(N,start_dat,year) %>%
 N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
-lp <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
-  theme(legend.text = element_markdown()) +
+lp <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3)  +
+  theme(legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
-                     values=c("grey50","grey30"))
+                     values=c("#0072B2","#009E73"))
+Nlp <- N
 
 #BRHO,LAPL,PLER
 N = as.data.frame(matrix(NA, nrow=37, ncol=3))
@@ -265,16 +268,12 @@ N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
 blp <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3)  +
-  theme(legend.text = element_markdown(),legend.position = "top",axis.title.x = element_blank()) +
+  theme(legend.text = element_markdown(),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("grey80","grey50","grey30"))
+                     values=c("#D55E00","#0072B2","#009E73"))
+Nblp <- N
 
-blp <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
-  theme(legend.text = element_markdown()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("grey80","grey50","grey30"))
 #BRHO, PLER, and LAPL
 brho_bg <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98)
 start_dat_brho <- start_dat %>%
@@ -311,16 +310,11 @@ N$species[N$species == "Np"] <- "Plantago"
 N$species[N$species == "Nl"] <- "Layia"
 
 blp2 <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
-  theme(legend.text = element_markdown()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("grey80","grey50","grey30"))
-
-blp2 <- ggplot(N,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
   theme(legend.position= "none") +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("grey80","grey50","grey30"))
+                     values=c("#D55E00","#0072B2","#009E73"))
+Nblp2 <- N
 
 # Bromus and Layia
 N = as.data.frame(matrix(NA, nrow=37, ncol=2))
@@ -366,24 +360,75 @@ ggarrange(blp,blp2,
 
 #two plots of simulations
 Nblp <- Nblp %>%
-  rename(sim1=abundance) %>%
-  select(-cover)
-Nblp2 <- Nblp2 %>%
-  rename(sim2=abundance)%>%
-  select(-cover)
-blp <- inner_join(Nblp,Nblp2) %>%
-  pivot_longer(3:4,names_to = "sim",values_to = "abundance")
+  inner_join(trt)
 
-p <- ggplot(blp,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
-  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines")) +
+Nblp2 <- Nblp2 %>%
+  inner_join(trt)
+
+Nlp <- Nlp %>%
+  inner_join(trt)
+
+  
+
+blpN <- inner_join(Nblp,Nblp2) 
+
+blp2N <- blpN%>%
+  pivot_longer(3:4,names_to = "sim",values_to = "abundance") %>%
+  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
+
+blp2N$N <- factor(blp2N$N, levels = c("Low","Intermediate","High"))
+
+
+
+p <- ggplot(blp2N,aes(year,abundance,color=species)) +
+  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
+  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
+  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
+  geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
+  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top") +
   facet_wrap(~sim,ncol=1)+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("grey80","grey50","grey30"))
+                     values=c("#D55E00","#0072B2","#009E73")) 
 
-g <- grid.arrange(p,left = textGrob(c("a)","b)"), x =c(2.8,2.8), 
-                                    y = c(.99,.51), gp = gpar(fontface = "bold", fontsize = 13)))
-grid.newpage()
-grid.draw(g)
+lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
+  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
+  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
+  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
+  geom_line(size = .8) + geom_point(aes(year,abundance,shape=type_year),size=3.5) + xlab("Year") +
+  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.title.y = element_blank())+
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
+  scale_shape_manual(name="Year type",values=c(1,16)) +
+  scale_x_continuous(expand = c(0.01,0.01))
+
+
+
+sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
+  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
+  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
+  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
+  geom_line(size = .8) + geom_point(aes(year,abundance,shape=type_year),size=3.5) + xlab("Year") +
+  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+    scale_shape_manual(name="Year type",values=c(1,16)) +
+  scale_x_continuous(expand = c(0.01,0.01))
+
+sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
+  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
+  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
+  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
+  geom_line(size = .8) + geom_point(aes(year,abundance,shape=type_year),size=3.5) + xlab("Year") +
+  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "bottom",axis.title.y = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_shape_manual(name="Year type",values=c(1,16),guide=FALSE) +
+  scale_x_continuous(expand = c(0.01, 0.01))
+
+
+plot_grid(lp,sim1,sim2,ncol=1,labels = c("a)","b)","c)"),align="v",rel_heights = c(.9,.66,1))
 
 

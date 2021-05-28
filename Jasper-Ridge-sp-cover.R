@@ -32,14 +32,17 @@ jr <- ggplot(dat, aes(year,mean_cov,color=species)) +
   geom_line(size=.8) + geom_point(size=1.3) +
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   ylab(expression(Percent~cover~(m^{"2"}))) +
-  theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank()) +
-  scale_color_manual(values=c("grey80","grey50","grey30"),name = "Species", 
-                     labels = c("Bromus", "Layia", "Plantago"))
+  theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank())+
+  scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
+                     labels = c("Bromus", "Layia", "Plantago"))+
+    scale_x_continuous(expand = c(0.01, 0.01))
+
 
 p <- ggplot(ppt, aes(year,growing_season_ppt)) + 
   geom_line(size=.8,lty=2) + geom_point(size=1.3) +
   xlab("Year") +  
-  ylab("Precipitation (mm)") 
+  ylab("Precipitation (mm)") +
+  scale_x_continuous(expand = c(0.01, 0.01))
 
 
 gjr <- ggplotGrob(jr)
@@ -48,4 +51,4 @@ maxWidth = grid::unit.pmax(gjr$widths[2:5], gp$widths[2:5])
 gjr$widths[2:5] <- as.list(maxWidth)
 gp$widths[2:5] <- as.list(maxWidth)
 grid.arrange(gjr,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7), 
-                                    y = c(.91,.51), gp = gpar(fontface = "bold", fontsize = 13)))
+                                    y = c(.92,.51), gp = gpar(fontface = "bold", fontsize = 13)))
