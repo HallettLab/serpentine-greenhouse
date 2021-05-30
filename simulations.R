@@ -391,44 +391,50 @@ p <- ggplot(blp2N,aes(year,abundance,color=species)) +
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) 
 
-lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
-  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
+trts <- ggplot(trt,aes(year,growing_season_ppt)) +
+  annotate("rect", xmin = -Inf, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2") +
   annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
-  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
-  geom_line(size = .8) + geom_point(aes(year,abundance,shape=type_year),size=3.5) + xlab("Year") +
-  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.title.y = element_blank())+
+  annotate("rect", xmin = 2007, xmax = Inf, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
+  geom_line(size=0.8)+
+  geom_hline(yintercept=565,lty=2)+
+  geom_point(size=3, aes(shape=type_year))+
+  scale_shape_manual(name="Growing season type",values=c(1,16)) +
+  xlab("Year") +
+  ylab("Precipitation (mm)")+
+  theme(legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank())+
+  scale_x_continuous(expand = c(0.04,0.04)) +
+  annotate("text", x=1988,y=1200, label="Low N")+
+  annotate("text", x=2001,y=1200, label="Intermediate N") +
+  annotate("text", x=2014,y=1200, label="High N")
+  
+
+
+lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
-  scale_shape_manual(name="Year type",values=c(1,16)) +
-  scale_x_continuous(expand = c(0.01,0.01))
+  scale_x_continuous(expand = c(0.04,0.04))
 
 
 
 sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
-  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
-  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
-  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
-  geom_line(size = .8) + geom_point(aes(year,abundance,shape=type_year),size=3.5) + xlab("Year") +
+  geom_line(size = .8) + xlab("Year") +
   theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
-    scale_shape_manual(name="Year type",values=c(1,16)) +
-  scale_x_continuous(expand = c(0.01,0.01))
+  scale_x_continuous(expand = c(0.04,0.04))
 
 sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
-  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
-  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
-  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
-  geom_line(size = .8) + geom_point(aes(year,abundance,shape=type_year),size=3.5) + xlab("Year") +
+  geom_line(size = .8) + xlab("Year") +
   theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "bottom",axis.title.y = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
-  scale_shape_manual(name="Year type",values=c(1,16),guide=FALSE) +
-  scale_x_continuous(expand = c(0.01, 0.01))
+  scale_x_continuous(expand = c(0.04, 0.04))
 
 
-plot_grid(lp,sim1,sim2,ncol=1,labels = c("a)","b)","c)"),align="v",rel_heights = c(.9,.66,1))
+plot_grid(trts,lp,sim1,sim2,ncol=1,labels = c("a)","b)","c)","d)"),align="v",rel_heights = c(.6,.6,.6,.9))
 
 

@@ -29,7 +29,7 @@ names(spp.labs) <- c("BRMO","LAPL","PLER","VUMI")
 
 #graph with species 
 jr <- ggplot(dat, aes(year,mean_cov,color=species)) + 
-  geom_line(size=.8) + geom_point(size=1.3) +
+  geom_line(size=.8) + 
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   ylab(expression(Percent~cover~(m^{"2"}))) +
   theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank())+
@@ -39,7 +39,7 @@ jr <- ggplot(dat, aes(year,mean_cov,color=species)) +
 
 
 p <- ggplot(ppt, aes(year,growing_season_ppt)) + 
-  geom_line(size=.8,lty=2) + geom_point(size=1.3) +
+  geom_line(size=.8) +
   xlab("Year") +  
   ylab("Precipitation (mm)") +
   scale_x_continuous(expand = c(0.01, 0.01))
