@@ -35,14 +35,16 @@ jr <- ggplot(dat, aes(year,mean_cov,color=species)) +
   theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank())+
   scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
                      labels = c("Bromus", "Layia", "Plantago"))+
-    scale_x_continuous(expand = c(0.01, 0.01))
+    scale_x_continuous(expand = c(0.04, 0.04)) +
+  theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
 
 
 p <- ggplot(ppt, aes(year,growing_season_ppt)) + 
   geom_line(size=.8) +
   xlab("Year") +  
   ylab("Precipitation (mm)") +
-  scale_x_continuous(expand = c(0.01, 0.01))
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
 
 
 gjr <- ggplotGrob(jr)

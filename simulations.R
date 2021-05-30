@@ -405,7 +405,8 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   scale_x_continuous(expand = c(0.04,0.04)) +
   annotate("text", x=1988,y=1200, label="Low N")+
   annotate("text", x=2001,y=1200, label="Intermediate N") +
-  annotate("text", x=2014,y=1200, label="High N")
+  annotate("text", x=2014,y=1200, label="High N") +
+  theme(plot.margin = unit(c(.5,.5,.7,.7), "cm"))
   
 
 
@@ -414,7 +415,8 @@ lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
   theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
-  scale_x_continuous(expand = c(0.04,0.04))
+  scale_x_continuous(expand = c(0.04,0.04))+
+  theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
 
 
 
@@ -432,9 +434,10 @@ sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04, 0.04))
+  scale_x_continuous(expand = c(0.04, 0.04))+
+  theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
 
 
-plot_grid(trts,lp,sim1,sim2,ncol=1,labels = c("a)","b)","c)","d)"),align="v",rel_heights = c(.6,.6,.6,.9))
+plot_grid(trts,lp,sim1,sim2,ncol=1,labels = c("a)","b)","c)","d)"),align="v",rel_heights = c(.6,.6,.5,.9))
 
 
