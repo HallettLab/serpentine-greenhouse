@@ -436,13 +436,13 @@ sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
 leg <- as_ggplot(leg)
 
 trt2 <- trt %>%
-  mutate(gst = 1) 
+  mutate(gst = 1,n=NA) 
 
 trt2$n[trt2$n_trt == "lo.N"] <- "Low"
-trt2$n[trt2$n_trt == "int.N"] <- "Interm"
+trt2$n[trt2$n_trt == "int.N"] <- "Intermediate"
 trt2$n[trt2$n_trt == "hi.N"] <- "High"
 
-trt2$n <- factor(trt2$n,levels = c("Low","Interm","High"))
+trt2$n <- factor(trt2$n,levels = c("Low","Intermediate","High"))
 
 bar <- ggplot(trt2,aes(year,gst)) +
   geom_point(aes(year,gst,color=n),size=0,shape =15)+
@@ -458,6 +458,6 @@ bar <- ggplot(trt2,aes(year,gst)) +
   guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))
 
 
-plot_grid(leg,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)"))
+plot_grid(leg,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
 
