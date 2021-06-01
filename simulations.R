@@ -368,7 +368,6 @@ Nblp2 <- Nblp2 %>%
 Nlp <- Nlp %>%
   inner_join(trt)
 
-  
 
 blpN <- inner_join(Nblp,Nblp2) 
 
@@ -405,8 +404,7 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   scale_x_continuous(expand = c(0.04,0.04)) +
   annotate("text", x=1988,y=1200, label="Low N")+
   annotate("text", x=2001,y=1200, label="Intermediate N") +
-  annotate("text", x=2014,y=1200, label="High N") +
-  theme(plot.margin = unit(c(.5,.5,.7,.7), "cm"))
+  annotate("text", x=2014,y=1200, label="High N") 
   
 
 
@@ -415,8 +413,7 @@ lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
   theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
-  scale_x_continuous(expand = c(0.04,0.04))+
-  theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
+  scale_x_continuous(expand = c(0.04,0.04))
 
 
 
@@ -430,14 +427,37 @@ sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
 
 sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "bottom",axis.title.y = element_blank()) +
+  theme(plot.margin=unit(c(5.5,5.5,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04, 0.04))+
-  theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
+  scale_x_continuous(expand = c(0.04, 0.04))
+
+leg <- as_ggplot(leg)
+
+trt2 <- trt %>%
+  mutate(gst = 1) 
+
+trt2$n[trt2$n_trt == "lo.N"] <- "Low"
+trt2$n[trt2$n_trt == "int.N"] <- "Interm"
+trt2$n[trt2$n_trt == "hi.N"] <- "High"
+
+trt2$n <- factor(trt2$n,levels = c("Low","Interm","High"))
+
+bar <- ggplot(trt2,aes(year,gst)) +
+  geom_point(aes(year,gst,color=n),size=0,shape =15)+
+  annotate("rect", xmin = -Inf, xmax = 1994.5, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow2") +
+  annotate("rect", xmin = 1994.5, xmax = 2006.5, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow3")+
+  annotate("rect", xmin = 2006.5, xmax = Inf, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow4")+
+  geom_point(size=3, aes(year,gst,shape=type_year),inherit.aes = FALSE)+
+  scale_shape_manual(name="Rainfall",values=c(1,16)) +
+  xlab("Year") +
+  theme(plot.margin=unit(c(0,5.5,5.5,5.5),"pt"),legend.position = "bottom",axis.text.y = element_blank(),axis.title.y = element_blank(),axis.ticks.y = element_blank())+
+  scale_x_continuous(expand = c(0.04,0.04)) +
+  coord_cartesian(ylim = c(1,1))+
+  guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))
 
 
-plot_grid(trts,lp,sim1,sim2,ncol=1,labels = c("a)","b)","c)","d)"),align="v",rel_heights = c(.6,.6,.5,.9))
+plot_grid(leg,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)"))
 
 
