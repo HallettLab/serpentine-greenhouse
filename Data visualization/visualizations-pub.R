@@ -199,12 +199,13 @@ p <- ggplot(seed_dat, aes(trt_N,mean_out_in,group = interaction(species, trt_wat
   scale_shape_manual(values = c(1,16), name="Water treatments", 
                      labels = c("Dry","Wet")) + xlab("Nitrogen treatments") + 
   theme(strip.text.x = element_text(face = "italic"),legend.text = element_markdown()) +
-  scale_x_discrete(labels = c("Low","Interm","High")) + 
-  scale_color_manual(name = "Phytometer species",labels = c("*Plantago erecta*",
-                                                             "*Layia platyglossa*",
-                                                             "*Festuca microstachys*",
-                                                             "*Bromus hordeaceus*"),
-                       values=c("grey80","grey65","grey50","black")) #+
+  scale_x_discrete(labels = c("Low","Intermediate","High")) + 
+  scale_color_manual(name = "Phytometer species",labels = c("*Bromus*",
+                                                             "*Layia*",
+                                                             "*Plantago*"),
+                       values=c("#D55E00","#0072B2","#009E73")) +
+  ggtitle("Background competitor")+
+  theme(plot.title = element_text(hjust = 0.5,face="bold"))#+
   #geom_errorbar(aes(x = trt_N, y = mean_out_in, 
                     #ymin = mean_out_in - se_out_in, ymax = mean_out_in + se_out_in, 
                     #color = species),position=pd)
@@ -218,11 +219,13 @@ p2 <- ggplot(seed_dat_none, aes(trt_N,mean_out_in,group = interaction(species, t
   scale_shape_manual(values = c(1,16), name="Water treatments", 
                      labels = c("Dry","Wet")) + xlab("Nitrogen treatments") + 
   theme(strip.text.x = element_blank(),strip.text.y = element_blank(),
-        legend.text = element_markdown(),legend.position = "none") +
+        legend.text = element_blank(),legend.position = "none")+#,axis.title.y = element_blank(),axis.title.x = element_blank())+
   scale_x_discrete(labels = c("Low","Intermediate","High")) + 
-  ggtitle("No background competition") +
+  ggtitle("No background competitor") +
   theme(plot.title = element_text(hjust = 0.5,face="bold")) +
-  scale_color_manual(values=c("grey80","grey65","grey50","black")) #+
+  scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Phytometer species",
+                     labels = c("*Bromus*","*Layia*","*Plantago*"))
+
   #geom_errorbar(aes(x = trt_N, y = mean_out_in, 
                     #ymin = mean_out_in - se_out_in, ymax = mean_out_in + se_out_in, 
                     #color = species),position=pd)

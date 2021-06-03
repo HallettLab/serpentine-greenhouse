@@ -400,7 +400,8 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   scale_shape_manual(name="Growing season type",values=c(1,16)) +
   xlab("Year") +
   ylab("Precipitation (mm)")+
-  theme(legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank())+
+  theme(legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank(),
+        plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"))+
   scale_x_continuous(expand = c(0.04,0.04)) +
   annotate("text", x=1988,y=1200, label="Low N")+
   annotate("text", x=2001,y=1200, label="Intermediate N") +
@@ -410,7 +411,7 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
 
 lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
   scale_x_continuous(expand = c(0.04,0.04))
@@ -419,7 +420,7 @@ lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
 
 sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
@@ -427,7 +428,7 @@ sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
 
 sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  theme(plot.margin=unit(c(5.5,5.5,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
+  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
