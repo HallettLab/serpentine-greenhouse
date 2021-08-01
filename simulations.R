@@ -2,6 +2,7 @@ library(tidyverse)
 library(ggtext)
 library(cowplot)
 library(grid)
+library(ggplotify)
 
 ## Read in data
 params2 <- read.csv(paste(datpath, "params2.csv", sep = ""))
@@ -426,6 +427,16 @@ sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_x_continuous(expand = c(0.04,0.04))
 
+leg <- ggplot(Nblp,aes(year,abundance,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("Exotic","Subordinate","Dominant"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04))
+
+leg2 <- as.ggplot(get_legend(leg))
+
 sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
@@ -434,7 +445,6 @@ sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_x_continuous(expand = c(0.04, 0.04))
 
-leg <- as_ggplot(leg)
 
 trt2 <- trt %>%
   mutate(gst = 1,n=NA) 
@@ -456,9 +466,10 @@ bar <- ggplot(trt2,aes(year,gst)) +
   theme(plot.margin=unit(c(0,5.5,5.5,5.5),"pt"),legend.position = "bottom",axis.text.y = element_blank(),axis.title.y = element_blank(),axis.ticks.y = element_blank())+
   scale_x_continuous(expand = c(0.04,0.04)) +
   coord_cartesian(ylim = c(1,1))+
-  guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))
+  guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))+
+  geom_vline(xintercept=c(1994.5,2006.5))
 
 
-plot_grid(leg,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+plot_grid(leg2,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
 

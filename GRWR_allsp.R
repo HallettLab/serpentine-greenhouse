@@ -994,6 +994,45 @@ ggplot(consistent.out,aes(time,abundance,group=interaction(species,water))) +
 join <- full_join(brho_lapl_dat,brho_pler_dat)
 brho_lapl_pler <- full_join(join,lapl_pler_dat)
 
+pler_lapl <- brho_lapl_pler %>%
+  filter(inv_pair == "Plantago_c" | inv_pair == "Layia_c")
+
+ggplot(pler_lapl, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~inv_pair,labeller = labeller(inv_pair=sp.labs),ncol=2) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("azure3","azure4")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+pler_brho <- brho_lapl_pler %>%
+  filter(inv_pair == "Plantago_b" | inv_pair == "Bromus_b")
+
+ggplot(pler_brho, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~inv_pair,labeller = labeller(inv_pair=sp.labs),ncol=2) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("azure3","azure4")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
+lapl_brho <- brho_lapl_pler %>%
+  filter(inv_pair == "Layia_a" | inv_pair == "Bromus_a")
+
+ggplot(lapl_brho, aes(x=N, y=grwrChesson, fill = water)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  facet_wrap(~inv_pair,labeller = labeller(inv_pair=sp.labs),ncol=2) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("azure3","azure4")) +
+  theme(strip.text = element_text(face = "italic")) +
+  geom_hline(yintercept = 0)
+
 pairwise <- c("a","a","a","a","a","a","a","a","a","a","a","a","b","b","b","b","b","b","b","b","b","b","b","b","c","c","c","c","c","c","c","c","c","c","c","c")
 
 brho_lapl_pler <- brho_lapl_pler %>%
@@ -1007,7 +1046,7 @@ brho_lapl_pler$water <- factor(brho_lapl_pler$water, levels = c("lo","hi"))
 brho_lapl_pler$inv_pair <- factor(brho_lapl_pler$inv_pair, levels = c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Bromus_a"))
 brho_lapl_pler$paircomb <- factor(brho_lapl_pler$paircomb, levels = c("c","b","a"))
 
-sp.labs<- c("Plantago","Layia","Plantago","Bromus","Layia","Bromus")
+sp.labs<- c("Dominant","Subordinate","Dominant","Exotic","Subordinate","Exotic")
 names(sp.labs) <- c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Bromus_a")
 
 
@@ -1018,7 +1057,6 @@ p<-ggplot(brho_lapl_pler, aes(x=N, y=grwrChesson, fill = water)) +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
                     values=c("azure3","azure4")) +
-  theme(strip.text = element_text(face = "italic")) +
   geom_hline(yintercept = 0)
 
 

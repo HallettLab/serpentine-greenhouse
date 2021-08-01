@@ -1,5 +1,6 @@
 library(tidyverse)
 library(ggtext)
+library(gridExtra)
 
 calcSE<-function(x){
   x <- x[is.na(x)==F]
@@ -14,8 +15,21 @@ ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
 dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
   filter(treatment == "c") %>%
   filter(species == "PLER" | species == "BRMO" | species == "LAPL") %>%
+group_by(year,species) %>%
+  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
+
+dom <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
+  filter(treatment == "c") %>%
+  filter(species == "PLER") %>%
   group_by(year,species) %>%
   summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
+
+sub_dom <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
+  filter(treatment == "c") %>%
+  filter(species == "LAPL" | species == "PLER") %>%
+  group_by(year,species) %>%
+  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
+
 
 theme_set(theme_bw())
 theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
@@ -24,19 +38,48 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
               strip.text= element_text(size = 13),
               axis.text = element_text(size = 13))
 
-spp.labs <- c("Bromus", "Layia", "Plantago", "Festuca")
-names(spp.labs) <- c("BRMO","LAPL","PLER","VUMI")
+spp.labs <- c("Bromus", "Layia", "Plantago")
+names(spp.labs) <- c("BRMO","LAPL","PLER")
 
 #graph with species 
-jr <- ggplot(dat, aes(year,mean_cov,color=species)) + 
+jr <- ggplot(dat,aes(year,mean_cov,color=species)) + 
   geom_line(size=.8) + 
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   ylab(expression(Percent~cover~(m^{"2"}))) +
-  theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank())+
   scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
-                     labels = c("Bromus", "Layia", "Plantago"))+
+                     labels = c("Exotic", "Subordinate", "Dominant"))+
     scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"), legend.position = "top")+
+  xlab("Year")
+
+dom <- ggplot(dom, aes(year,mean_cov,color=species)) + 
+  geom_line(size=.8) + 
+  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
+  ylab(expression(Percent~cover~(m^{"2"}))) +
+  scale_color_manual(values="#009E73",name = "Species", 
+                     labels = "Dominant")+
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))+
+  xlab("Year")
+
+subdom <- ggplot(sub_dom, aes(year,mean_cov,color=species)) + 
+  geom_line(size=.8) + 
+  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
+  ylab(expression(Percent~cover~(m^{"2"}))) +
+  scale_color_manual(values=c("#0072B2","#009E73"),name = "Species", 
+                     labels = c("Subordinate","Dominant"))+
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))+
+  xlab("Year")
+
+plot_grid(dom,subdom,jr,ncol=1)
+
+
+scale_color_manual(values=c("#D55E00","#009E73","#0072B2"),name = "Species", 
+                   labels = c("Invader", "Responder", "Native"))
+
+theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank())+
+  
 
 
 p <- ggplot(ppt, aes(year,growing_season_ppt)) + 
@@ -44,7 +87,8 @@ p <- ggplot(ppt, aes(year,growing_season_ppt)) +
   xlab("Year") +  
   ylab("Precipitation (mm)") +
   scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm")) +
+  geom_hline(yintercept=565, linetype="dashed")
 
 
 gjr <- ggplotGrob(jr)
