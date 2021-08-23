@@ -1965,3 +1965,5 @@ grwr_se <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
                       lapl_pler_lo_hi_se,lapl_pler_lo_int_se)
 
 grwr_se<-pivot_longer(grwr_se,cols=1:32,names_to = "treatment", values_to = "se")
+
+write.csv(grwr_se,"grwr_se.csv")
