@@ -1952,3 +1952,16 @@ for (i in 1:length(posts)){
 ldgr_se <- calcSE(ldgr_out)
 brho_lapl_lo_lo_se <- ldgr_se
 
+grwr_se <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
+                      brho_lapl_lo_hi_se,brho_lapl_lo_int_se,brho_lapl_lo_lo_se,
+                      pler_brho_hi_hi_se,pler_brho_hi_int_se,pler_brho_hi_lo_se,
+                      pler_brho_lo_hi_se,pler_brho_lo_int_se,pler_brho_lo_lo_se,
+                      lapl_brho_hi_hi_se,lapl_brho_hi_int_se,lapl_brho_lo_hi_se,
+                      lapl_brho_lo_int_se,brho_pler_hi_hi_se,brho_pler_hi_int_se,
+                      brho_pler_hi_lo_se,brho_pler_lo_hi_se,brho_pler_lo_int_se,
+                      brho_pler_lo_lo_se,pler_lapl_hi_hi_se,pler_lapl_hi_int_se,
+                      pler_lapl_hi_lo_se,pler_lapl_lo_hi_se,pler_lapl_lo_int_se,
+                      pler_lapl_lo_lo_se,lapl_pler_hi_hi_se,lapl_pler_hi_int_se,
+                      lapl_pler_lo_hi_se,lapl_pler_lo_int_se)
+
+grwr_se<-pivot_longer(grwr_se,cols=1:32,names_to = "treatment", values_to = "se")
