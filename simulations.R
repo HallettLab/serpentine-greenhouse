@@ -431,11 +431,21 @@ leg <- ggplot(Nblp,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("Exotic","Subordinate","Dominant"),
+  scale_color_manual(name = "Species",labels = c("*Bromus* (exotic)","*Layia* (subordinate native)","*Plantago* (dominant native)"),
                      values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04))
+  scale_x_continuous(expand = c(0.04,0.04))+
+  theme(legend.text = element_markdown())
 
-leg2 <- as.ggplot(get_legend(leg))
+g_legend <- function(a.gplot){ 
+  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+  legend <- tmp$grobs[[leg]] 
+  legend
+} 
+
+legend <- as.ggplot(g_legend(leg))
+
+
 
 sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
@@ -470,6 +480,6 @@ bar <- ggplot(trt2,aes(year,gst)) +
   geom_vline(xintercept=c(1994.5,2006.5))
 
 
-plot_grid(leg2,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+plot_grid(legend,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
 

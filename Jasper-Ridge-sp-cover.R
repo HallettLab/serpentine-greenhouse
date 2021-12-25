@@ -1,35 +1,12 @@
 library(tidyverse)
 library(ggtext)
 library(gridExtra)
+library(grid)
 
 calcSE<-function(x){
   x <- x[is.na(x)==F]
   sd(x)/sqrt(length(x))
 }
-
-#rainfall
-ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
-  filter(year != 1982)
-
-#BRHO, PLER, and LAPL
-dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
-  filter(treatment == "c") %>%
-  filter(species == "PLER" | species == "BRMO" | species == "LAPL") %>%
-group_by(year,species) %>%
-  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
-
-dom <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
-  filter(treatment == "c") %>%
-  filter(species == "PLER") %>%
-  group_by(year,species) %>%
-  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
-
-sub_dom <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
-  filter(treatment == "c") %>%
-  filter(species == "LAPL" | species == "PLER") %>%
-  group_by(year,species) %>%
-  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
-
 
 theme_set(theme_bw())
 theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
@@ -37,6 +14,13 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
               text = element_text(size = 13),
               strip.text= element_text(size = 13),
               axis.text = element_text(size = 13))
+
+#BRHO, PLER, and LAPL
+dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
+  filter(treatment == "c") %>%
+  filter(species == "PLER" | species == "BRMO" | species == "LAPL") %>%
+group_by(year,species) %>%
+  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
 
 spp.labs <- c("Bromus", "Layia", "Plantago")
 names(spp.labs) <- c("BRMO","LAPL","PLER")
@@ -47,40 +31,18 @@ jr <- ggplot(dat,aes(year,mean_cov,color=species)) +
   #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   ylab(expression(Percent~cover~(m^{"2"}))) +
   scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
-                     labels = c("Exotic", "Subordinate", "Dominant"))+
+                     labels = c("*Bromus* (exotic)", "*Layia* (subordinate native)", "*Plantago* (dominant native)"))+
     scale_x_continuous(expand = c(0.04, 0.04)) +
   theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"), legend.position = "top")+
-  xlab("Year")
-
-dom <- ggplot(dom, aes(year,mean_cov,color=species)) + 
-  geom_line(size=.8) + 
-  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
-  ylab(expression(Percent~cover~(m^{"2"}))) +
-  scale_color_manual(values="#009E73",name = "Species", 
-                     labels = "Dominant")+
-  scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))+
-  xlab("Year")
-
-subdom <- ggplot(sub_dom, aes(year,mean_cov,color=species)) + 
-  geom_line(size=.8) + 
-  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
-  ylab(expression(Percent~cover~(m^{"2"}))) +
-  scale_color_manual(values=c("#0072B2","#009E73"),name = "Species", 
-                     labels = c("Subordinate","Dominant"))+
-  scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))+
-  xlab("Year")
-
-plot_grid(dom,subdom,jr,ncol=1)
+  xlab("Year") +
+  theme(legend.text = ggtext::element_markdown())
 
 
-scale_color_manual(values=c("#D55E00","#009E73","#0072B2"),name = "Species", 
-                   labels = c("Invader", "Responder", "Native"))
+#rainfall
+ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
+  filter(year != 1982)
 
-theme(legend.text = element_text(face="italic"),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank())+
-  
-
+x <- expression(paste("El Ni", tilde(n), "o"))
 
 p <- ggplot(ppt, aes(year,growing_season_ppt)) + 
   geom_line(size=.8) +
@@ -88,8 +50,13 @@ p <- ggplot(ppt, aes(year,growing_season_ppt)) +
   ylab("Precipitation (mm)") +
   scale_x_continuous(expand = c(0.04, 0.04)) +
   theme(plot.margin = unit(c(.5,.8,.5,.5), "cm")) +
-  geom_hline(yintercept=565, linetype="dashed")
-
+  geom_hline(yintercept=565, linetype="dashed")+
+  annotate("text",x=1983,y=1275,label=x)+
+  annotate("text", x=1998,y=1055,label=x) +
+  annotate("text", x=2017,y=885,label=x) +
+  annotate("label",x=2014,y=180,label="Prolonged\ndrought")+
+  annotate("label",x=2008,y=240,label="Prolonged\ndrought")+
+  annotate("label",x=1989,y=250,label="Prolonged\ndrought")
 
 gjr <- ggplotGrob(jr)
 gp <- ggplotGrob(p)
