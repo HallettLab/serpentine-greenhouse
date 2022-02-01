@@ -49,6 +49,8 @@ lg <- .32 # ms thesis from Cal Poly SLO
 ######BRHO######
 ################
 
+brho_hi_hi <- rstan::extract(no_dist_seeds_brho_hi_hi)
+
 # Grab the length of your posterior distribution
 posterior_length <- length(brho_hi_hi$lambda)
 
