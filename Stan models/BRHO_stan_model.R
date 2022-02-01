@@ -5,7 +5,7 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 ## Read in data
-data <- read.csv(paste(datpath, "/model_dat1.csv", sep = "")) %>%
+data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
   select(-X)
 
 #data <- read.csv("model_dat_0.csv", sep = ",") %>%
@@ -18,7 +18,7 @@ data <- read.csv(paste(datpath, "/model_dat1.csv", sep = "")) %>%
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "BRHO")
-dat <- subset(dat, waterN_treatment == "lo_lo")
+dat <- subset(dat, waterN_treatment == "hi_int")
 
 ## Create model variables for our data
 ### Set Fecundity as the seeds out from our focal species
@@ -73,8 +73,8 @@ acf(brho_hi_hi$lambda)
 ######################################################
 
 # high intermediate initials
-initials <- list(lambda=52.55, alpha_pler=0.16, alpha_brho=0.83, alpha_lapl=0.19,
-                 alpha_femi=0.37, epsilon=rep(1,P), sigma = 172.19)
+initials <- list(lambda=53.26, alpha_pler=0.161, alpha_brho=0.831, alpha_lapl=0.186,
+                 alpha_femi=0.368, epsilon=rep(1,P), sigma = 175.36)
 initials1<- list(initials, initials, initials)
 
 ## Fit model
