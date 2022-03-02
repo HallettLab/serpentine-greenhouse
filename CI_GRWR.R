@@ -3,7 +3,7 @@
 #################
 
 ##Data
-params <- read.csv(paste(datpath, "params3.csv", sep = ""))
+params <- read.csv(paste(datpath, "params2.csv", sep = ""))
 
 ##Functions##
 #calculate SE
@@ -93,9 +93,8 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
 N_equil
-N_brho_hi_hi <- 203.9877
+N_brho_hi_hi <- 210.2639
 
 
 ##################
@@ -143,7 +142,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_pler_hi_hi <- 101.8302
+N_pler_hi_hi <- 209.9339
 
 ##################
 #######LAPL#######
@@ -189,14 +188,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_hi_hi <- 119.5346
+N_lapl_hi_hi <- 75.80274
 
 ###########################
 ######CIs HI H2O HI N######
 ###########################
-N_brho_hi_hi <- 203.9877
-N_lapl_hi_hi <- 119.5346
-N_pler_hi_hi <- 101.8302
+N_brho_hi_hi <- 210.2639
+N_lapl_hi_hi <- 75.80274
+N_pler_hi_hi <- 209.9339
 
 ##########################
 ###PLER invading BRHO#####
@@ -226,7 +225,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_hi_hi_se <- ldgr_se
 
 ##########################
@@ -247,7 +246,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_hi_hi_se <- ldgr_se
 
 ##########################
@@ -278,7 +277,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_brho_hi_hi_se <- ldgr_se
 
 ##########################
@@ -299,7 +298,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_pler_hi_hi_se <- ldgr_se
 
 ##########################
@@ -330,7 +329,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_hi_hi_se <- ldgr_se
 
 ##########################
@@ -351,7 +350,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_hi_hi_se <- ldgr_se
 
 ########################################################################################
@@ -404,8 +403,8 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
-N_brho_hi_int <- 61.63854
+N_equil
+N_brho_hi_int <- 62.48029
 
 
 ##################
@@ -452,7 +451,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_int <- 52.75433
+N_pler_hi_int <- 53.96839
 
 ##################
 #######LAPL#######
@@ -498,14 +497,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_hi_int <- 13.19490
+N_lapl_hi_int <- 9.474947
 
 ###########################
 ######CIs HI H2O INT N######
 ###########################
-N_brho_hi_int <- 61.63854
-N_lapl_hi_int <- 13.19490
-N_pler_hi_int <- 52.75433
+N_brho_hi_int <- 62.48029
+N_lapl_hi_int <- 9.474947
+N_pler_hi_int <- 53.96839
 
 ##########################
 ###PLER invading BRHO#####
@@ -535,7 +534,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_hi_int_se <- ldgr_se
 
 ##########################
@@ -556,7 +555,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_hi_int_se <- ldgr_se
 
 ##########################
@@ -589,7 +588,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_brho_hi_int_se <- ldgr_se
 
 ##########################
@@ -610,7 +609,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_pler_hi_int_se <- ldgr_se
 
 ##########################
@@ -641,7 +640,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_hi_int_se <- ldgr_se
 
 ##########################
@@ -662,7 +661,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_hi_int_se <- ldgr_se
 
 ########################################################################################
@@ -715,9 +714,8 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
 N_equil
-N_brho_hi_lo <- 15.57822
+N_brho_hi_lo <- 14.23884
 
 
 ##################
@@ -764,7 +762,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_lo <- 60.52950
+N_pler_hi_lo <-  73.31154
 
 ##################
 #######LAPL#######
@@ -774,9 +772,9 @@ N_lapl_hi_lo <- 0
 ###########################
 ######CIs HI H2O INT N######
 ###########################
-N_brho_hi_lo <- 15.57822
-N_lapl_hi_lo <- 0
-N_pler_hi_lo <- 60.52950
+#N_brho_hi_lo <- 15.57822
+#N_lapl_hi_lo <- 0
+#N_pler_hi_lo <- 60.52950
 
 ##########################
 ###PLER invading BRHO#####
@@ -806,7 +804,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_hi_lo_se <- ldgr_se
 
 ##########################
@@ -827,7 +825,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_hi_lo_se <- ldgr_se
 
 
@@ -859,7 +857,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_hi_lo_se <- ldgr_se
 
 ##########################
@@ -880,7 +878,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_hi_lo_se <- ldgr_se
 
 #####################################################################################
@@ -936,9 +934,8 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
 N_equil
-N_brho_lo_hi <- 119.2125
+N_brho_lo_hi <- 122.2564
 
 
 ##################
@@ -986,7 +983,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_pler_lo_hi <- 166.7332
+N_pler_lo_hi <- 197.7790
 
 ##################
 #######LAPL#######
@@ -1032,14 +1029,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_lo_hi <- 122.6577
+N_lapl_lo_hi <- 103.8008
 
 ###########################
 ######CIs LO H2O HI N######
 ###########################
-N_brho_lo_hi <- 119.2125
-N_lapl_lo_hi <- 122.6577
-N_pler_lo_hi <- 166.7332
+#N_brho_lo_hi <- 119.2125
+#N_lapl_lo_hi <- 122.6577
+#N_pler_lo_hi <- 166.7332
 
 ##########################
 ###PLER invading BRHO#####
@@ -1072,7 +1069,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_lo_hi_se <- ldgr_se
 
 ##########################
@@ -1093,7 +1090,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_lo_hi_se <- ldgr_se
 
 ##########################
@@ -1126,7 +1123,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_brho_lo_hi_se <- ldgr_se
 
 ##########################
@@ -1147,7 +1144,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_pler_lo_hi_se <- ldgr_se
 
 ##########################
@@ -1180,7 +1177,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_lo_hi_se <- ldgr_se
 
 ##########################
@@ -1201,7 +1198,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_lo_hi_se <- ldgr_se
 
 ########################################################################################
@@ -1254,9 +1251,8 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
 N_equil
-N_brho_lo_int <- 53.04479
+N_brho_lo_int <- 113.0222
 
 
 ##################
@@ -1303,7 +1299,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_lo_int <- 57.82130
+N_pler_lo_int <- 113.9215
 
 ##################
 #######LAPL#######
@@ -1349,7 +1345,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_lo_int <- 4.434136
+N_lapl_lo_int <- 96.63784
 
 ###########################
 ######CIs LO H2O INT N######
@@ -1386,7 +1382,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_lo_int_se <- ldgr_se
 
 ##########################
@@ -1407,7 +1403,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_lo_int_se <- ldgr_se
 
 ##########################
@@ -1441,7 +1437,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_brho_lo_int_se <- ldgr_se
 
 ##########################
@@ -1462,7 +1458,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 lapl_pler_lo_int_se <- ldgr_se
 
 ##########################
@@ -1493,7 +1489,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_lo_int_se <- ldgr_se
 
 ##########################
@@ -1514,7 +1510,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_lo_int_se <- ldgr_se
 
 ########################################################################################
@@ -1567,7 +1563,6 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
 N_equil
 N_brho_hi_lo <- 15.57822
 
@@ -1785,7 +1780,6 @@ for (i in 1:length(posts)) {
 }
 
 # Calculate SE 
-N_se <- calcSE(equil_out)
 N_equil
 N_brho_lo_lo <- 0
 
@@ -1834,7 +1828,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_lo_lo <- 15.98185
+N_pler_lo_lo <- 54.59702
 
 ##################
 #######LAPL#######
@@ -1877,7 +1871,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_lo_lo_se <- ldgr_se
 
 ##########################
@@ -1898,7 +1892,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_lo_lo_se <- ldgr_se
 
 
@@ -1930,7 +1924,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_lo_lo_se <- ldgr_se
 
 ##########################
@@ -1951,10 +1945,10 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_lo_lo_se <- ldgr_se
 
-grwr_se <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
+grwr_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
                       brho_lapl_lo_hi_se,brho_lapl_lo_int_se,brho_lapl_lo_lo_se,
                       pler_brho_hi_hi_se,pler_brho_hi_int_se,pler_brho_hi_lo_se,
                       pler_brho_lo_hi_se,pler_brho_lo_int_se,pler_brho_lo_lo_se,
@@ -1966,6 +1960,10 @@ grwr_se <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
                       pler_lapl_lo_lo_se,lapl_pler_hi_hi_se,lapl_pler_hi_int_se,
                       lapl_pler_lo_hi_se,lapl_pler_lo_int_se)
 
-grwr_se<-pivot_longer(grwr_se,cols=1:32,names_to = "treatment", values_to = "se")
+grwr_sd<-pivot_longer(grwr_sd,cols=1:32,names_to = "treatment", values_to = "sd")
 
-write.csv(grwr_se,"grwr_se.csv")
+write.csv(grwr_sd,"grwr_sd.csv")
+
+#pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
+#brho_lo_lo <- rstan::extract(no_dist_seeds_brho_lo_lo)
+#lapl_lo_lo <- rstan::extract(no_dist_seeds_lapl_lo_lo)

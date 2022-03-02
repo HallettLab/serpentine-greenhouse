@@ -28,10 +28,10 @@ names(spp.labs) <- c("BRMO","LAPL","PLER")
 #graph with species 
 jr <- ggplot(dat,aes(year,mean_cov,color=species)) + 
   geom_line(size=.8) + 
-  #geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
+  geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
   ylab(expression(Percent~cover~(m^{"2"}))) +
   scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
-                     labels = c("*Bromus* (exotic)", "*Layia* (subordinate native)", "*Plantago* (dominant native)"))+
+                     labels = c("*Bromus* (acquistive non-native)", "*Layia* (acquisitive native)", "*Plantago* (conservative native)"))+
     scale_x_continuous(expand = c(0.04, 0.04)) +
   theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"), legend.position = "top")+
   xlab("Year") +
