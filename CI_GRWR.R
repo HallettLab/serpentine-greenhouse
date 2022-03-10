@@ -38,8 +38,26 @@ ps <- .75 # gulmon
 pg <- .92 # gulmon
 bs <- .013 # andrew
 bg <- .98 # gulmon
-ls <- .15 # ms thesis from Cal Poly SLO
-lg <- .32 # ms thesis from Cal Poly SLO
+#ls <- .15 # ms thesis from Cal Poly SLO
+#lg <- .32 # ms thesis from Cal Poly SLO
+
+## extract from stan models
+#pler_lo_lo <- rstan::extract(pler_lo_lo)
+#brho_lo_lo <- rstan::extract(brho_lo_lo)
+pler_lo_int <- rstan::extract(pler_lo_int)
+brho_lo_int <- rstan::extract(brho_lo_int)
+lapl_lo_int <- rstan::extract(lapl_lo_int)
+pler_lo_hi <- rstan::extract(pler_lo_hi)
+brho_lo_hi <- rstan::extract(brho_lo_hi)
+lapl_lo_hi <- rstan::extract(lapl_lo_hi)
+pler_hi_lo <- rstan::extract(pler_hi_lo)
+brho_hi_lo <- rstan::extract(brho_hi_lo)
+pler_hi_int <- rstan::extract(pler_hi_int)
+brho_hi_int <- rstan::extract(brho_hi_int)
+lapl_hi_int <- rstan::extract(lapl_hi_int)
+pler_hi_hi <- rstan::extract(pler_hi_hi)
+brho_hi_hi <- rstan::extract(brho_hi_hi)
+lapl_hi_hi <- rstan::extract(lapl_hi_hi)
 
 ##########################################
 ####Equilibrium abundance HI H20 Hi N#####
@@ -48,8 +66,6 @@ lg <- .32 # ms thesis from Cal Poly SLO
 ################
 ######BRHO######
 ################
-
-brho_hi_hi <- rstan::extract(no_dist_seeds_brho_hi_hi)
 
 # Grab the length of your posterior distribution
 posterior_length <- length(brho_hi_hi$lambda)
@@ -94,7 +110,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_hi <- 210.2639
+N_brho_hi_hi <- 113.9891
 
 
 ##################
@@ -142,7 +158,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_pler_hi_hi <- 209.9339
+N_pler_hi_hi <- 146.6225
 
 ##################
 #######LAPL#######
@@ -188,14 +204,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_hi_hi <- 75.80274
+N_lapl_hi_hi <- 23.90881
 
 ###########################
 ######CIs HI H2O HI N######
 ###########################
-N_brho_hi_hi <- 210.2639
-N_lapl_hi_hi <- 75.80274
-N_pler_hi_hi <- 209.9339
+N_brho_hi_hi <- 113.9891
+N_lapl_hi_hi <- 23.90881
+N_pler_hi_hi <- 146.6225
 
 ##########################
 ###PLER invading BRHO#####
@@ -404,7 +420,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_int <- 62.48029
+N_brho_hi_int <- 58.57532
 
 
 ##################
@@ -451,7 +467,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_int <- 53.96839
+N_pler_hi_int <- 46.10318
 
 ##################
 #######LAPL#######
@@ -497,14 +513,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_hi_int <- 9.474947
+N_lapl_hi_int <- 1.693067
 
 ###########################
 ######CIs HI H2O INT N######
 ###########################
-N_brho_hi_int <- 62.48029
-N_lapl_hi_int <- 9.474947
-N_pler_hi_int <- 53.96839
+N_brho_hi_int <- 58.57532
+N_lapl_hi_int <- 1.693067
+N_pler_hi_int <- 46.10318
 
 ##########################
 ###PLER invading BRHO#####
@@ -715,7 +731,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_lo <- 14.23884
+N_brho_hi_lo <- 17.88716
 
 
 ##################
@@ -762,7 +778,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_lo <-  73.31154
+N_pler_hi_lo <-  79.20671
 
 ##################
 #######LAPL#######
@@ -772,9 +788,9 @@ N_lapl_hi_lo <- 0
 ###########################
 ######CIs HI H2O INT N######
 ###########################
-#N_brho_hi_lo <- 15.57822
-#N_lapl_hi_lo <- 0
-#N_pler_hi_lo <- 60.52950
+N_brho_hi_lo <- 17.88716
+N_lapl_hi_lo <- 0
+N_pler_hi_lo <- 79.20671
 
 ##########################
 ###PLER invading BRHO#####
@@ -935,7 +951,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_lo_hi <- 122.2564
+N_brho_lo_hi <- 43.81978
 
 
 ##################
@@ -983,7 +999,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_pler_lo_hi <- 197.7790
+N_pler_lo_hi <- 136.6321
 
 ##################
 #######LAPL#######
@@ -1029,14 +1045,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_lo_hi <- 103.8008
+N_lapl_lo_hi <- 25.09404
 
 ###########################
 ######CIs LO H2O HI N######
 ###########################
-#N_brho_lo_hi <- 119.2125
-#N_lapl_lo_hi <- 122.6577
-#N_pler_lo_hi <- 166.7332
+N_brho_lo_hi <- 43.81978
+N_lapl_lo_hi <- 25.09404
+N_pler_lo_hi <- 136.6321
 
 ##########################
 ###PLER invading BRHO#####
@@ -1252,7 +1268,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_lo_int <- 113.0222
+N_brho_lo_int <- 36.30497
 
 
 ##################
@@ -1299,7 +1315,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_lo_int <- 113.9215
+N_pler_lo_int <- 68.34712
 
 ##################
 #######LAPL#######
@@ -1345,14 +1361,14 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_lo_int <- 96.63784
+N_lapl_lo_int <- 2.009346 
 
 ###########################
 ######CIs LO H2O INT N######
 ###########################
-N_brho_lo_int <- 53.04479
-N_lapl_lo_int <- 4.434136
-N_pler_lo_int <- 57.82130
+N_brho_lo_int <- 36.30497
+N_lapl_lo_int <- 2.009346 
+N_pler_lo_int <- 68.34712
 
 ##########################
 ###PLER invading BRHO#####
@@ -1564,7 +1580,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_lo <- 15.57822
+N_brho_hi_lo <-  14.57478
 
 
 ##################
@@ -1611,7 +1627,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_lo <- 60.52950
+N_pler_hi_lo <- 75.08643
 
 ##################
 #######LAPL#######
@@ -1621,9 +1637,9 @@ N_lapl_hi_lo <- 0
 ###########################
 ######CIs HI H2O INT N######
 ###########################
-N_brho_hi_lo <- 15.57822
+N_brho_hi_lo <- 14.57478
 N_lapl_hi_lo <- 0
-N_pler_hi_lo <- 60.52950
+N_pler_hi_lo <- 75.08643
 
 ##########################
 ###PLER invading BRHO#####
@@ -1653,7 +1669,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_brho_hi_lo_se <- ldgr_se
 
 ##########################
@@ -1674,7 +1690,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 pler_lapl_hi_lo_se <- ldgr_se
 
 
@@ -1706,7 +1722,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_pler_hi_lo_se <- ldgr_se
 
 ##########################
@@ -1727,7 +1743,7 @@ for (i in 1:length(posts)){
 }
 
 # Calculate SE 
-ldgr_se <- calcSE(ldgr_out)
+ldgr_se <- sd(ldgr_out)
 brho_lapl_hi_lo_se <- ldgr_se
 
 ########################################################################################
@@ -1828,7 +1844,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_lo_lo <- 54.59702
+N_pler_lo_lo <- 30.27704
 
 ##################
 #######LAPL#######
@@ -1840,7 +1856,7 @@ N_lapl_lo_lo <- 0
 ###########################
 N_brho_lo_lo <- 0
 N_lapl_lo_lo <- 0
-N_pler_lo_lo <- 15.98185
+N_pler_lo_lo <- 30.27704
 
 ##########################
 ###PLER invading BRHO#####
@@ -1964,6 +1980,4 @@ grwr_sd<-pivot_longer(grwr_sd,cols=1:32,names_to = "treatment", values_to = "sd"
 
 write.csv(grwr_sd,"grwr_sd.csv")
 
-#pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
-#brho_lo_lo <- rstan::extract(no_dist_seeds_brho_lo_lo)
-#lapl_lo_lo <- rstan::extract(no_dist_seeds_lapl_lo_lo)
+

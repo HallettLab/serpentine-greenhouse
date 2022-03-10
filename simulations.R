@@ -5,7 +5,7 @@ library(grid)
 library(ggplotify)
 
 ## Read in data
-params2 <- read.csv(paste(datpath, "params2.csv", sep = ""))
+params2 <- read.csv(paste(datpath, "two-step-fit-params2.csv", sep = ""))
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) 
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
 
@@ -431,7 +431,7 @@ leg <- ggplot(Nblp,aes(year,abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus* (exotic)","*Layia* (subordinate native)","*Plantago* (dominant native)"),
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_x_continuous(expand = c(0.04,0.04))+
   theme(legend.text = element_markdown())

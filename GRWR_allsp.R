@@ -3,7 +3,7 @@ library(gridExtra)
 library(grid)
 library(ggtext)
 
-params <- read.csv(paste(datpath, "params.csv", sep = ""))
+params <- read.csv(paste(datpath, "two-step-fit-params-new.csv", sep = ""))
 
 ## Data manipulation
 model.dat <- params %>%
