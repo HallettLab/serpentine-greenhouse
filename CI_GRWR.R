@@ -42,8 +42,26 @@ bg <- .98 # gulmon
 #lg <- .32 # ms thesis from Cal Poly SLO
 
 ## extract from stan models
-#pler_lo_lo <- rstan::extract(pler_lo_lo)
-#brho_lo_lo <- rstan::extract(brho_lo_lo)
+pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
+brho_lo_lo <- rstan::extract(no_dist_seeds_brho_lo_lo)
+pler_lo_int <- rstan::extract(no_dist_seeds_pler_lo_int)
+brho_lo_int <- rstan::extract(no_dist_seeds_brho_lo_int)
+lapl_lo_int <- rstan::extract(no_dist_seeds_lapl_lo_int)
+pler_lo_hi <- rstan::extract(no_dist_seeds_pler_lo_hi)
+brho_lo_hi <- rstan::extract(no_dist_seeds_brho_lo_hi)
+lapl_lo_hi <- rstan::extract(no_dist_seeds_lapl_lo_hi)
+pler_hi_lo <- rstan::extract(no_dist_seeds_pler_hi_lo)
+brho_hi_lo <- rstan::extract(no_dist_seeds_brho_hi_lo)
+pler_hi_int <- rstan::extract(no_dist_seeds_pler_hi_int)
+brho_hi_int <- rstan::extract(no_dist_seeds_brho_hi_int)
+lapl_hi_int <- rstan::extract(no_dist_seeds_lapl_hi_int)
+pler_hi_hi <- rstan::extract(no_dist_seeds_pler_hi_hi)
+brho_hi_hi <- rstan::extract(no_dist_seeds_brho_hi_hi)
+lapl_hi_hi <- rstan::extract(no_dist_seeds_lapl_hi_hi)
+
+#two-step fit models
+pler_lo_lo <- rstan::extract(pler_lo_lo)
+brho_lo_lo <- rstan::extract(brho_lo_lo)
 pler_lo_int <- rstan::extract(pler_lo_int)
 brho_lo_int <- rstan::extract(brho_lo_int)
 lapl_lo_int <- rstan::extract(lapl_lo_int)
@@ -58,6 +76,55 @@ lapl_hi_int <- rstan::extract(lapl_hi_int)
 pler_hi_hi <- rstan::extract(pler_hi_hi)
 brho_hi_hi <- rstan::extract(brho_hi_hi)
 lapl_hi_hi <- rstan::extract(lapl_hi_hi)
+
+#pairs plots og stan model fits
+#pler
+pler_hi_hi<-data.frame(pler_hi_hi)
+pler_hi_int<-data.frame(pler_hi_int)
+pler_hi_lo<-data.frame(pler_hi_lo)
+pler_lo_hi<-data.frame(pler_lo_hi)
+pler_lo_int<-data.frame(pler_lo_int)
+pler_lo_lo<-data.frame(pler_lo_lo)
+plot_grid(
+ggmatrix_gtable(ggpairs(pler_hi_hi[6:9],title="pler hi hi")),
+  ggmatrix_gtable(ggpairs(pler_hi_int[6:9],title="pler hi int")),
+  ggmatrix_gtable(ggpairs(pler_hi_lo[6:9],title="pler hi lo"),
+  ggmatrix_gtable(ggpairs(pler_lo_hi[6:9],title="pler lo hi")),
+  ggmatrix_gtable(ggpairs(pler_lo_int[6:9],title="pler lo int")),
+  ggmatrix_gtable(ggpairs(pler_lo_lo[6:9],title= "pler lo lo")),
+  nrow = 2,
+  ncol = 3)
+
+#brho
+brho_hi_hi<-data.frame(brho_hi_hi)
+brho_hi_int<-data.frame(brho_hi_int)
+brho_hi_lo<-data.frame(brho_hi_lo)
+brho_lo_hi<-data.frame(brho_lo_hi)
+brho_lo_int<-data.frame(brho_lo_int)
+brho_lo_lo<-data.frame(brho_lo_lo)
+plot_grid(
+  ggmatrix_gtable(ggpairs(brho_hi_hi[3:6],title="brho hi hi")),
+  ggmatrix_gtable(ggpairs(brho_hi_int[3:6],title="brho hi int")),
+  ggmatrix_gtable(ggpairs(brho_hi_lo[3:6],title="brho hi lo")),
+  ggmatrix_gtable(ggpairs(brho_lo_hi[3:6],title="brho lo hi")),
+  ggmatrix_gtable(ggpairs(brho_lo_int[3:6],title="brho lo int")),
+  ggmatrix_gtable(ggpairs(brho_lo_lo[3:6],title="brho lo lo")),
+  nrow = 2,
+  ncol = 3)
+
+#lapl
+lapl_hi_hi<-data.frame(lapl_hi_hi)
+lapl_hi_int<-data.frame(lapl_hi_int)
+lapl_lo_hi<-data.frame(lapl_lo_hi)
+lapl_lo_int<-data.frame(lapl_lo_int)
+plot_grid(
+  ggmatrix_gtable(ggpairs(lapl_hi_hi[3:6],title="lapl hi hi")),
+  ggmatrix_gtable(ggpairs(lapl_hi_int[3:6],title="lapl hi int")),
+  ggmatrix_gtable(ggpairs(lapl_lo_hi[3:6],title="lapl lo hi")),
+  ggmatrix_gtable(ggpairs(brho_lo_int[3:6],title="lapl lo int")),
+  nrow = 2,
+  ncol = 2)
+
 
 ##########################################
 ####Equilibrium abundance HI H20 Hi N#####
