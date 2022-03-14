@@ -103,12 +103,12 @@ brho_lo_hi<-data.frame(brho_lo_hi)
 brho_lo_int<-data.frame(brho_lo_int)
 brho_lo_lo<-data.frame(brho_lo_lo)
 plot_grid(
-  ggmatrix_gtable(ggpairs(brho_hi_hi[3:6],title="brho hi hi")),
-  ggmatrix_gtable(ggpairs(brho_hi_int[3:6],title="brho hi int")),
-  ggmatrix_gtable(ggpairs(brho_hi_lo[3:6],title="brho hi lo")),
-  ggmatrix_gtable(ggpairs(brho_lo_hi[3:6],title="brho lo hi")),
-  ggmatrix_gtable(ggpairs(brho_lo_int[3:6],title="brho lo int")),
-  ggmatrix_gtable(ggpairs(brho_lo_lo[3:6],title="brho lo lo")),
+  ggmatrix_gtable(ggpairs(brho_hi_hi[6:9],title="brho hi hi")),
+  ggmatrix_gtable(ggpairs(brho_hi_int[6:9],title="brho hi int")),
+  ggmatrix_gtable(ggpairs(brho_hi_lo[6:9],title="brho hi lo")),
+  ggmatrix_gtable(ggpairs(brho_lo_hi[6:9],title="brho lo hi")),
+  ggmatrix_gtable(ggpairs(brho_lo_int[6:9],title="brho lo int")),
+  ggmatrix_gtable(ggpairs(brho_lo_lo[6:9],title="brho lo lo")),
   nrow = 2,
   ncol = 3)
 
@@ -118,10 +118,10 @@ lapl_hi_int<-data.frame(lapl_hi_int)
 lapl_lo_hi<-data.frame(lapl_lo_hi)
 lapl_lo_int<-data.frame(lapl_lo_int)
 plot_grid(
-  ggmatrix_gtable(ggpairs(lapl_hi_hi[3:6],title="lapl hi hi")),
-  ggmatrix_gtable(ggpairs(lapl_hi_int[3:6],title="lapl hi int")),
-  ggmatrix_gtable(ggpairs(lapl_lo_hi[3:6],title="lapl lo hi")),
-  ggmatrix_gtable(ggpairs(brho_lo_int[3:6],title="lapl lo int")),
+  ggmatrix_gtable(ggpairs(lapl_hi_hi[6:9],title="lapl hi hi")),
+  ggmatrix_gtable(ggpairs(lapl_hi_int[6:9],title="lapl hi int")),
+  ggmatrix_gtable(ggpairs(lapl_lo_hi[6:9],title="lapl lo hi")),
+  ggmatrix_gtable(ggpairs(brho_lo_int[6:9],title="lapl lo int")),
   nrow = 2,
   ncol = 2)
 
