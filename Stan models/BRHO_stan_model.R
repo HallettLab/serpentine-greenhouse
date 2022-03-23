@@ -131,13 +131,18 @@ acf(brho_hi_lo$lambda)
 ######################################################
 
 # low high initials
-initials <- list(lambda=372, alpha_pler=0.5, alpha_brho=3.1, alpha_lapl=0.4,
+initials <- list(lambda=412, alpha_pler=0.5, alpha_brho=.05, alpha_lapl=0.4,
                  alpha_femi=0.4, epsilon=rep(1,P), sigma = 569)
 initials1<- list(initials, initials, initials)
 
-no_dist_seeds_brho_lo_hi <- stan(file = "BRHO_Rplot_four_species_BH_model.stan", 
+#no_dist_seeds_brho_lo_hi <- stan(file = "BRHO_Rplot_four_species_BH_model.stan", 
+#                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
+#                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth =50),
+#                                 init = initials1)
+
+no_dist_seeds_brho_lo_hi <- stan(file = "lohi_constrained_BRHO_Rplot_four_species_BH_model.stan", 
                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","bg"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth =50),
+                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999, max_treedepth =50),
                                  init = initials1)
 
 traceplot(no_dist_seeds_brho_lo_hi, pars="lambda")
@@ -149,8 +154,15 @@ save(no_dist_seeds_brho_lo_hi, file = "no_dist_seeds_brho_lo_hi.rdata")
 ## Look at resulting estimated parameter distributions
 stan_dens(no_dist_seeds_brho_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
 
+pairs(no_dist_seeds_brho_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
+
 ## Extract all parameter estimates
 brho_lo_hi <- rstan::extract(no_dist_seeds_brho_lo_hi)
+cor(brho_lo_hi$lambda, brho_lo_hi$alpha_pler) #-.03
+cor(brho_lo_hi$lambda, brho_lo_hi$alpha_lapl) #.003
+cor(brho_lo_hi$lambda, brho_lo_hi$alpha_femi) #.002
+cor(brho_lo_hi$lambda, brho_lo_hi$alpha_brho) #-0.012
+
 acf(brho_lo_hi$lambda)
 
 ######################################################
