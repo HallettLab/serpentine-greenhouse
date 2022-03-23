@@ -3,7 +3,7 @@ library(gridExtra)
 library(grid)
 library(ggtext)
 
-params <- read.csv(paste(datpath, "two-step-fit-params-new.csv", sep = ""))
+params <- read.csv(paste(datpath, "params", sep = ""))
 
 ## Data manipulation
 model.dat <- params %>%
@@ -1004,7 +1004,7 @@ library(stringr)
 
 grwr_sd <- read.csv(paste(datpath, "grwr_sd.csv", sep = ""))
 
-pairwise <- c("a","a","a","a","a","a","b","b","b","b","b","b","a","a","a","a","b","b","b","b","b","b","c","c","c","c","c","c","c","c","c","c")
+pairwise <- c("a","a","a","a","a","a","b","b","b","b","b","b","a","a","a","a","a","a","b","b","b","b","b","b","c","c","c","c","c","c","c","c","c","c","c","c")
 
 sd <- grwr_sd %>%
   separate(treatment, into = "inv_pair",sep=9,remove=FALSE) %>%
@@ -1019,15 +1019,11 @@ sd <- grwr_sd %>%
   unite(inv_pair,invader,pair,sep = "_",remove = FALSE) %>%
   select(-pair)
 
-
 sd_brho_lapl_pler <- right_join(sd,brho_lapl_pler)
-
-sd_brho_lapl_pler[is.na(sd_brho_lapl_pler)] <- 0
 
 sd_brho_lapl_pler$N <- factor(sd_brho_lapl_pler$N, levels = c("lo","int","hi"))
 sd_brho_lapl_pler$water <- factor(sd_brho_lapl_pler$water, levels = c("lo","hi"))
 sd_brho_lapl_pler$inv_pair <- factor(sd_brho_lapl_pler$inv_pair, levels = c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Bromus_a"))
-sd_brho_lapl_pler$paircomb <- factor(sd_brho_lapl_pler$paircomb, levels = c("c","b","a"))
 
 sp.labs<- c("Plantago invading Layia","Layia invading Plantago","Plantago invading Bromus","Bromus invading Plantago","Layia invading Bromus","Bromus invading Layia")
 names(sp.labs) <- c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Bromus_a")
@@ -1035,7 +1031,7 @@ names(sp.labs) <- c("Plantago_c","Layia_c","Plantago_b","Bromus_b","Layia_a","Br
 p<-ggplot(sd_brho_lapl_pler, aes(x=N, y=grwrChesson,ymin=grwrChesson-sd,
                                  ymax=grwrChesson+sd, fill = water)) + 
   geom_bar(stat="identity", position = position_dodge()) + 
-  facet_wrap(~inv_pair,ncol=2,labeller = labeller(inv_pair=sp.labs)) +
+  facet_wrap(~inv_pair,nrow=3,labeller = labeller(inv_pair=sp.labs),scales="free") +
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 

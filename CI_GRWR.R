@@ -1848,7 +1848,7 @@ ldgr_mean <- mean (ldgr_out)
 brho_lapl_lo_lo_se <- ldgr_se
 brho_lapl_lo_lo_mean <- ldgr_mean
 
-grwr_mean_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
+grwr_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
                       brho_lapl_lo_hi_se,brho_lapl_lo_int_se,brho_lapl_lo_lo_se,
                       pler_brho_hi_hi_se,pler_brho_hi_int_se,pler_brho_hi_lo_se,
                       pler_brho_lo_hi_se,pler_brho_lo_int_se,pler_brho_lo_lo_se,
@@ -1858,31 +1858,31 @@ grwr_mean_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_l
                       brho_pler_lo_lo_se,pler_lapl_hi_hi_se,pler_lapl_hi_int_se,
                       pler_lapl_hi_lo_se,pler_lapl_lo_hi_se,pler_lapl_lo_int_se,
                       pler_lapl_lo_lo_se,lapl_pler_hi_hi_se,lapl_pler_hi_int_se,
-                      lapl_pler_lo_hi_se,lapl_pler_lo_int_se,brho_lapl_hi_hi_mean,brho_lapl_hi_int_mean,brho_lapl_hi_lo_mean,
-                      brho_lapl_lo_hi_mean,brho_lapl_lo_int_mean,brho_lapl_lo_lo_mean,
-                      pler_brho_hi_hi_mean,pler_brho_hi_int_mean,pler_brho_hi_lo_mean,
-                      pler_brho_lo_hi_mean,pler_brho_lo_int_mean,pler_brho_lo_lo_mean,
-                      lapl_brho_hi_hi_mean,lapl_brho_hi_int_mean,lapl_brho_lo_hi_mean,
-                      lapl_brho_lo_int_mean,brho_pler_hi_hi_mean,brho_pler_hi_int_mean,
-                      brho_pler_hi_lo_mean,brho_pler_lo_hi_mean,brho_pler_lo_int_mean,
-                      brho_pler_lo_lo_mean,pler_lapl_hi_hi_mean,pler_lapl_hi_int_mean,
-                      pler_lapl_hi_lo_mean,pler_lapl_lo_hi_mean,pler_lapl_lo_int_mean,
-                      pler_lapl_lo_lo_mean,lapl_pler_hi_hi_mean,lapl_pler_hi_int_mean,
-                      lapl_pler_lo_hi_mean,lapl_pler_lo_int_mean)
+                      lapl_pler_lo_hi_se,lapl_pler_lo_int_se)
+#,brho_lapl_hi_hi_mean,brho_lapl_hi_int_mean,brho_lapl_hi_lo_mean,
+                      #brho_lapl_lo_hi_mean,brho_lapl_lo_int_mean,brho_lapl_lo_lo_mean,
+                      #pler_brho_hi_hi_mean,pler_brho_hi_int_mean,pler_brho_hi_lo_mean,
+                      #pler_brho_lo_hi_mean,pler_brho_lo_int_mean,pler_brho_lo_lo_mean,
+                      #lapl_brho_hi_hi_mean,lapl_brho_hi_int_mean,lapl_brho_lo_hi_mean,
+                      #lapl_brho_lo_int_mean,brho_pler_hi_hi_mean,brho_pler_hi_int_mean,
+                      #brho_pler_hi_lo_mean,brho_pler_lo_hi_mean,brho_pler_lo_int_mean,
+                      #brho_pler_lo_lo_mean,pler_lapl_hi_hi_mean,pler_lapl_hi_int_mean,
+                      #pler_lapl_hi_lo_mean,pler_lapl_lo_hi_mean,pler_lapl_lo_int_mean,
+                      #pler_lapl_lo_lo_mean,lapl_pler_hi_hi_mean,lapl_pler_hi_int_mean,
+                      #lapl_pler_lo_hi_mean,lapl_pler_lo_int_mean)
 
-grwr_mean_sd2 <-pivot_longer(grwr_mean_sd,cols=1:64,names_to = "treatment", values_to = "sd") %>%
-  mutate(ID = 1:64)
+grwr_sd <-pivot_longer(grwr_sd,cols=1:32,names_to = "treatment", values_to = "sd")
 
-grwr_sd <- grwr_mean_sd2[grwr_mean_sd2$ID < 33, ] %>%
-  select(1:2)
+#grwr_sd <- grwr_mean_sd2[grwr_mean_sd2$ID < 33, ] %>%
+  #select(1:2)
 
-grwr_mean <- grwr_mean_sd2[grwr_mean_sd2$ID > 32, ] %>%
-  rename("mean" = "sd") %>%
-  select(1:2)
+#grwr_mean <- grwr_mean_sd2[grwr_mean_sd2$ID > 32, ] %>%
+  #rename("mean" = "sd") %>%
+  #select(1:2)
 
-grwr_mean_sd_final <- cbind(grwr_sd,grwr_mean) %>%
-  select(2:4)
+#grwr_mean_sd_final <- cbind(grwr_sd,grwr_mean) %>%
+  #select(2:4)
 
-write.csv(grwr_mean_sd_final,"grwr_sd_mean.csv")
+write.csv(grwr_sd,"grwr_sd2.csv")
 
 
