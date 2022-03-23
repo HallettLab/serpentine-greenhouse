@@ -38,8 +38,8 @@ ps <- .75 # gulmon
 pg <- .92 # gulmon
 bs <- .013 # andrew
 bg <- .98 # gulmon
-#ls <- .15 # ms thesis from Cal Poly SLO
-#lg <- .32 # ms thesis from Cal Poly SLO
+ls <- .15 # ms thesis from Cal Poly SLO
+lg <- .32 # ms thesis from Cal Poly SLO
 
 ## extract from stan models
 pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
@@ -177,7 +177,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_hi <- 113.9891
+N_brho_hi_hi <- 207.2087
 
 
 ##################
@@ -225,7 +225,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_pler_hi_hi <- 146.6225
+N_pler_hi_hi <- 189.1819
 
 ##################
 #######LAPL#######
@@ -271,14 +271,8 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_hi_hi <- 23.90881
+N_lapl_hi_hi <- 140.6358
 
-###########################
-######CIs HI H2O HI N######
-###########################
-N_brho_hi_hi <- 113.9891
-N_lapl_hi_hi <- 23.90881
-N_pler_hi_hi <- 146.6225
 
 ##########################
 ###PLER invading BRHO#####
@@ -309,7 +303,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 pler_brho_hi_hi_se <- ldgr_se
+pler_brho_hi_hi_mean <- ldgr_mean
 
 ##########################
 ###PLER invading LAPL#####
@@ -330,7 +326,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 pler_lapl_hi_hi_se <- ldgr_se
+pler_lapl_hi_hi_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading BRHO#####
@@ -361,7 +359,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 lapl_brho_hi_hi_se <- ldgr_se
+lapl_brho_hi_hi_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading PLER#####
@@ -382,7 +382,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 lapl_pler_hi_hi_se <- ldgr_se
+lapl_pler_hi_hi_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading PLER#####
@@ -413,7 +415,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 brho_pler_hi_hi_se <- ldgr_se
+brho_pler_hi_hi_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading LAPL#####
@@ -434,7 +438,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 brho_lapl_hi_hi_se <- ldgr_se
+brho_lapl_hi_hi_mean <- ldgr_mean
 
 ########################################################################################
 ########################################################################################
@@ -487,7 +493,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_int <- 58.57532
+N_brho_hi_int <- 57.11660
 
 
 ##################
@@ -534,7 +540,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_int <- 46.10318
+N_pler_hi_int <- 48.26259
 
 ##################
 #######LAPL#######
@@ -580,14 +586,8 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_hi_int <- 1.693067
+N_lapl_hi_int <- 6.627693
 
-###########################
-######CIs HI H2O INT N######
-###########################
-N_brho_hi_int <- 58.57532
-N_lapl_hi_int <- 1.693067
-N_pler_hi_int <- 46.10318
 
 ##########################
 ###PLER invading BRHO#####
@@ -618,7 +618,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 pler_brho_hi_int_se <- ldgr_se
+pler_brho_hi_int_mean <- ldgr_mean
 
 ##########################
 ###PLER invading LAPL#####
@@ -639,7 +641,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 pler_lapl_hi_int_se <- ldgr_se
+pler_lapl_hi_int_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading BRHO#####
@@ -672,7 +676,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 lapl_brho_hi_int_se <- ldgr_se
+lapl_brho_hi_int_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading PLER#####
@@ -693,20 +699,22 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 lapl_pler_hi_int_se <- ldgr_se
+lapl_pler_hi_int_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading PLER#####
 ##########################
 # Grab the length of your posterior distribution
-posterior_length <- length(brho_hi_hi$lambda)
+posterior_length <- length(brho_hi_int$lambda)
 # Grab 400 random positions from your posterior distribution
 posts <- sample(posterior_length, 400, replace=TRUE)
 # Subset your posteriors using your random positions
-lambdas <- brho_hi_hi$lambda[posts]
-alphas_intra <- brho_hi_hi$alpha_brho[posts]
-alphas_inter_pler <- brho_hi_hi$alpha_pler[posts]
-alphas_inter_lapl <- brho_hi_hi$alpha_lapl[posts]
+lambdas <- brho_hi_int$lambda[posts]
+alphas_intra <- brho_hi_int$alpha_brho[posts]
+alphas_inter_pler <- brho_hi_int$alpha_pler[posts]
+alphas_inter_lapl <- brho_hi_int$alpha_lapl[posts]
 
 ## For LDGR confidence intervals
 # Create output object for invader LDGRs
@@ -724,7 +732,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 brho_pler_hi_int_se <- ldgr_se
+brho_pler_hi_int_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading LAPL#####
@@ -745,7 +755,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 brho_lapl_hi_int_se <- ldgr_se
+brho_lapl_hi_int_mean <- ldgr_mean
 
 ########################################################################################
 ########################################################################################
@@ -798,7 +810,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_hi_lo <- 17.88716
+N_brho_hi_lo <- 17.93910
 
 
 ##################
@@ -845,19 +857,13 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_hi_lo <-  79.20671
+N_pler_hi_lo <-  72.57050
 
 ##################
 #######LAPL#######
 ##################
 N_lapl_hi_lo <- 0
 
-###########################
-######CIs HI H2O INT N######
-###########################
-N_brho_hi_lo <- 17.88716
-N_lapl_hi_lo <- 0
-N_pler_hi_lo <- 79.20671
 
 ##########################
 ###PLER invading BRHO#####
@@ -888,7 +894,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 pler_brho_hi_lo_se <- ldgr_se
+pler_brho_hi_lo_mean <- ldgr_mean
 
 ##########################
 ###PLER invading LAPL#####
@@ -909,7 +917,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 pler_lapl_hi_lo_se <- ldgr_se
+pler_lapl_hi_lo_mean <- ldgr_mean
 
 
 ##########################
@@ -941,7 +951,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean(ldgr_out)
 brho_pler_hi_lo_se <- ldgr_se
+brho_pler_hi_lo_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading LAPL#####
@@ -962,7 +974,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_lapl_hi_lo_se <- ldgr_se
+brho_lapl_hi_lo_mean <- ldgr_mean
 
 #####################################################################################
 #####################################################################################
@@ -1018,7 +1032,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_lo_hi <- 43.81978
+N_brho_lo_hi <- 2227.849
 
 
 ##################
@@ -1066,7 +1080,7 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_pler_lo_hi <- 136.6321
+N_pler_lo_hi <- 133.3819
 
 ##################
 #######LAPL#######
@@ -1112,14 +1126,8 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_lo_hi <- 25.09404
+N_lapl_lo_hi <- 116.9672
 
-###########################
-######CIs LO H2O HI N######
-###########################
-N_brho_lo_hi <- 43.81978
-N_lapl_lo_hi <- 25.09404
-N_pler_lo_hi <- 136.6321
 
 ##########################
 ###PLER invading BRHO#####
@@ -1153,7 +1161,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 pler_brho_lo_hi_se <- ldgr_se
+pler_brho_lo_hi_mean <- ldgr_mean
 
 ##########################
 ###PLER invading LAPL#####
@@ -1174,7 +1184,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 pler_lapl_lo_hi_se <- ldgr_se
+pler_lapl_lo_hi_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading BRHO#####
@@ -1207,7 +1219,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 lapl_brho_lo_hi_se <- ldgr_se
+lapl_brho_lo_hi_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading PLER#####
@@ -1228,7 +1242,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 lapl_pler_lo_hi_se <- ldgr_se
+lapl_pler_lo_hi_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading PLER#####
@@ -1261,7 +1277,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_pler_lo_hi_se <- ldgr_se
+brho_pler_lo_hi_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading LAPL#####
@@ -1282,7 +1300,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_lapl_lo_hi_se <- ldgr_se
+brho_lapl_lo_hi_mean <- ldgr_mean
 
 ########################################################################################
 ########################################################################################
@@ -1335,7 +1355,7 @@ for (i in 1:length(posts)) {
 
 # Calculate SE 
 N_equil
-N_brho_lo_int <- 36.30497
+N_brho_lo_int <- 43.38967
 
 
 ##################
@@ -1382,7 +1402,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_lo_int <- 68.34712
+N_pler_lo_int <- 164.6629
 
 ##################
 #######LAPL#######
@@ -1428,14 +1448,8 @@ for (i in 1:length(posts)) {
   
 }
 N_equil
-N_lapl_lo_int <- 2.009346 
+N_lapl_lo_int <- 15.91799
 
-###########################
-######CIs LO H2O INT N######
-###########################
-N_brho_lo_int <- 36.30497
-N_lapl_lo_int <- 2.009346 
-N_pler_lo_int <- 68.34712
 
 ##########################
 ###PLER invading BRHO#####
@@ -1466,7 +1480,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 pler_brho_lo_int_se <- ldgr_se
+pler_brho_lo_int_mean <- ldgr_mean
 
 ##########################
 ###PLER invading LAPL#####
@@ -1487,7 +1503,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 pler_lapl_lo_int_se <- ldgr_se
+pler_lapl_lo_int_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading BRHO#####
@@ -1521,7 +1539,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 lapl_brho_lo_int_se <- ldgr_se
+lapl_brho_lo_int_mean <- ldgr_mean
 
 ##########################
 ###LAPL invading PLER#####
@@ -1542,7 +1562,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 lapl_pler_lo_int_se <- ldgr_se
+lapl_pler_lo_int_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading PLER#####
@@ -1573,7 +1595,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_pler_lo_int_se <- ldgr_se
+brho_pler_lo_int_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading LAPL#####
@@ -1594,224 +1618,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_lapl_lo_int_se <- ldgr_se
-
-########################################################################################
-########################################################################################
-
-###########################################
-####Equilibrium abundance HI H20 LO N#####
-###########################################
-
-################
-######BRHO######
-################
-
-# Grab the length of your posterior distribution
-posterior_length <- length(brho_hi_lo$lambda)
-# Grab 400 random positions from your posterior distribution
-posts <- sample(posterior_length, 400, replace=TRUE)
-# Subset your posteriors using your random positions
-lambdas <- brho_hi_lo$lambda[posts]
-alphas_intra <- brho_hi_lo$alpha_brho[posts]
-alphas_inter_pler <- brho_hi_lo$alpha_pler[posts]
-alphas_inter_lapl <- brho_hi_lo$alpha_lapl[posts]
-
-## For equilibrium abundance confidence intervals
-# Set length of time for achieving equilibrium population
-time <- 50
-
-# Create output equilibrium vector
-equil_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)) {
-  
-  # Create vector of abundances to reach equilibrium
-  N_equil <- vector(length = time + 1)
-  # Set starting population
-  N_equil[1] <- 100
-  
-  # Loop once for each time step, ideally reaching equilibrium by final time step
-  for (j in 1:time) {
-    
-    # Be sure to subset the ith values of posterior alphas and lambdas 
-    N_equil[j + 1] <- pop.equilibrium(N0 = N_equil[j], s = bs, g = bg, 
-                                      a_intra = alphas_intra[i], lambda = lambdas[i])
-  }
-  
-  # Store final abundance in your output object
-  equil_out[i] <- N_equil[j + 1]
-  
-}
-
-# Calculate SE 
-N_equil
-N_brho_hi_lo <-  14.57478
-
-
-##################
-#######PLER#######
-##################
-
-# Grab the length of your posterior distribution
-posterior_length <- length(pler_hi_lo$lambda)
-# Grab 400 random positions from your posterior distribution
-posts <- sample(posterior_length, 400, replace=TRUE)
-# Subset your posteriors using your random positions
-lambdas <- pler_hi_lo$lambda[posts]
-alphas_intra <- pler_hi_lo$alpha_pler[posts]
-alphas_inter_brho <- pler_hi_lo$alpha_brho[posts]
-alphas_inter_lapl <- pler_hi_lo$alpha_lapl[posts]
-
-
-## For equilibrium abundance confidence intervals
-# Set length of time for achieving equilibrium population
-time <- 50
-
-# Create output equilibrium vector
-equil_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)) {
-  
-  # Create vector of abundances to reach equilibrium
-  N_equil <- vector(length = time + 1)
-  # Set starting population
-  N_equil[1] <- 100
-  
-  # Loop once for each time step, ideally reaching equilibrium by final time step
-  for (j in 1:time) {
-    
-    # Be sure to subset the ith values of posterior alphas and lambdas 
-    N_equil[j + 1] <- pop.equilibrium(N0 = N_equil[j], s = ps, g = pg, 
-                                      a_intra = alphas_intra[i], lambda = lambdas[i])
-  }
-  
-  # Store final abundance in your output object
-  equil_out[i] <- N_equil[j + 1]
-  
-}
-
-N_equil
-N_pler_hi_lo <- 75.08643
-
-##################
-#######LAPL#######
-##################
-N_lapl_hi_lo <- 0
-
-###########################
-######CIs HI H2O INT N######
-###########################
-N_brho_hi_lo <- 14.57478
-N_lapl_hi_lo <- 0
-N_pler_hi_lo <- 75.08643
-
-##########################
-###PLER invading BRHO#####
-##########################
-# Grab the length of your posterior distribution
-posterior_length <- length(pler_hi_lo$lambda)
-# Grab 400 random positions from your posterior distribution
-posts <- sample(posterior_length, 400, replace=TRUE)
-# Subset your posteriors using your random positions
-lambdas <- pler_hi_lo$lambda[posts]
-alphas_intra <- pler_hi_lo$alpha_pler[posts]
-alphas_inter_brho <- pler_hi_lo$alpha_brho[posts]
-alphas_inter_lapl <- pler_hi_lo$alpha_lapl[posts]
-
-## For LDGR confidence intervals
-# Create output object for invader LDGRs
-ldgr_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)){
-  
-  # Calculate an LDGR for each set of sampled lambdas and alphas
-  # Here your lambdas will always be the same, but the alpha_inter will change depending on the resident species
-  ldgr_out[i] <- pop.invade(s = ps, g = pg, lambda=lambdas[i], a_inter = alphas_inter_brho[i],
-                            resident = N_brho_hi_lo, N0 = 1)
-  
-}
-
-# Calculate SE 
-ldgr_se <- sd(ldgr_out)
-pler_brho_hi_lo_se <- ldgr_se
-
-##########################
-###PLER invading LAPL#####
-##########################
-## For LDGR confidence intervals
-# Create output object for invader LDGRs
-ldgr_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)){
-  
-  # Calculate an LDGR for each set of sampled lambdas and alphas
-  # Here your lambdas will always be the same, but the alpha_inter will change depending on the resident species
-  ldgr_out[i] <- pop.invade(s = ps, g = pg, lambda=lambdas[i], a_inter = alphas_inter_lapl[i],
-                            resident = N_lapl_hi_lo, N0 = 1)
-  
-}
-
-# Calculate SE 
-ldgr_se <- sd(ldgr_out)
-pler_lapl_hi_lo_se <- ldgr_se
-
-
-##########################
-###BRHO invading PLER#####
-##########################
-# Grab the length of your posterior distribution
-posterior_length <- length(brho_hi_lo$lambda)
-# Grab 400 random positions from your posterior distribution
-posts <- sample(posterior_length, 400, replace=TRUE)
-# Subset your posteriors using your random positions
-lambdas <- brho_hi_lo$lambda[posts]
-alphas_intra <- brho_hi_lo$alpha_brho[posts]
-alphas_inter_pler <- brho_hi_lo$alpha_pler[posts]
-alphas_inter_lapl <- brho_hi_lo$alpha_lapl[posts]
-
-## For LDGR confidence intervals
-# Create output object for invader LDGRs
-ldgr_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)){
-  
-  # Calculate an LDGR for each set of sampled lambdas and alphas
-  # Here your lambdas will always be the same, but the alpha_inter will change depending on the resident species
-  ldgr_out[i] <- pop.invade(s = bs, g = bg, lambda=lambdas[i], a_inter = alphas_inter_pler[i],
-                            resident = N_pler_hi_lo, N0 = 1)
-  
-}
-
-# Calculate SE 
-ldgr_se <- sd(ldgr_out)
-brho_pler_hi_lo_se <- ldgr_se
-
-##########################
-###BRHO invading LAPL#####
-##########################
-## For LDGR confidence intervals
-# Create output object for invader LDGRs
-ldgr_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)){
-  
-  # Calculate an LDGR for each set of sampled lambdas and alphas
-  # Here your lambdas will always be the same, but the alpha_inter will change depending on the resident species
-  ldgr_out[i] <- pop.invade(s = bs, g = bg, lambda=lambdas[i], a_inter = alphas_inter_lapl[i],
-                            resident = N_lapl_hi_lo, N0 = 1)
-  
-}
-
-# Calculate SE 
-ldgr_se <- sd(ldgr_out)
-brho_lapl_hi_lo_se <- ldgr_se
+brho_lapl_lo_int_mean <- ldgr_mean
 
 ########################################################################################
 ########################################################################################
@@ -1911,7 +1720,7 @@ for (i in 1:length(posts)) {
 }
 
 N_equil
-N_pler_lo_lo <- 30.27704
+N_pler_lo_lo <- 36.59878
 
 ##################
 #######LAPL#######
@@ -1955,7 +1764,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 pler_brho_lo_lo_se <- ldgr_se
+pler_brho_lo_lo_mean <- ldgr_mean
 
 ##########################
 ###PLER invading LAPL#####
@@ -1976,7 +1787,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 pler_lapl_lo_lo_se <- ldgr_se
+pler_lapl_lo_lo_mean <- ldgr_mean
 
 
 ##########################
@@ -2008,7 +1821,9 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_pler_lo_lo_se <- ldgr_se
+brho_pler_lo_lo_mean <- ldgr_mean
 
 ##########################
 ###BRHO invading LAPL#####
@@ -2029,9 +1844,11 @@ for (i in 1:length(posts)){
 
 # Calculate SE 
 ldgr_se <- sd(ldgr_out)
+ldgr_mean <- mean (ldgr_out)
 brho_lapl_lo_lo_se <- ldgr_se
+brho_lapl_lo_lo_mean <- ldgr_mean
 
-grwr_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
+grwr_mean_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
                       brho_lapl_lo_hi_se,brho_lapl_lo_int_se,brho_lapl_lo_lo_se,
                       pler_brho_hi_hi_se,pler_brho_hi_int_se,pler_brho_hi_lo_se,
                       pler_brho_lo_hi_se,pler_brho_lo_int_se,pler_brho_lo_lo_se,
@@ -2041,10 +1858,31 @@ grwr_sd <- data.frame(brho_lapl_hi_hi_se,brho_lapl_hi_int_se,brho_lapl_hi_lo_se,
                       brho_pler_lo_lo_se,pler_lapl_hi_hi_se,pler_lapl_hi_int_se,
                       pler_lapl_hi_lo_se,pler_lapl_lo_hi_se,pler_lapl_lo_int_se,
                       pler_lapl_lo_lo_se,lapl_pler_hi_hi_se,lapl_pler_hi_int_se,
-                      lapl_pler_lo_hi_se,lapl_pler_lo_int_se)
+                      lapl_pler_lo_hi_se,lapl_pler_lo_int_se,brho_lapl_hi_hi_mean,brho_lapl_hi_int_mean,brho_lapl_hi_lo_mean,
+                      brho_lapl_lo_hi_mean,brho_lapl_lo_int_mean,brho_lapl_lo_lo_mean,
+                      pler_brho_hi_hi_mean,pler_brho_hi_int_mean,pler_brho_hi_lo_mean,
+                      pler_brho_lo_hi_mean,pler_brho_lo_int_mean,pler_brho_lo_lo_mean,
+                      lapl_brho_hi_hi_mean,lapl_brho_hi_int_mean,lapl_brho_lo_hi_mean,
+                      lapl_brho_lo_int_mean,brho_pler_hi_hi_mean,brho_pler_hi_int_mean,
+                      brho_pler_hi_lo_mean,brho_pler_lo_hi_mean,brho_pler_lo_int_mean,
+                      brho_pler_lo_lo_mean,pler_lapl_hi_hi_mean,pler_lapl_hi_int_mean,
+                      pler_lapl_hi_lo_mean,pler_lapl_lo_hi_mean,pler_lapl_lo_int_mean,
+                      pler_lapl_lo_lo_mean,lapl_pler_hi_hi_mean,lapl_pler_hi_int_mean,
+                      lapl_pler_lo_hi_mean,lapl_pler_lo_int_mean)
 
-grwr_sd<-pivot_longer(grwr_sd,cols=1:32,names_to = "treatment", values_to = "sd")
+grwr_mean_sd2 <-pivot_longer(grwr_mean_sd,cols=1:64,names_to = "treatment", values_to = "sd") %>%
+  mutate(ID = 1:64)
 
-write.csv(grwr_sd,"grwr_sd.csv")
+grwr_sd <- grwr_mean_sd2[grwr_mean_sd2$ID < 33, ] %>%
+  select(1:2)
+
+grwr_mean <- grwr_mean_sd2[grwr_mean_sd2$ID > 32, ] %>%
+  rename("mean" = "sd") %>%
+  select(1:2)
+
+grwr_mean_sd_final <- cbind(grwr_sd,grwr_mean) %>%
+  select(2:4)
+
+write.csv(grwr_mean_sd_final,"grwr_sd_mean.csv")
 
 
