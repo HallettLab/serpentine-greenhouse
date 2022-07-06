@@ -3,3 +3,6 @@
 .Ruserdata
 .DS_Store
 
+.Rproj.user/shared/notebooks/paths
+.DS_Store
+Stan models/.DS_Store
