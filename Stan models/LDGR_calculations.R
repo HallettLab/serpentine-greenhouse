@@ -572,8 +572,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_brho_hi_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_brho_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_brho_hi_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_brho_hi_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
@@ -605,8 +605,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_hi_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_hi_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_hi_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -671,8 +671,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_lapl_hi_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_lapl_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_lapl_hi_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_lapl_hi_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading lapl at hi_hi conditions.
@@ -737,8 +737,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_lapl_hi_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_lapl_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_lapl_hi_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_lapl_hi_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -748,11 +748,8 @@ pler_lapl_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
 # extract posteriors
 load(here("Stan models","no_dist_seeds_pler_hi_lo.Rdata"))
 load(here("Stan models","no_dist_seeds_brho_hi_lo.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_hi_lo.Rdata"))
 pler_hi_lo <- rstan::extract(no_dist_seeds_pler_hi_lo)
 brho_hi_lo <- rstan::extract(no_dist_seeds_brho_hi_lo)
-lapl_hi_lo <- rstan::extract(no_dist_seeds_lapl_hi_lo)
-
 
 # BRHO to equilibrium
 
@@ -854,52 +851,7 @@ N_pler_hi_lo <-equil_out
 
 # LAPL to equilibrium
 
-# Grab the length of your posterior distribution
-posterior_length <- length(lapl_hi_lo$lambda)
-
-# Grab 400 random positions from your posterior distribution
-# LGS let's increase this to 2000
-# Also changed to replace = FALSE
-posts <- sample(posterior_length, 2000, replace=FALSE)
-
-# Subset your posteriors using your random positions
-lambdas <- lapl_hi_lo$lambda[posts]
-alphas_intra <- lapl_hi_lo$alpha_lapl[posts]
-alphas_inter_brho <- lapl_hi_lo$alpha_brho[posts]
-alphas_inter_pler <- lapl_hi_lo$alpha_pler[posts]
-
-
-## For equilibrium abundance confidence intervals
-# Set length of time for achieving equilibrium population
-time <- 50
-
-# Create output equilibrium vector
-equil_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)) {
-  
-  # Create vector of abundances to reach equilibrium
-  N_equil <- vector(length = time + 1)
-  # Set starting population
-  N_equil[1] <- 100
-  
-  # Loop once for each time step, ideally reaching equilibrium by final time step
-  for (j in 1:time) {
-    
-    # Be sure to subset the ith values of posterior alphas and lambdas 
-    N_equil[j + 1] <- pop.equilibrium(N0 = N_equil[j], s = ls, g = lg, 
-                                      a_intra = alphas_intra[i], lambda = lambdas[i])
-  }
-  
-  # Store final abundance in your output object
-  equil_out[i] <- N_equil[j + 1]
-  
-}
-
-# LGS: Let's save our resident equilibrium results, so we can use these
-# for the invasion analyses below
-N_lapl_hi_lo <-equil_out
+N_lapl_hi_lo <- 0
 
 # PLER invading BRHO
 
@@ -971,10 +923,10 @@ brho_pler_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
 
 # Note example where both are at hi_hi
 # We'll keep the same posts as above
-lambdas <- lapl_hi_lo$lambda[posts]
-alphas_intra <- lapl_hi_lo$alpha_lapl[posts]
-alphas_inter_brho <- lapl_hi_lo$alpha_brho[posts]
-alphas_inter_pler <- lapl_hi_lo$alpha_pler[posts]
+lambdas <- 0
+alphas_intra <- 0
+alphas_inter_brho <- 0
+alphas_inter_pler <- 0
 
 ## For LDGR confidence intervals
 # Create output object for invader LDGRs
@@ -989,7 +941,7 @@ for (i in 1:length(posts)){
   # we do here
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
-  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas[i], a_inter = alphas_inter_brho[i],
+  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas, a_inter = alphas_inter_brho,
                                 resident = N_brho_hi_lo[i], N0 = 1, g_resident=bg ))
   
 }
@@ -1023,7 +975,7 @@ for (i in 1:length(posts)){
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
   ldgr_out[i] <- log(pop.invade(s = bs, g = bg, lambda=lambdas[i], a_inter = alphas_inter_lapl[i],
-                                resident = N_lapl_hi_lo[i], N0 = 1, g_resident=lg ))
+                                resident = N_lapl_hi_lo, N0 = 1, g_resident=lg ))
   
 }
 
@@ -1037,10 +989,10 @@ brho_lapl_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
 
 # Note example where both are at hi_hi
 # We'll keep the same posts as above
-lambdas <- lapl_hi_lo$lambda[posts]
-alphas_intra <- lapl_hi_lo$alpha_lapl[posts]
-alphas_inter_brho <- lapl_hi_lo$alpha_brho[posts]
-alphas_inter_pler <- lapl_hi_lo$alpha_pler[posts]
+lambdas <- 0
+alphas_intra <- 0
+alphas_inter_brho <- 0
+alphas_inter_pler <- 0
 
 ## For LDGR confidence intervals
 # Create output object for invader LDGRs
@@ -1055,7 +1007,7 @@ for (i in 1:length(posts)){
   # we do here
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
-  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas[i], a_inter = alphas_inter_pler[i],
+  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas, a_inter = alphas_inter_pler,
                                 resident = N_pler_hi_lo[i], N0 = 1, g_resident=pg ))
   
 }
@@ -1089,7 +1041,7 @@ for (i in 1:length(posts)){
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
   ldgr_out[i] <- log(pop.invade(s = ps, g = pg, lambda=lambdas[i], a_inter = alphas_inter_lapl[i],
-                                resident = N_lapl_hi_lo[i], N0 = 1, g_resident=lg ))
+                                resident = N_lapl_hi_lo, N0 = 1, g_resident=lg ))
   
 }
 
@@ -1671,8 +1623,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_lo_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_lo_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_lo_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -1737,8 +1689,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_lapl_lo_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_lapl_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_lapl_lo_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_lapl_lo_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading lapl at hi_hi conditions.
@@ -1814,10 +1766,9 @@ pler_lapl_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
 # extract posteriors
 load(here("Stan models","no_dist_seeds_pler_lo_lo.Rdata"))
 load(here("Stan models","no_dist_seeds_brho_lo_lo.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_lo_lo.Rdata"))
 pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
 brho_lo_lo <- rstan::extract(no_dist_seeds_brho_lo_lo)
-lapl_lo_lo <- rstan::extract(no_dist_seeds_lapl_lo_lo)
+
 
 # BRHO to equilibrium
 
@@ -1918,53 +1869,7 @@ for (i in 1:length(posts)) {
 N_pler_lo_lo <-equil_out
 
 # LAPL to equilibrium
-
-# Grab the length of your posterior distribution
-posterior_length <- length(lapl_lo_lo$lambda)
-
-# Grab 400 random positions from your posterior distribution
-# LGS let's increase this to 2000
-# Also changed to replace = FALSE
-posts <- sample(posterior_length, 2000, replace=FALSE)
-
-# Subset your posteriors using your random positions
-lambdas <- lapl_lo_lo$lambda[posts]
-alphas_intra <- lapl_lo_lo$alpha_lapl[posts]
-alphas_inter_brho <- lapl_lo_lo$alpha_brho[posts]
-alphas_inter_pler <- lapl_lo_lo$alpha_pler[posts]
-
-
-## For equilibrium abundance confidence intervals
-# Set length of time for achieving equilibrium population
-time <- 50
-
-# Create output equilibrium vector
-equil_out <- vector(length = length(posts))
-
-# Loop for once set of randomly sampled parameters from your poteriors
-for (i in 1:length(posts)) {
-  
-  # Create vector of abundances to reach equilibrium
-  N_equil <- vector(length = time + 1)
-  # Set starting population
-  N_equil[1] <- 100
-  
-  # Loop once for each time step, ideally reaching equilibrium by final time step
-  for (j in 1:time) {
-    
-    # Be sure to subset the ith values of posterior alphas and lambdas 
-    N_equil[j + 1] <- pop.equilibrium(N0 = N_equil[j], s = ls, g = lg, 
-                                      a_intra = alphas_intra[i], lambda = lambdas[i])
-  }
-  
-  # Store final abundance in your output object
-  equil_out[i] <- N_equil[j + 1]
-  
-}
-
-# LGS: Let's save our resident equilibrium results, so we can use these
-# for the invasion analyses below
-N_lapl_lo_lo <-equil_out
+N_lapl_lo_lo <- 0
 
 # PLER invading BRHO
 
@@ -2027,8 +1932,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -2037,10 +1942,10 @@ brho_pler_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
 
 # Note example where both are at hi_hi
 # We'll keep the same posts as above
-lambdas <- lapl_lo_lo$lambda[posts]
-alphas_intra <- lapl_lo_lo$alpha_lapl[posts]
-alphas_inter_brho <- lapl_lo_lo$alpha_brho[posts]
-alphas_inter_pler <- lapl_lo_lo$alpha_pler[posts]
+lambdas <- 0
+alphas_intra <- 0
+alphas_inter_brho <- 0
+alphas_inter_pler <- 0
 
 ## For LDGR confidence intervals
 # Create output object for invader LDGRs
@@ -2055,7 +1960,7 @@ for (i in 1:length(posts)){
   # we do here
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
-  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas[i], a_inter = alphas_inter_brho[i],
+  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas, a_inter = alphas_inter_brho,
                                 resident = N_brho_lo_lo[i], N0 = 1, g_resident=bg ))
   
 }
@@ -2089,12 +1994,12 @@ for (i in 1:length(posts)){
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
   ldgr_out[i] <- log(pop.invade(s = bs, g = bg, lambda=lambdas[i], a_inter = alphas_inter_lapl[i],
-                                resident = N_lapl_lo_lo[i], N0 = 1, g_resident=lg ))
+                                resident = N_lapl_lo_lo, N0 = 1, g_resident=lg ))
   
 }
 
-brho_lapl_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_lapl_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_lapl_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_lapl_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading lapl at hi_hi conditions.
@@ -2103,10 +2008,10 @@ brho_lapl_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
 
 # Note example where both are at hi_hi
 # We'll keep the same posts as above
-lambdas <- lapl_lo_lo$lambda[posts]
-alphas_intra <- lapl_lo_lo$alpha_lapl[posts]
-alphas_inter_brho <- lapl_lo_lo$alpha_brho[posts]
-alphas_inter_pler <- lapl_lo_lo$alpha_pler[posts]
+lambdas <- 0
+alphas_intra <- 0
+alphas_inter_brho <- 0
+alphas_inter_pler <- 0
 
 ## For LDGR confidence intervals
 # Create output object for invader LDGRs
@@ -2121,7 +2026,7 @@ for (i in 1:length(posts)){
   # we do here
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
-  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas[i], a_inter = alphas_inter_pler[i],
+  ldgr_out[i] <- log(pop.invade(s = ls, g = lg, lambda=lambdas, a_inter = alphas_inter_pler,
                                 resident = N_pler_lo_lo[i], N0 = 1, g_resident=pg ))
   
 }
@@ -2136,14 +2041,14 @@ lapl_pler_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
 
 # Note example where both are at hi_hi
 # We'll keep the same posts as above
-lambdas <- pler_lo_lo$lambda[posts]
-alphas_intra <- pler_lo_lo$alpha_pler[posts]
-alphas_inter_brho <- pler_lo_lo$alpha_brho[posts]
-alphas_inter_lapl <- pler_lo_lo$alpha_lapl[posts]
 
 ## For LDGR confidence intervals
 # Create output object for invader LDGRs
 ldgr_out <- vector(length = length(posts))
+lambdas <- pler_lo_lo$lambda[posts]
+alphas_intra <- pler_lo_lo$alpha_pler[posts]
+alphas_inter_brho <- pler_lo_lo$alpha_brho[posts]
+alphas_inter_lapl <- pler_lo_lo$alpha_lapl[posts]
 
 # Loop for once set of randomly sampled parameters from your poteriors
 for (i in 1:length(posts)){
@@ -2155,7 +2060,7 @@ for (i in 1:length(posts)){
   #LGS: note I added N_brho_hi_hi[i] with the i index to loop through our posteriors
   # of brho's equilibrium abundance.
   ldgr_out[i] <- log(pop.invade(s = ps, g = pg, lambda=lambdas[i], a_inter = alphas_inter_lapl[i],
-                                resident = N_lapl_lo_lo[i], N0 = 1, g_resident=lg ))
+                                resident = N_lapl_lo_lo, N0 = 1, g_resident=lg ))
   
 }
 
