@@ -14,7 +14,7 @@ params_dat <- params2
 
 pop.equilibrium <- function (N0, s, g, a_intra, lambda) {
   # to run for only a single timestep
-  N <- s*(1-g)*N0 + N0*(lambda*g)/(1+a_intra*N0)
+  N <- s*(1-g)*N0 + N0*(lambda*g)/(1+a_intra*N0*g)
   return(N)
 }
 
