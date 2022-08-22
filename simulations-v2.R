@@ -5,33 +5,85 @@ library(grid)
 library(ggplotify)
 
 ## Read in data
-params2 <- read.csv(paste(datpath, "params2.csv", sep = ""))
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) 
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
+params <- read.csv(paste(datpath, "params.csv", sep = ""))
 
 ## Determine equilibrium conditions for each species in isolation
-params_dat <- params2
+params_dat <- params
 
-pop.equilibrium <- function (N0, s, g, a_intra, lambda) {
+pop.equilibrium <- function (N0, s, g, alphas_intra, lambda) {
   # to run for only a single timestep
-  N <- s*(1-g)*N0 + N0*(lambda*g)/(1+a_intra*N0)
+  N <- s*(1-g)*N0 + N0*(lambda*g)/(1+alphas_intra*N0*g)
   return(N)
 }
 
-## Bromus
-bromus <-params_dat %>%
-  filter(species == "Bromus")
+
+# Subset your posteriors using your random positions
+bromus <- params_dat %>%
+  filter(species == "Bromus")%>%
+  separate(treatments, into = c("w_trt","n_trt"),sep=-5)
+bromus$w_trt[bromus$w_trt == c("hi.water","hi.water.","hi.water")] <- "Wet"
+bromus$w_trt[bromus$w_trt == c("lo.water", "lo.water.","lo.water")] <- "Dry"
+bromus$n_trt[bromus$n_trt == ".hi.N"] <- "hi.N"
+bromus$n_trt[bromus$n_trt == ".lo.N"] <- "lo.N"
+
+lambda <- bromus$lambda
+alphas_intra <- bromus$alpha_bromus
 
 N0 <- 27
-time <- length(precipt$type_year)
+time <- length(1:39)
 N_bromus <- rep(NA, time)
 N_bromus[1] <- N0
 bs <- 0.013
 bg <- 0.98
 
 for (t in 1:time) {
-  params <- subset(bromus,w_trt==precipt$type_year[t] & n_trt==nitrogen$n_trt[t])
-  N_bromus[t+1] <- pop.equilibrium(N0=N_bromus[t], s=bs, g=bg, a_intra=bromus$alpha_Bromus, lambda=bromus$lambda)
+  params <- subset(bromus,w_trt==trt$type_year[t] & n_trt==trt$n_trt[t])
+  N_bromus[t+1] <- pop.equilibrium(N0=N_bromus[t], s=bs, g=bg, alphas_intra=bromus$alpha_bromus, 
+                                  lambda=bromus$lambda)
+}
+
+# Loop for once set of randomly sampled parameters from your posteriors
+for (t in 1:time) {
+  
+  # Create vector of abundances to reach equilibrium
+  N_equil <- vector(length = time + 1)
+  # Set starting population
+  N_equil[1] <- 100
+  
+  # Loop once for each time step, ideally reaching equilibrium by final time step
+  for (j in 1:time) {
+    
+    # Be sure to subset the ith values of posterior alphas and lambdas 
+    N_equil[j + 1] <- pop.equilibrium(N0 = N_equil[j], s = bs, g = bg, 
+                                      alphas_intra = bromus$alpha_bromus, lambda = bromus$lambda)
+  }
+  
+  # Store final abundance in your output object
+  equil_out[i] <- N_equil[j + 1]
+  
+}
+
+# LGS: Let's save our resident equilibrium results, so we can use these
+# for the invasion analyses below
+N_brho_hi_hi <-equil_out
+
+## Bromus
+bromus <-params_dat %>%
+  filter(species == "Bromus") %>%
+  separate(treatments,into = c(""))
+
+N0 <- 27
+time <- length(trt$type_year)
+N_bromus <- rep(NA, time)
+N_bromus[1] <- N0
+bs <- 0.013
+bg <- 0.98
+
+for (t in 1:time) {
+  params <- subset(bromus,type_year==trt$type_year[t] & n_trt==trt$n_trt[t])
+  N_bromus[t+1] <- pop.equilibrium(N0=N_bromus[t], s=bs, g=bg, a_intra=bromus$alpha_bromus, lambda=bromus$lambda)
 }
 
 # check output
