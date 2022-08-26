@@ -221,7 +221,7 @@ pler_brho_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
 
-#PLER invading BRHO
+#BRHO invading PLER
 
 # Note example where both are at hi_hi
 # We'll keep the same posts as above
