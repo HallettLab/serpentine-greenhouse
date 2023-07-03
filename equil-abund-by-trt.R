@@ -2,6 +2,34 @@
 ####Equilibrium abundance HI H20 Hi N#####
 ##########################################
 
+##survival and germination fractions
+ps <- .75 # gulmon
+pg <- .92 # gulmon
+bs <- .013 # andrew
+bg <- .98 # gulmon
+ls <- .15 # rossington
+lg <- .32 # rossington
+
+##Load stan models from Stan models folder
+#Extract parameters from models and rename 
+
+brho_hi_hi <- extract(no_dist_seeds_brho_hi_hi)
+brho_hi_int <- extract(no_dist_seeds_brho_hi_int)
+brho_hi_lo <- extract(no_dist_seeds_brho_hi_lo)
+brho_lo_hi <- extract(no_dist_seeds_brho_lo_hi)
+brho_lo_int <- extract(no_dist_seeds_brho_lo_int)
+brho_lo_lo <- extract(no_dist_seeds_brho_lo_lo)
+lapl_hi_hi <- extract(no_dist_seeds_lapl_hi_hi)
+lapl_hi_int <- extract(no_dist_seeds_lapl_hi_int)
+lapl_lo_hi <- extract(no_dist_seeds_lapl_lo_hi)
+lapl_lo_int <- extract(no_dist_seeds_lapl_lo_int)
+pler_hi_hi <- extract(no_dist_seeds_pler_hi_hi)
+pler_hi_int <- extract(no_dist_seeds_pler_hi_int)
+pler_hi_lo <- extract(no_dist_seeds_pler_hi_lo)
+pler_lo_hi <- extract(no_dist_seeds_pler_lo_hi)
+pler_lo_int <- extract(no_dist_seeds_pler_lo_int)
+pler_lo_lo <- extract(no_dist_seeds_pler_lo_lo)
+
 ################
 ######BRHO######
 ################
