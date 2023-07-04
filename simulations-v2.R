@@ -4,56 +4,40 @@ library(cowplot)
 library(grid)
 library(ggplotify)
 
+ps <- .75 # gulmon
+pg <- .92 # gulmon
+bs <- .013 # andrew
+bg <- .98 # gulmon
+ls <- .15 # rossington
+lg <- .32 # rossington
+
 ## Read in data
-params <- read.csv(paste(datpath, "params.csv", sep = "")) # parameters from first stan model fits
+params2 <- read.csv(paste(datpath, "params2_LGS.csv", sep = "")) # parameters from first stan model fits
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) %>%
   rename(w_trt=type_year)
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
 
 ## Run code from equil-abundance-by-trt.R script to get equilibrium conditions
-# for each species in isolation
+# for each species in isolation to get species_eq dataframe
 
-## Revise params dataframe 
-params_dat <- params %>%
-  separate(treatments, into = c("w_trt","n_trt"),sep=-5)%>%
-  filter(species == "Bromus" |species=="Plantago"|species=="Layia")
-params_dat$w_trt[params_dat$w_trt == c("hi.water","hi.water.","hi.water")] <- "Wet"
-params_dat$w_trt[params_dat$w_trt == c("lo.water", "lo.water.","lo.water")] <- "Dry"
-params_dat$n_trt[params_dat$n_trt == ".hi.N"] <- "hi.N"
-params_dat$n_trt[params_dat$n_trt == ".lo.N"] <- "lo.N"
-params_dat$w_trt <- as.factor(params_dat$w_trt)
-params_dat$n_trt <- as.factor(params_dat$n_trt)
-
-## Data manipulation for starting conditions
-# original equilibrium abundances for 1983 from simulations.R script
-# brho_eq = 219.444
-# lapl_eq = 476.512
-# pler_eq = 208.154
 cover_dat <- cover %>%
   filter(species == "BRMO" | species == "PLER" | species == "LAPL") %>%
   group_by(year, species) %>%
   summarize(mean_cover = mean(cover)) %>%
   filter(year == 1983) %>%
-  mutate(species = c("Bromus","Layia","Plantago")) %>%
-  mutate(abundance = mean_cover*c(brho_eq,lapl_eq,pler_eq)/100)%>%
-  select(-mean_cover) %>%
-  pivot_wider(names_from = species, values_from = abundance)
+  mutate(species = c("Bromus","Layia","Plantago"))
 
-# equilibrium abundances from equil-abundance-by-trt.R script
-# N_brho_hi_lo = 0.6622049
-# N_lapl_hi_lo = 0
-# N_pler_hi_lo = 9.205548
-cover_dat <- cover %>%
-  filter(species == "BRMO" | species == "PLER" | species == "LAPL") %>%
-  group_by(year, species) %>%
-  summarize(mean_cover = mean(cover)) %>%
-  filter(year == 1983) %>%
-  mutate(species = c("Bromus","Layia","Plantago")) %>%
-  mutate(abundance = mean_cover*c(N_brho_hi_lo,N_lapl_hi_lo,N_pler_hi_lo)/100)%>%
-  select(-mean_cover) %>%
-  pivot_wider(names_from = species, values_from = abundance)
+cover_dat <- left_join(cover_dat,trt)
+cover_dat <- left_join(cover_dat,species_eq) 
 
-params2_dat <- read.csv(paste(datpath, "params2.csv", sep = ""))%>%
+cover_dat <- cover_dat %>%
+  mutate(abundance_sqcm = ((mean_cover*equil_abundance)/103.2256))
+#cover_dat$abundance_sqcm[cover_dat$abundance_sqcm==0] <- 0.1
+cover_dat <- cover_dat %>%  
+  select(-3:-7) %>%
+  pivot_wider(names_from = species, values_from = abundance_sqcm)
+
+params2_dat <- params2 %>%
   separate(treatments, into = c("w_trt","n_trt"),sep=-5)
 params2_dat$w_trt[params2_dat$w_trt == c("hi.water","hi.water.","hi.water")] <- "Wet"
 params2_dat$w_trt[params2_dat$w_trt == c("lo.water", "lo.water.","lo.water")] <- "Dry"
@@ -99,16 +83,11 @@ growth = function(N, start_dat,year){
 
 Nblp <- growth(N,start_dat,year) %>%
   mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")
+  pivot_longer(!year,names_to="species",values_to ="abundance")%>%
+  mutate(sqrt_abundance = sqrt(abundance))
 Nblp$species[Nblp$species == "Nb"] <- "Bromus"
 Nblp$species[Nblp$species == "Nl"] <- "Layia"
 Nblp$species[Nblp$species == "Np"] <- "Plantago"
-
-blp <- ggplot(Nblp,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3)  +
-  theme(legend.text = element_markdown(),legend.position = "top",axis.title.x = element_blank(),axis.text.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73"))
 
 ## all species sim with bromus germination = 0
 #BRHO, PLER, and LAPL
@@ -117,7 +96,7 @@ start_dat_brho <- start_dat %>%
   cbind(bg = brho_bg)
 
 N = as.data.frame(matrix(NA, nrow=37, ncol=3))
-colnames(N) = c("Nb", "Np","Nl")
+colnames(N) = c("Nb", "Nl","Np")
 N[1,] =c(cov_trt$Bromus,cov_trt$Layia,cov_trt$Plantago)
 
 growth = function(N, start_dat,year){
@@ -138,16 +117,11 @@ growth = function(N, start_dat,year){
 
 Nblp2 <- growth(N,start_dat,year) %>%
   mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")
+  pivot_longer(!year,names_to="species",values_to ="abundance") %>%
+  mutate(sqrt_abundance=sqrt(abundance))
 Nblp2$species[Nblp2$species == "Nb"] <- "Bromus"
 Nblp2$species[Nblp2$species == "Np"] <- "Plantago"
 Nblp2$species[Nblp2$species == "Nl"] <- "Layia"
-
-blp2 <- ggplot(Nblp2,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
-  theme(legend.position= "none") +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73"))
 
 ## PLER and LAPL sim
 N = as.data.frame(matrix(NA, nrow=37, ncol=2))
@@ -170,16 +144,10 @@ growth = function(N, start_dat,year){
 
 Nlp <- growth(N,start_dat,year) %>%
   mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")
+  pivot_longer(!year,names_to="species",values_to ="abundance")%>%
+  mutate(sqrt_abundance = sqrt(abundance))
 Nlp$species[Nlp$species == "Np"] <- "Plantago"
 Nlp$species[Nlp$species == "Nl"] <- "Layia"
-
-lp <- ggplot(Nlp,aes(year,abundance,color=species)) + geom_line(size = .8) + geom_point(size=1.3)  +
-  theme(legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
-                     values=c("#0072B2","#009E73"))
-
 
 #########################
 #####Visualization#######
@@ -237,14 +205,14 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   annotate("text", x=2001,y=1200, label="Intermediate N") +
   annotate("text", x=2014,y=1200, label="High N") 
 
-lp <- ggplot(Nlp,aes(year,abundance,color=species)) +
+lp <- ggplot(Nlp,aes(year,sqrt_abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
   scale_x_continuous(expand = c(0.04,0.04))
 
-sim1 <- ggplot(Nblp,aes(year,abundance,color=species)) +
+sim1 <- ggplot(Nblp,aes(year,sqrt_abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
@@ -271,7 +239,7 @@ g_legend <- function(a.gplot){
 legend <- as.ggplot(g_legend(leg))
 
 
-sim2 <-  ggplot(Nblp2,aes(year,abundance,color=species)) +
+sim2 <-  ggplot(Nblp2,aes(year,sqrt_abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
@@ -303,6 +271,6 @@ bar <- ggplot(trt2,aes(year,gst)) +
   guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))+
   geom_vline(xintercept=c(1994.5,2006.5))
 
-plot_grid(legend,lp,blp,blp2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+plot_grid(legend,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
 
