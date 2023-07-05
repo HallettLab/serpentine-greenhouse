@@ -2126,10 +2126,25 @@ names(sp.labs) <- c("pler_lapl","lapl_pler","pler_brho",
                     "brho_pler","lapl_brho","brho_lapl")
 
 
-p<-ggplot(mean_sd_LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
+levels(mean_sd_LDGR$invader_resident)= c("pler_lapl"=expression("*Plantago* invading *Layia*"),
+                                         "lapl_pler"=expression("*Layia* invading *Plantago*"),
+                                         "pler_brho"=expression("*Plantago* invading *Bromus*"),
+                                         "brho_pler"=expression("*Bromus* invading *Plantago*"),
+                                         "lapl_brho"=expression("*Layia* invading *Bromus*"),
+                                         "brho_lapl"=expression("*Bromus* invading *Layia*"))
+
+theme_set(theme_bw())
+theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+              strip.background = element_blank(),
+              text = element_text(size = 16),
+              strip.text= element_text(size = 16),
+              axis.text = element_text(size = 16))
+
+ggplot(mean_sd_LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
                                  ymax=mean_LDGR+sd_LDGR, fill = water_trt)) + 
   geom_bar(stat="identity", position = position_dodge()) + 
-  facet_wrap(~invader_resident,nrow=3,labeller = labeller(invader_resident=sp.labs)) +
+  facet_wrap(~invader_resident,nrow=3,labeller = labeller(type=label_parsed)) +
+  theme(strip.text.x = element_markdown())+
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
