@@ -2111,3 +2111,28 @@ sd_LDGR <- as.data.frame(cbind(brho_lapl_hi_hi_sd, brho_lapl_hi_int_sd, brho_lap
   select(-4)
 
 mean_sd_LDGR <- left_join(mean_LDGR,sd_LDGR)
+
+###################################################
+###LDGR/GRWR data manipulation & visualization#####
+###################################################
+mean_sd_LDGR$n_trt <- factor(mean_sd_LDGR$n_trt, levels = c("lo","int","hi"))
+mean_sd_LDGR$water_trt <- factor(mean_sd_LDGR$water_trt, levels = c("lo","hi"))
+mean_sd_LDGR$invader_resident <- factor(mean_LDGR$invader_resident, 
+                                        levels = c("pler_lapl","lapl_pler","pler_brho",
+                                                   "brho_pler","lapl_brho","brho_lapl"))
+
+sp.labs<- c("Plantago invading Layia","Layia invading Plantago","Plantago invading Bromus","Bromus invading Plantago","Layia invading Bromus","Bromus invading Layia")
+names(sp.labs) <- c("pler_lapl","lapl_pler","pler_brho",
+                    "brho_pler","lapl_brho","brho_lapl")
+
+
+p<-ggplot(mean_sd_LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
+                                 ymax=mean_LDGR+sd_LDGR, fill = water_trt)) + 
+  geom_bar(stat="identity", position = position_dodge()) + 
+  facet_wrap(~invader_resident,nrow=3,labeller = labeller(invader_resident=sp.labs)) +
+  ylab("Growth rate when rare") + xlab("N treatments") +
+  scale_x_discrete(labels = c("Low","Intermediate","High")) +
+  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
+                    values=c("azure3","azure4")) +
+  geom_hline(yintercept = 0)+
+  geom_errorbar(position = position_dodge(0.9),width=0.1)
