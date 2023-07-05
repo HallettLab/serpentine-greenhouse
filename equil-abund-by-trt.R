@@ -3,6 +3,7 @@
 ##########################################
 
 library(rstan)
+library(here)
 
 ##survival and germination fractions
 ps <- .75 # gulmon
@@ -13,8 +14,24 @@ ls <- .15 # rossington
 lg <- .32 # rossington
 
 ##Load stan models from Stan models folder
-#Extract parameters from models and rename 
+load(here("Stan models","no_dist_seeds_pler_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_hi_lo.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_lo.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_lo_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_lo_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_lo_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_lo_int.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_lo_int.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_lo_int.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_lo_lo.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_lo_lo.Rdata"))
 
+#Extract parameters from models and rename 
 brho_hi_hi <- rstan::extract(no_dist_seeds_brho_hi_hi)
 brho_hi_int <- rstan::extract(no_dist_seeds_brho_hi_int)
 brho_hi_lo <- rstan::extract(no_dist_seeds_brho_hi_lo)
@@ -816,6 +833,8 @@ N_pler_lo_lo <- N_equil[51]
 ##################
 N_lapl_lo_lo <- 0
 
+
+#####put together into a dataframe
 species_eq <- data.frame(N_brho_hi_hi,N_brho_hi_int,N_brho_hi_lo,N_brho_lo_hi,N_brho_lo_int,N_brho_lo_lo,
       N_lapl_hi_hi,N_lapl_hi_int,N_lapl_hi_lo,N_lapl_lo_hi,N_lapl_lo_int,N_lapl_lo_lo,
       N_pler_hi_hi,N_pler_hi_int,N_pler_hi_lo,N_pler_lo_hi,N_pler_lo_int,N_pler_lo_lo) %>%
