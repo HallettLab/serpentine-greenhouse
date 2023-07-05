@@ -19,6 +19,7 @@ cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
 
 ## Run code from equil-abundance-by-trt.R script to get equilibrium conditions
 # for each species in isolation to get species_eq dataframe
+source("equil-abund-by-trt.R")
 
 cover_dat <- cover %>%
   filter(species == "BRMO" | species == "PLER" | species == "LAPL") %>%

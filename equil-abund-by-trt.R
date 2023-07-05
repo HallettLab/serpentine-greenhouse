@@ -2,6 +2,7 @@
 ####Equilibrium abundance HI H20 Hi N#####
 ##########################################
 
+library(tidyverse)
 library(rstan)
 library(here)
 
@@ -14,9 +15,9 @@ ls <- .15 # rossington
 lg <- .32 # rossington
 
 ##Load stan models from Stan models folder
-load(here("Stan models","no_dist_seeds_pler_hi_int.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_hi_int.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_hi_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_hi_hi.Rdata"))
 load(here("Stan models","no_dist_seeds_pler_hi_int.Rdata"))
 load(here("Stan models","no_dist_seeds_brho_hi_int.Rdata"))
 load(here("Stan models","no_dist_seeds_lapl_hi_int.Rdata"))

@@ -1,7 +1,8 @@
 # Equations and literature fractions ----
 # example script for calculating LDGR with the posteriors
 
-library(stan)
+library(tidyverse)
+library(rstan)
 library(here)
 
 # Determine equilibrium conditions for each species in isolation 
@@ -2070,3 +2071,43 @@ pler_lapl_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
 
+
+##############################################
+##make dataframe for mean and sd GRWR values##
+##############################################
+
+mean_LDGR <- as.data.frame(cbind(brho_lapl_hi_hi_mean, brho_lapl_hi_int_mean, brho_lapl_hi_lo_mean,
+                           brho_lapl_lo_hi_mean, brho_lapl_lo_int_mean, brho_lapl_lo_lo_mean,
+                           lapl_brho_hi_hi_mean, lapl_brho_hi_int_mean, lapl_brho_hi_lo_mean,
+                           lapl_brho_lo_hi_mean, lapl_brho_lo_int_mean, lapl_brho_lo_lo_mean,
+                           brho_pler_hi_hi_mean, brho_pler_hi_int_mean, brho_pler_hi_lo_mean,
+                           brho_pler_lo_hi_mean, brho_pler_lo_int_mean, brho_pler_lo_lo_mean,
+                           pler_brho_hi_hi_mean, pler_brho_hi_int_mean, pler_brho_hi_lo_mean,
+                           pler_brho_lo_hi_mean, pler_brho_lo_int_mean, pler_brho_lo_lo_mean,
+                           lapl_pler_hi_hi_mean, lapl_pler_hi_int_mean, lapl_pler_hi_lo_mean,
+                           lapl_pler_lo_hi_mean, lapl_pler_lo_int_mean, lapl_pler_lo_lo_mean,
+                           pler_lapl_hi_hi_mean, pler_lapl_hi_int_mean, pler_lapl_hi_lo_mean,
+                           pler_lapl_lo_hi_mean, pler_lapl_lo_int_mean, pler_lapl_lo_lo_mean)) %>%
+  pivot_longer(1:36,names_to = "trt",values_to = "mean_LDGR") %>%
+  separate(trt,into = c("invader","resident","water_trt","n_trt","del"),sep = "_")%>%
+  unite("invader_resident",1:2) %>%
+  select(-4)
+
+sd_LDGR <- as.data.frame(cbind(brho_lapl_hi_hi_sd, brho_lapl_hi_int_sd, brho_lapl_hi_lo_sd,
+                                 brho_lapl_lo_hi_sd, brho_lapl_lo_int_sd, brho_lapl_lo_lo_sd,
+                                 lapl_brho_hi_hi_sd, lapl_brho_hi_int_sd, lapl_brho_hi_lo_sd,
+                                 lapl_brho_lo_hi_sd, lapl_brho_lo_int_sd, lapl_brho_lo_lo_sd,
+                                 brho_pler_hi_hi_sd, brho_pler_hi_int_sd, brho_pler_hi_lo_sd,
+                                 brho_pler_lo_hi_sd, brho_pler_lo_int_sd, brho_pler_lo_lo_sd,
+                                 pler_brho_hi_hi_sd, pler_brho_hi_int_sd, pler_brho_hi_lo_sd,
+                                 pler_brho_lo_hi_sd, pler_brho_lo_int_sd, pler_brho_lo_lo_sd,
+                                 lapl_pler_hi_hi_sd, lapl_pler_hi_int_sd, lapl_pler_hi_lo_sd,
+                                 lapl_pler_lo_hi_sd, lapl_pler_lo_int_sd, lapl_pler_lo_lo_sd,
+                                 pler_lapl_hi_hi_sd, pler_lapl_hi_int_sd, pler_lapl_hi_lo_sd,
+                                 pler_lapl_lo_hi_sd, pler_lapl_lo_int_sd, pler_lapl_lo_lo_sd)) %>%
+  pivot_longer(1:36,names_to = "trt",values_to = "sd_LDGR") %>%
+  separate(trt,into = c("invader","resident","water_trt","n_trt","del"),sep = "_")%>%
+  unite("invader_resident",1:2) %>%
+  select(-4)
+
+mean_sd_LDGR <- left_join(mean_LDGR,sd_LDGR)
