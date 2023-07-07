@@ -3,6 +3,8 @@ library(ggtext)
 library(cowplot)
 library(grid)
 library(ggplotify)
+library(rstan)
+library(here)
 
 ps <- .75 # gulmon
 pg <- .92 # gulmon
@@ -16,41 +18,212 @@ params2 <- read.csv(paste(datpath, "params2_LGS.csv", sep = "")) # parameters fr
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) %>%
   rename(w_trt=type_year)
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
+stems_dat <-  read.csv(paste(datpath, "/stems_background.csv", sep = "")) %>%
+  filter(seed_sp != "FEMI") %>%
+  mutate(recruit=stem_density/seed_added) 
 
-## Run code from equil-abundance-by-trt.R script to get equilibrium conditions
-# for each species in isolation to get species_eq dataframe
-source("equil-abund-by-trt.R")
+##survival and germination fractions
+ps <- .75 # gulmon
+pg <- .92 # gulmon
+bs <- .013 # andrew
+bg <- .98 # gulmon
+ls <- .15 # rossington
+lg <- .32 # rossington
 
-cover_dat <- cover %>%
-  filter(species == "BRMO" | species == "PLER" | species == "LAPL") %>%
-  group_by(year, species) %>%
-  summarize(mean_cover = mean(cover)) %>%
-  filter(year == 1983) %>%
-  mutate(species = c("Bromus","Layia","Plantago"))
+##Load stan models from Stan models folder
+load(here("Stan models","no_dist_seeds_pler_hi_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_hi_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_hi_int.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_hi_lo.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_hi_lo.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_lo_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_lo_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_lo_hi.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_lo_int.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_lo_int.Rdata"))
+load(here("Stan models","no_dist_seeds_lapl_lo_int.Rdata"))
+load(here("Stan models","no_dist_seeds_pler_lo_lo.Rdata"))
+load(here("Stan models","no_dist_seeds_brho_lo_lo.Rdata"))
 
-cover_dat <- left_join(cover_dat,trt)
-cover_dat <- left_join(cover_dat,species_eq) 
+#Extract parameters from models and rename 
+brho_hi_hi <- rstan::extract(no_dist_seeds_brho_hi_hi)
+brho_hi_int <- rstan::extract(no_dist_seeds_brho_hi_int)
+brho_hi_lo <- rstan::extract(no_dist_seeds_brho_hi_lo)
+brho_lo_hi <- rstan::extract(no_dist_seeds_brho_lo_hi)
+brho_lo_int <- rstan::extract(no_dist_seeds_brho_lo_int)
+brho_lo_lo <- rstan::extract(no_dist_seeds_brho_lo_lo)
+lapl_hi_hi <- rstan::extract(no_dist_seeds_lapl_hi_hi)
+lapl_hi_int <- rstan::extract(no_dist_seeds_lapl_hi_int)
+lapl_lo_hi <- rstan::extract(no_dist_seeds_lapl_lo_hi)
+lapl_lo_int <- rstan::extract(no_dist_seeds_lapl_lo_int)
+pler_hi_hi <- rstan::extract(no_dist_seeds_pler_hi_hi)
+pler_hi_int <- rstan::extract(no_dist_seeds_pler_hi_int)
+pler_hi_lo <- rstan::extract(no_dist_seeds_pler_hi_lo)
+pler_lo_hi <- rstan::extract(no_dist_seeds_pler_lo_hi)
+pler_lo_int <- rstan::extract(no_dist_seeds_pler_lo_int)
+pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
 
-cover_dat <- cover_dat %>%
-  mutate(abundance_sqcm = ((mean_cover*equil_abundance)/103.2256))
-#cover_dat$abundance_sqcm[cover_dat$abundance_sqcm==0] <- 0.1
-cover_dat <- cover_dat %>%  
-  select(-3:-7) %>%
-  pivot_wider(names_from = species, values_from = abundance_sqcm)
+##hi water hi N posteriors
+# brho
+posterior_length <- length(brho_hi_hi$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+blambda <- brho_hi_hi$lambda[posts]
+bab <- brho_hi_hi$alpha_brho[posts]
+bap <- brho_hi_hi$alpha_pler[posts]
+bal <- brho_hi_hi$alpha_lapl[posts]
+#lapl
+posterior_length <- length(lapl_hi_hi$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+llambda <- lapl_hi_hi$lambda[posts]
+lal <- lapl_hi_hi$alpha_lapl[posts]
+lap <- lapl_hi_hi$alpha_pler[posts]
+lab <- lapl_hi_hi$alpha_brho[posts]
+#pler
+posterior_length <- length(pler_hi_hi$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+plambda <- pler_hi_hi$lambda[posts]
+pap <- pler_hi_hi$alpha_pler[posts]
+pab <- pler_hi_hi$alpha_brho[posts]
+pal <- pler_hi_hi$alpha_lapl[posts]
 
-params2_dat <- params2 %>%
-  separate(treatments, into = c("w_trt","n_trt"),sep=-5)
-params2_dat$w_trt[params2_dat$w_trt == c("hi.water","hi.water.","hi.water")] <- "Wet"
-params2_dat$w_trt[params2_dat$w_trt == c("lo.water", "lo.water.","lo.water")] <- "Dry"
-params2_dat$n_trt[params2_dat$n_trt == ".hi.N"] <- "hi.N"
-params2_dat$n_trt[params2_dat$n_trt == ".lo.N"] <- "lo.N"
-params2_dat$w_trt <- as.factor(params2_dat$w_trt)
-params2_dat$n_trt <- as.factor(params2_dat$n_trt) # parameters in a different format
+hi_hi_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambda,pap,pab,pal))%>%
+  mutate(w_trt="Wet",n_trt="hi.N")
 
-cov_trt <- left_join(cover_dat,trt)
-trt_params <- left_join(trt,params2_dat)
+##hi water int N posteriors
+# brho
+posterior_length <- length(brho_hi_int$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+blambda <- brho_hi_int$lambda[posts]
+bab <- brho_hi_int$alpha_brho[posts]
+bap <- brho_hi_int$alpha_pler[posts]
+bal <- brho_hi_int$alpha_lapl[posts]
+#lapl
+posterior_length <- length(lapl_hi_int$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+llambda <- lapl_hi_int$lambda[posts]
+lal <- lapl_hi_int$alpha_lapl[posts]
+lap <- lapl_hi_int$alpha_pler[posts]
+lab <- lapl_hi_int$alpha_brho[posts]
+#pler
+posterior_length <- length(pler_hi_int$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+plambda <- pler_hi_int$lambda[posts]
+pap <- pler_hi_int$alpha_pler[posts]
+pab <- pler_hi_int$alpha_brho[posts]
+pal <- pler_hi_int$alpha_lapl[posts]
 
-start_dat <- full_join(cov_trt, trt_params) 
+hi_int_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambda,pap,pab,pal))%>%
+  mutate(w_trt="Wet",n_trt="int.N")
+
+##hi water lo N posteriors
+# brho
+posterior_length <- length(brho_hi_lo$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+blambda <- brho_hi_lo$lambda[posts]
+bab <- brho_hi_lo$alpha_brho[posts]
+bap <- brho_hi_lo$alpha_pler[posts]
+bal <- brho_hi_lo$alpha_lapl[posts]
+#lapl
+llambda <- 0
+lal <- 0
+lap <- 0
+lab <- 0
+#pler
+posterior_length <- length(pler_hi_lo$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+plambda <- pler_hi_lo$lambda[posts]
+pap <- pler_hi_lo$alpha_pler[posts]
+pab <- pler_hi_lo$alpha_brho[posts]
+pal <- pler_hi_lo$alpha_lapl[posts]
+
+hi_lo_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambda,pap,pab,pal))%>%
+  mutate(w_trt="Wet",n_trt="lo.N")
+
+##lo water hi N posteriors
+# brho
+posterior_length <- length(brho_lo_hi$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+blambda <- brho_lo_hi$lambda[posts]
+bab <- brho_lo_hi$alpha_brho[posts]
+bap <- brho_lo_hi$alpha_pler[posts]
+bal <- brho_lo_hi$alpha_lapl[posts]
+#lapl
+posterior_length <- length(lapl_lo_hi$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+llambda <- lapl_lo_hi$lambda[posts]
+lal <- lapl_lo_hi$alpha_lapl[posts]
+lap <- lapl_lo_hi$alpha_pler[posts]
+lab <- lapl_lo_hi$alpha_brho[posts]
+#pler
+posterior_length <- length(pler_lo_hi$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+plambda <- pler_lo_hi$lambda[posts]
+pap <- pler_lo_hi$alpha_pler[posts]
+pab <- pler_lo_hi$alpha_brho[posts]
+pal <- pler_lo_hi$alpha_lapl[posts]
+
+lo_hi_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambda,pap,pab,pal))%>%
+  mutate(w_trt="Dry",n_trt="hi.N")
+
+##lo water int N posteriors
+# brho
+posterior_length <- length(brho_lo_int$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+blambda <- brho_lo_int$lambda[posts]
+bab <- brho_lo_int$alpha_brho[posts]
+bap <- brho_lo_int$alpha_pler[posts]
+bal <- brho_lo_int$alpha_lapl[posts]
+#lapl
+posterior_length <- length(lapl_lo_int$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+llambda <- lapl_lo_int$lambda[posts]
+lal <- lapl_lo_int$alpha_lapl[posts]
+lap <- lapl_lo_int$alpha_pler[posts]
+lab <- lapl_lo_int$alpha_brho[posts]
+#pler
+posterior_length <- length(pler_lo_int$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+plambda <- pler_lo_int$lambda[posts]
+pap <- pler_lo_int$alpha_pler[posts]
+pab <- pler_lo_int$alpha_brho[posts]
+pal <- pler_lo_int$alpha_lapl[posts]
+
+lo_int_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambda,pap,pab,pal))%>%
+  mutate(w_trt="Dry",n_trt="int.N")
+
+##lo water lo N posteriors
+# brho
+posterior_length <- length(brho_lo_lo$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+blambda <- brho_lo_lo$lambda[posts]
+bab <- brho_lo_lo$alpha_brho[posts]
+bap <- brho_lo_lo$alpha_pler[posts]
+bal <- brho_lo_lo$alpha_lapl[posts]
+#lapl
+llambda <- 0
+lal <- 0
+lap <- 0
+lab <- 0
+#pler
+posterior_length <- length(pler_lo_lo$lambda)
+posts <- sample(posterior_length, 2000, replace=FALSE)
+plambda <- pler_lo_lo$lambda[posts]
+pap <- pler_lo_lo$alpha_pler[posts]
+pab <- pler_lo_lo$alpha_brho[posts]
+pal <- pler_lo_lo$alpha_lapl[posts]
+
+lo_lo_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambda,pap,pab,pal))%>%
+  mutate(w_trt="Dry",n_trt="lo.N")
+
+posts <- as.data.frame(rbind(hi_hi_posts,hi_int_posts,hi_lo_posts,lo_hi_posts,lo_int_posts,lo_lo_posts)) 
+
+##join posts with trt dataframe
+trt_posts <- full_join(trt,posts)
+
+start_dat <- full_join(cov_trt, trt_posts) 
 
 #####################################
 ########## Simulation ###############
