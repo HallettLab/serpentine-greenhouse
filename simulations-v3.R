@@ -18,9 +18,9 @@ lg <- .32 # rossington
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) %>%
   rename(w_trt=type_year)
 cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
-stems_dat <-  read.csv(paste(datpath, "/stems_background.csv", sep = "")) %>%
-  filter(seed_sp != "FEMI") %>%
-  mutate(recruit=stem_density/seed_added) 
+#stems_dat <-  read.csv(paste(datpath, "/stems_background.csv", sep = "")) %>%
+  #filter(seed_sp != "FEMI") %>%
+  #mutate(recruit=stem_density/seed_added) 
 
 ##survival and germination fractions
 ps <- .75 # gulmon
@@ -234,30 +234,35 @@ cover_trt <- left_join(cover_dat,trt) %>%
   rename(BRHO = BRMO) %>%
   mutate(BRHO = BRHO*16,PLER=PLER*128,LAPL=LAPL*0)
 
-start_dat <- left_join(trt_posts,cover_trt) 
+ 
 
 #####################################
 ########## Simulation ###############
 #####################################
 
-start_dat <- start_dat %>%
-  filter(year !=1983) 
-
-#year <- length(1:72001)
-
 ## all species sim 1 without altering bromus germination
-N = as.data.frame(matrix(NA, nrow=72001, ncol=3))
-colnames(N) = c("Nb", "Nl","Np")
-N[1,] = c(cover_trt$BRHO,cover_trt$LAPL,cover_trt$PLER)
+#N = as.data.frame(matrix(NA, nrow=72001, ncol=3))
+#colnames(N) = c("Nb", "Nl","Np")
+alldat0 <- left_join(trt_posts,cover_trt) %>%
+  filter(year !=1983) %>%
+  select(-BRHO, -LAPL, -PLER)
 
-growth = function(N, start_dat,replicate.var){
-  replicate.var = N[1,1]
-  for (i in 1:(replicate.var-1)){
-    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*bg*N$Nb[i] + start_dat$bal[i]*lg*N$Nl[i]))
+key <- as.data.frame(cbind(replicate.var=rep(seq(1:2000),36)))
+
+alldat <- cbind(key, alldat0) %>%
+  mutate(Nb = cover_trt$BRHO, Nl=cover_trt$LAPL, Np=cover_trt$PLER)
+  
+dummy <- alldat %>%
+  filter(replicate.var == 1)
+
+growth = function(N){
+
+  for (i in 1:(nrow(N)-1)){
+    N$Nb[i+1] = bs*(1-bg)*N$Nb[i]  + bg*N$Nb[i]*(N$blambda[i]/(1 + N$bap[i]*pg*N$Np[i] + N$bab[i]*bg*N$Nb[i] + N$bal[i]*lg*N$Nl[i]))
     
-    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*bg*N$Nb[i] + start_dat$pal[i]*lg*N$Nl[i]))
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(N$plambda[i]/(1 + N$pap[i]*pg*N$Np[i] + N$pab[i]*bg*N$Nb[i] + N$pal[i]*lg*N$Nl[i]))
     
-    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lab[i]*bg*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(N$llambda[i]/(1 + N$lal[i]*lg*N$Nl[i] + N$lab[i]*bg*N$Nb[i] + N$lap[i]*pg*N$Np[i]))
    
     N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
     
@@ -267,30 +272,31 @@ growth = function(N, start_dat,replicate.var){
   return(N)
 }
 
-X[[1]]
 
 
-X[[1]]
+growth(dummy)
 
 
-index <- cbind(replicate.var=rep(seq(1:2000),36))
-start <- cbind(start_dat,index) 
-start <- start[order(start[["replicate.var"]]),]
-X <- split(start, start["replicate.var"])
-out <- lapply(X, FUN=growth, start_dat)
-reps <- unique(start["replicate.var"])
-output <- cbind(reps, do.call("rbind", out))
-names(output) = c("replicate.var", "year","water_trt","n_trt","blambda","bab",
-                  "bap","bal","llambda","lal","lap","lab","plambda","pap",
-                  "pab","pal","BRHO","LAPL","PLER")
+X <- split(alldat, alldat["replicate.var"])
+out <- lapply(X, FUN=growth)
+output <- do.call("rbind",out)
 
-growth(X[1], replicate.var = "year")
 
-Nblp <- growth(N,start_dat,year) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")%>%
-Nblp$species[Nblp$species == "Nb"] <- "Bromus"
-Nblp$species[Nblp$species == "Nl"] <- "Layia"
-Nblp$species[Nblp$species == "Np"] <- "Plantago"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## all species sim with bromus germination = 0
 #BRHO, PLER, and LAPL
