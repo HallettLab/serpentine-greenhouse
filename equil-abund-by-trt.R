@@ -855,6 +855,9 @@ species_eq$n_trt[species_eq$n_trt == "hi"] <- "hi.N"
 species_eq$n_trt[species_eq$n_trt == "int"] <- "int.N"
 species_eq$n_trt[species_eq$n_trt == "lo"] <- "lo.N"
 
+species_eq_ntrt <- species_eq %>%
+  group_by(species,n_trt) %>%
+  summarize(mean_eq = mean(equil_abundance))
 
 
 
