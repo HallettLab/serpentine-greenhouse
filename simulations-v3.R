@@ -241,8 +241,7 @@ cover_trt <- left_join(cover_dat,trt) %>%
 #####################################
 
 ## all species sim 1 without altering bromus germination
-#N = as.data.frame(matrix(NA, nrow=72001, ncol=3))
-#colnames(N) = c("Nb", "Nl","Np")
+
 alldat0 <- left_join(trt_posts,cover_trt) %>%
   filter(year !=1983) %>%
   select(-BRHO, -LAPL, -PLER)
@@ -254,6 +253,8 @@ alldat <- cbind(key, alldat0) %>%
   
 dummy <- alldat %>%
   filter(replicate.var == 1)
+
+bg <- .98 
 
 growth = function(N){
 
@@ -272,92 +273,62 @@ growth = function(N){
   return(N)
 }
 
-
-
 growth(dummy)
+
+X <- split(alldat, alldat["replicate.var"])
+out <- lapply(X, FUN=growth)
+output_sim1 <- do.call("rbind",out)
+
+
+## all species sim with bromus germination = 1/2 for 18 years and full for another 18
+#BRHO, PLER, and LAPL
+g0 <- rep(0.49,36000)
+g1 <- rep(0.98,36000)
+bg2 <- c(g0,g1)
+
+growth = function(N){
+  
+  for (i in 1:(nrow(N)-1)){
+    N$Nb[i+1] = bs*(1-bg2)*N$Nb[i]  + bg2*N$Nb[i]*(N$blambda[i]/(1 + N$bap[i]*pg*N$Np[i] + N$bab[i]*bg2*N$Nb[i] + N$bal[i]*lg*N$Nl[i]))
+    
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(N$plambda[i]/(1 + N$pap[i]*pg*N$Np[i] + N$pab[i]*bg2*N$Nb[i] + N$pal[i]*lg*N$Nl[i]))
+    
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(N$llambda[i]/(1 + N$lal[i]*lg*N$Nl[i] + N$lab[i]*bg2*N$Nb[i] + N$lap[i]*pg*N$Np[i]))
+    
+    N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
+    
+    
+  }
+  
+  return(N)
+}
 
 
 X <- split(alldat, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
-output <- do.call("rbind",out)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## all species sim with bromus germination = 0
-#BRHO, PLER, and LAPL
-brho_bg <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98,.98)
-start_dat_brho <- start_dat %>%
-  cbind(bg = brho_bg)
-
-N = as.data.frame(matrix(NA, nrow=37, ncol=3))
-colnames(N) = c("Nb", "Nl","Np")
-N[1,] =c(cov_trt$Bromus,cov_trt$Layia,cov_trt$Plantago)
-
-growth = function(N, start_dat,year){
-  for (i in 1:(year-1)){
-    N$Nb[i+1] = bs*(1-start_dat_brho$bg[i])*N$Nb[i]  + start_dat_brho$bg[i]*N$Nb[i]*(start_dat$blambda[i]/(1 + start_dat$bap[i]*pg*N$Np[i] + start_dat$bab[i]*start_dat_brho$bg[i]*N$Nb[i] + start_dat$bal[i]*lg*N$Nl[i]))
-    N$Nb[i+1] = ifelse(N$Nb[i+1]<0.1,0.1,N$Nb[i+1])
-    
-    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pab[i]*start_dat_brho$bg[i]*N$Nb[i]+ start_dat$pal[i]*lg*N$Nl[i]))
-    
-    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lab[i]*start_dat_brho$bg[i]*N$Nb[i] + start_dat$lap[i]*pg*N$Np[i]))
-    N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
-    
-    
-  }
-  
-  return(N)
-}
-
-
-Nblp2 <- growth(N,start_dat,year) %>%
-  mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance") %>%
-  mutate(sqrt_abundance=sqrt(abundance))
-Nblp2$species[Nblp2$species == "Nb"] <- "Bromus"
-Nblp2$species[Nblp2$species == "Np"] <- "Plantago"
-Nblp2$species[Nblp2$species == "Nl"] <- "Layia"
+output_sim2 <- do.call("rbind",out)
 
 ## PLER and LAPL sim
-N = as.data.frame(matrix(NA, nrow=37, ncol=2))
-colnames(N) = c("Np", "Nl")
-N[1,] =c(cov_trt$Plantago,cov_trt$Layia)
 
-
-growth = function(N, start_dat,year){
-  for (i in 1:(year-1)){
+growth = function(N){
+  
+  for (i in 1:(nrow(N)-1)){
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(N$plambda[i]/(1 + N$pap[i]*pg*N$Np[i] + N$pal[i]*lg*N$Nl[i]))
     
-    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(start_dat$plambda[i]/(1 + start_dat$pap[i]*pg*N$Np[i] + start_dat$pal[i]*lg*N$Nl[i]))
-    
-    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(start_dat$llambda[i]/(1 + start_dat$lal[i]*lg*N$Nl[i] + start_dat$lap[i]*pg*N$Np[i]))
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(N$llambda[i]/(1 + N$lal[i]*lg*N$Nl[i] + N$lap[i]*pg*N$Np[i]))
     N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
+    
     
   }
   
   return(N)
 }
 
-Nlp <- growth(N,start_dat,year) %>%
-  mutate(year = 1983:2019) %>%
-  pivot_longer(!year,names_to="species",values_to ="abundance")%>%
-  mutate(sqrt_abundance = sqrt(abundance))
-Nlp$species[Nlp$species == "Np"] <- "Plantago"
-Nlp$species[Nlp$species == "Nl"] <- "Layia"
+
+X <- split(alldat, alldat["replicate.var"])
+out <- lapply(X, FUN=growth)
+output_lp <- do.call("rbind",out)
+
 
 #########################
 #####Visualization#######
@@ -369,29 +340,67 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
               strip.text= element_text(size = 16),
               axis.text = element_text(size = 16))
 
-Nblp <- Nblp %>%
-  inner_join(trt)
+sim1_mean <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance") 
+sim1_sd <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=sd(Nb),Layia=sd(Nl),Plantago=sd(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "sd_abundance")
 
-Nblp2 <- Nblp2 %>%
-  inner_join(trt)
-
-Nlp <- Nlp %>%
-  inner_join(trt)
-
-
-blpN <- inner_join(Nblp,Nblp2) 
-
-blp2N <- blpN%>%
-  pivot_longer(3:4,names_to = "sim",values_to = "abundance") %>%
+sim1a <- left_join(sim1_mean,sim1_sd)%>%
+  inner_join(trt) %>%
+  mutate(sim = "sim1") 
+sim1b <- left_join(sim1_mean,sim1_sd)%>%
+  inner_join(trt) %>%
+  mutate(sim = "sim1") %>%
   add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
 
-blp2N$N <- factor(blp2N$N, levels = c("Low","Intermediate","High"))
+sim2_mean <- output_sim2 %>%
+  group_by(year) %>%
+  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance") 
+sim2_sd <- output_sim2 %>%
+  group_by(year) %>%
+  summarize(Bromus=sd(Nb),Layia=sd(Nl),Plantago=sd(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "sd_abundance")
 
-p <- ggplot(blp2N,aes(year,abundance,color=species)) +
+sim2a <- left_join(sim2_mean,sim2_sd)%>%
+  inner_join(trt) %>%
+  mutate(sim = "sim2") 
+sim2b <- left_join(sim2_mean,sim2_sd)%>%
+  inner_join(trt) %>%
+  mutate(sim = "sim2") %>%
+  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
+
+simbrho <- rbind(sim1a,sim2a) %>%
+  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
+
+simlp_mean <- output_lp %>%
+  group_by(year) %>%
+  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance") 
+simlp_sd <- output_lp %>%
+  group_by(year) %>%
+  summarize(Bromus=sd(Nb),Layia=sd(Nl),Plantago=sd(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "sd_abundance")
+
+simlp <- left_join(simlp_mean,simlp_sd)%>%
+  inner_join(trt) %>%
+  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
+
+sim1b$N <- factor(sim1b$N, levels = c("Low","Intermediate","High"))
+simbrho$N <- factor(simbrho$N, levels = c("Low","Intermediate","High"))
+sim2b$N <- factor(sim2b$N, levels = c("Low","Intermediate","High"))
+simlp$N <- factor(simlp$N, levels = c("Low","Intermediate","High"))
+
+
+p <- ggplot(simbrho,aes(year,mean_abundance,color=species)) +
   annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
   annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
   annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
-  geom_line(size = .8) + geom_point(size=1.3) + xlab("Year") +
+  geom_line(size = .8) + xlab("Year") +
   theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top") +
   facet_wrap(~sim,ncol=1)+
   ylab(expression(Abundance~(m^{"2"})))+
@@ -415,22 +424,76 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   annotate("text", x=2001,y=1200, label="Intermediate N") +
   annotate("text", x=2014,y=1200, label="High N") 
 
-lp <- ggplot(Nlp,aes(year,sqrt_abundance,color=species)) +
+lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,mean_abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
+  geom_errorbar(aes(ymin = mean_abundance-sd_abundance,ymax=mean_abundance+sd_abundance))+
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
   scale_x_continuous(expand = c(0.04,0.04))
 
-sim1 <- ggplot(Nblp,aes(year,sqrt_abundance,color=species)) +
+
+sim1_CI25 <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.25),Layia=quantile(Nl,probs = 0.25),Plantago=quantile(Np,probs = 0.25)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIlower") 
+sim1_CI75 <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.75),Layia=quantile(Nl,probs = 0.75),Plantago=quantile(Np,probs = 0.75)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIupper") 
+sim1_CI <- left_join(sim1_CI25,sim1_CI75)
+sim1_med <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=median(Nb),Layia=median(Nl),Plantago=median(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "median") 
+
+sim1 <- left_join(sim1_mean,sim1_CI) 
+sim1 <- left_join(sim1,sim1_med)
+cols <- c("mean_abundance","CIlower","CIupper","median")
+sim1[cols] <- log(sim1[cols])
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+sim1[is.nan(sim1)] <- 0
+sim1["mean_abundance"][sim1["mean_abundance"] == -Inf] <- 0
+sim1["median"][sim1["median"] == -Inf] <- 0
+sim1["CIlower"][sim1["CIlower"] == -Inf] <- 0
+sim1["CIupper"][sim1["CIupper"] == -Inf] <- 0
+sim1["median"][sim1["median"] == -Inf] <- 0
+sim1$mean_abundance <- ifelse(sim1$mean_abundance < 0, 0, sim1$mean_abundance)
+sim1$CIlower <- ifelse(sim1$CIlower < 0, 0, sim1$CIlower)
+sim1$CIupper <- ifelse(sim1$CIupper < 0, 0, sim1$CIupper)
+sim1$median <- ifelse(sim1$median < 0, 0, sim1$median)
+
+
+simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
+ # geom_line(aes(y=CIlower), size = .4) + 
+#  geom_line(aes(y=CIupper), size = .4) + 
+  
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04))
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04)) 
+  
 
-leg <- ggplot(Nblp,aes(year,abundance,color=species)) +
+ggplot(subset(output_sim1, year > 2000)) + geom_histogram(aes(x=Np)) + facet_wrap(~year)
+
+
+simulation2 <-  ggplot(sim2b,aes(year,mean_abundance,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_errorbar(aes(ymin = mean_abundance-sd_abundance,ymax=mean_abundance+sd_abundance))+
+  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04, 0.04))
+
+
+leg <- ggplot(sim1b,aes(year,mean_abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
@@ -447,16 +510,6 @@ g_legend <- function(a.gplot){
 } 
 
 legend <- as.ggplot(g_legend(leg))
-
-
-sim2 <-  ggplot(Nblp2,aes(year,sqrt_abundance,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04, 0.04))
-
 
 trt2 <- trt %>%
   mutate(gst = 1,n=NA) 
@@ -481,6 +534,6 @@ bar <- ggplot(trt2,aes(year,gst)) +
   guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))+
   geom_vline(xintercept=c(1994.5,2006.5))
 
-plot_grid(legend,lp,sim1,sim2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+plot_grid(legend,lp + scale_y_log10(),simulation1+ scale_y_log10(),simulation2+ scale_y_log10(),bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
 
