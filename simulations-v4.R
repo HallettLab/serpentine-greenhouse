@@ -353,10 +353,9 @@ simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
 ########################################################
 ## all species sim with changes in Bromus germination ##
 ########################################################
-g0 <- rep(0.245,24000)
-ghalf <- rep(0.49,24000)
-g1 <- rep(0.98,24000)
-bg2 <- c(g0,ghalf,g1)
+g0 <- rep(0.49, 40000)
+g1 <- rep(0.98,40000)
+bg2 <- c(g0,g1)
 
 growth = function(N){
   
