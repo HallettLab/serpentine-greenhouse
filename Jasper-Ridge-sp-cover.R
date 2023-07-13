@@ -18,20 +18,31 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 #BRHO, PLER, and LAPL
 dat <- read.csv(paste(datpath, "JR_cover_1mplot.csv", sep = "")) %>%
   filter(treatment == "c") %>%
-  filter(species == "PLER" | species == "BRMO" | species == "LAPL") %>%
-group_by(year,species) %>%
-  summarize(mean_cov = mean(cover), se_cov = calcSE(cover))
-
+  filter(species == "PLER" | species == "BRMO" | species == "LAPL") 
+jrdat <-  dat %>%
+  group_by(year,species) %>%
+  summarize(mean_cov = mean(cover))
+lower <- dat %>%
+  group_by(year,species) %>%
+  summarize(lower=quantile(cover,probs = 0.25))
+upper <- dat %>%
+  group_by(year,species) %>%
+  summarize(upper=quantile(cover,probs=0.75))
+CI <- left_join(lower,upper)
+jrdatCI <- left_join(jrdat,CI)
+  
 spp.labs <- c("Bromus", "Layia", "Plantago")
 names(spp.labs) <- c("BRMO","LAPL","PLER")
 
 #graph with species 
-jr <- ggplot(dat,aes(year,mean_cov,color=species)) + 
+jr <- ggplot(jrdatCI,aes(year,mean_cov,color=species)) + 
   geom_line(size=.8) + 
-  geom_errorbar(aes(x=year,y=mean_cov,ymin=mean_cov-se_cov,ymax=mean_cov+se_cov))+
-  ylab(expression(Percent~cover~(m^{"2"}))) +
+  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
+  ylab(expression(Percent~cover~(per~m^{"2"}))) +
   scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
                      labels = c("*Bromus*", "*Layia*", "*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
     scale_x_continuous(expand = c(0.04, 0.04)) +
   theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"), legend.position = "top")+
   xlab("Year") +
@@ -52,7 +63,7 @@ p <- ggplot(ppt, aes(x=year)) +
   geom_line(aes(y=growing_season_ppt),data=ppt[25:27,],colour="#de2d26",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[27:30,],colour="black",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#de2d26",size=.8)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[33:41,],colour="black",size=.8)+
   xlab("Year") +  
   ylab("Precipitation (mm)") +
   scale_x_continuous(expand = c(0.04, 0.04)) +

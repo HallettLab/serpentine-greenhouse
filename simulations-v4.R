@@ -342,8 +342,8 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  ylab(expression(Log~abundance~(per~m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
@@ -578,5 +578,33 @@ bar <- ggplot(trt2,aes(year,gst)) +
   geom_vline(xintercept=c(1994.5,2006.5))
 
 plot_grid(legend,lp,simulation1,simulation2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+
+#just simulation 1
+source("Jasper-Ridge-sp-cover.R")
+
+leg <- jr
+
+g_legend <- function(a.gplot){ 
+  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+  legend <- tmp$grobs[[leg]] 
+  legend
+} 
+
+legend <- as.ggplot(g_legend(leg))
+
+simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  ylab(expression(Log~median~abundance~(per~m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04)) 
+
+plot_grid(legend,simulation1,bar,ncol=1,align="v",rel_heights = c(.2,1,.4),labels = c("","a)","b)"))
+
 
 
