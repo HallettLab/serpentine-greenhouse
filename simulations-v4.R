@@ -220,7 +220,7 @@ lo_lo_posts <-as.data.frame(cbind(blambda,bab,bap,bal,llambda,lal,lap,lab,plambd
 
 posts <- as.data.frame(rbind(hi_hi_posts,hi_int_posts,hi_lo_posts,lo_hi_posts,lo_int_posts,lo_lo_posts))
 
-trt_posts <- left_join(trt,posts)
+trt_posts <- full_join(trt,posts)
 
 ##join posts with trt dataframe
 cover_dat <- cover %>%
@@ -232,9 +232,24 @@ cover_dat <- cover %>%
   pivot_wider(names_from=species,values_from=mean_cover) %>%
   mutate(year=1983)
 
+source("equil-abund-by-trt.R")
+#1983 is wet and low N
+species_eq_wet_lo <- species_eq %>%
+  filter(w_trt=="Wet") %>%
+  filter(n_trt=="lo.N") 
+
+BRHO_equil <- species_eq_wet_lo %>%
+  filter(species=="Bromus")
+
+LAPL_equil <- species_eq_wet_lo %>%
+  filter(species=="Layia")
+
+PLER_equil <- species_eq_wet_lo %>%
+  filter(species=="Plantago")
+
 cover_trt <- left_join(cover_dat,trt) %>%
   rename(BRHO = BRMO) %>%
-  mutate(BRHO = BRHO*16,PLER=PLER*128,LAPL=LAPL*0)
+  mutate(BRHO = BRHO*BRHO_equil$equil_abundance,PLER=PLER*PLER_equil$equil_abundance,LAPL=LAPL*LAPL_equil$equil_abundance)
 
  
 
@@ -248,15 +263,13 @@ alldat0 <- left_join(trt_posts,cover_trt) %>%
   filter(year !=1983) %>%
   select(-BRHO, -LAPL, -PLER)
 
-key <- as.data.frame(cbind(replicate.var=rep(seq(1:2000),36)))
+key <- as.data.frame(cbind(replicate.var=rep(seq(1:2000),40)))
 
 alldat <- cbind(key, alldat0) %>%
   mutate(Nb = cover_trt$BRHO, Nl=cover_trt$LAPL, Np=cover_trt$PLER)
   
 dummy <- alldat %>%
   filter(replicate.var == 1)
-
-bg <- .98 
 
 growth = function(N){
 
