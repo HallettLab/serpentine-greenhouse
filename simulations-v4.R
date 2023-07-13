@@ -417,8 +417,8 @@ sim2$median <- ifelse(sim2$median < 0, 0, sim2$median)
 simulation2 <-  ggplot(sim2,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
+  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
+  ylab(expression(Log~median~abundance~(per~m^{"2"})))+
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
@@ -566,7 +566,7 @@ trt2$n <- factor(trt2$n,levels = c("Low","Intermediate","High"))
 bar <- ggplot(trt2,aes(year,gst)) +
   geom_point(aes(year,gst,color=n),size=0,shape =15)+
   annotate("rect", xmin = -Inf, xmax = 1994.5, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow2") +
-  annotate("rect", xmin = 1994.5, xmax = 2006.5, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow3")+
+  annotate("rect", xmin = 1994.5, xmax =Inf, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow3")+
   annotate("rect", xmin = 2006.5, xmax = Inf, ymin = -Inf, ymax = Inf, alpha = 1, fill="snow4")+
   geom_point(size=3, aes(year,gst,shape=w_trt),inherit.aes = FALSE)+
   scale_shape_manual(name="Rainfall",values=c(1,16)) +
@@ -577,10 +577,16 @@ bar <- ggplot(trt2,aes(year,gst)) +
   guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))+
   geom_vline(xintercept=c(1994.5,2006.5))
 
-plot_grid(legend,lp,simulation1,simulation2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+plot_grid(legend,simulation1,simulation2,lp,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
-#just simulation 1
-source("Jasper-Ridge-sp-cover.R")
+#just simulation 1 and JR dat
+theme_set(theme_bw())
+theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+              strip.background = element_blank(),
+              text = element_text(size = 16),
+              strip.text= element_text(size = 16),
+              axis.text = element_text(size = 12))
+#source("Jasper-Ridge-sp-cover.R")
 
 leg <- jr
 
@@ -596,15 +602,15 @@ legend <- as.ggplot(g_legend(leg))
 simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
-  ylab(expression(Log~median~abundance~(per~m^{"2"})))+
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.title.y = element_blank()) +
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                     values=c("#D55E00","#0072B2","#009E73")) +
   scale_x_continuous(expand = c(0.04,0.04)) 
 
-plot_grid(legend,simulation1,bar,ncol=1,align="v",rel_heights = c(.2,1,.4),labels = c("","a)","b)"))
+
+plot_grid(jr,simulation1,bar,ncol=1,align="v",rel_heights = c(1,1,.4),labels = c("a)","b)","c)"))
 
 
 
