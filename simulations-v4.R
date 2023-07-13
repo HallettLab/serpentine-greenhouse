@@ -238,11 +238,11 @@ cover_trt <- left_join(cover_dat,trt) %>%
 
  
 
-#####################################
-########## Simulation ###############
-#####################################
+######################################
+########## Simulations ###############
+######################################
 
-## all species sim 1 without altering bromus germination
+###all species sim 1 without altering bromus germination###
 
 alldat0 <- left_join(trt_posts,cover_trt) %>%
   filter(year !=1983) %>%
@@ -281,12 +281,69 @@ X <- split(alldat, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
 output_sim1 <- do.call("rbind",out)
 
+## data manipulation
+sim1_mean <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance")
+sim1_CI25 <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.25),Layia=quantile(Nl,probs = 0.25),Plantago=quantile(Np,probs = 0.25)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIlower") 
+sim1_CI75 <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.75),Layia=quantile(Nl,probs = 0.75),Plantago=quantile(Np,probs = 0.75)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIupper") 
+sim1_CI <- left_join(sim1_CI25,sim1_CI75)
+sim1_med <- output_sim1 %>%
+  group_by(year) %>%
+  summarize(Bromus=median(Nb),Layia=median(Nl),Plantago=median(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "median") 
+sim1 <- left_join(sim1_mean,sim1_CI) 
+sim1 <- left_join(sim1,sim1_med)
+cols <- c("mean_abundance","CIlower","CIupper","median")
+sim1[cols] <- log(sim1[cols])
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+sim1[is.nan(sim1)] <- 0
+sim1["mean_abundance"][sim1["mean_abundance"] == -Inf] <- 0
+sim1["median"][sim1["median"] == -Inf] <- 0
+sim1["CIlower"][sim1["CIlower"] == -Inf] <- 0
+sim1["CIupper"][sim1["CIupper"] == -Inf] <- 0
+sim1["median"][sim1["median"] == -Inf] <- 0
+sim1$mean_abundance <- ifelse(sim1$mean_abundance < 0, 0, sim1$mean_abundance)
+sim1$CIlower <- ifelse(sim1$CIlower < 0, 0, sim1$CIlower)
+sim1$CIupper <- ifelse(sim1$CIupper < 0, 0, sim1$CIupper)
+sim1$median <- ifelse(sim1$median < 0, 0, sim1$median)
 
-## all species sim with bromus germination = 1/2 for 18 years and full for another 18
-#BRHO, PLER, and LAPL
-g0 <- rep(0.49,36000)
-g1 <- rep(0.98,36000)
-bg2 <- c(g0,g1)
+ggplot(subset(output_sim1, year > 2000)) + geom_histogram(aes(x=Np)) + facet_wrap(~year)
+
+## visualization
+theme_set(theme_bw())
+theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+              strip.background = element_blank(),
+              text = element_text(size = 16),
+              strip.text= element_text(size = 16),
+              axis.text = element_text(size = 16))
+
+simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04)) 
+
+########################################################
+## all species sim with changes in Bromus germination ##
+########################################################
+g0 <- rep(0.245,24000)
+ghalf <- rep(0.49,24000)
+g1 <- rep(0.98,24000)
+bg2 <- c(g0,ghalf,g1)
 
 growth = function(N){
   
@@ -310,8 +367,55 @@ X <- split(alldat, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
 output_sim2 <- do.call("rbind",out)
 
-## PLER and LAPL sim
+sim2_mean <- output_sim2 %>%
+  group_by(year) %>%
+  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance")
+sim2_CI25 <- output_sim2 %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.25),Layia=quantile(Nl,probs = 0.25),Plantago=quantile(Np,probs = 0.25)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIlower") 
+sim2_CI75 <- output_sim2 %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.75),Layia=quantile(Nl,probs = 0.75),Plantago=quantile(Np,probs = 0.75)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIupper") 
+sim2_CI <- left_join(sim2_CI25,sim2_CI75)
+sim2_med <- output_sim2 %>%
+  group_by(year) %>%
+  summarize(Bromus=median(Nb),Layia=median(Nl),Plantago=median(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "median") 
+sim2 <- left_join(sim2_mean,sim2_CI) 
+sim2 <- left_join(sim2,sim2_med)
+cols <- c("mean_abundance","CIlower","CIupper","median")
+sim2[cols] <- log(sim2[cols])
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+sim2[is.nan(sim2)] <- 0
+sim2["mean_abundance"][sim2["mean_abundance"] == -Inf] <- 0
+sim2["median"][sim2["median"] == -Inf] <- 0
+sim2["CIlower"][sim2["CIlower"] == -Inf] <- 0
+sim2["CIupper"][sim2["CIupper"] == -Inf] <- 0
+sim2["median"][sim2["median"] == -Inf] <- 0
+sim2$mean_abundance <- ifelse(sim2$mean_abundance < 0, 0, sim2$mean_abundance)
+sim2$CIlower <- ifelse(sim2$CIlower < 0, 0, sim2$CIlower)
+sim2$CIupper <- ifelse(sim2$CIupper < 0, 0, sim2$CIupper)
+sim2$median <- ifelse(sim2$median < 0, 0, sim2$median)
 
+
+simulation2 <-  ggplot(sim2,aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04, 0.04))
+
+#############################
+######PLER and LAPL sim######
+#############################
 growth = function(N){
   
   for (i in 1:(nrow(N)-1)){
@@ -329,74 +433,68 @@ growth = function(N){
 
 X <- split(alldat, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
-output_lp <- do.call("rbind",out)
+output_simlp <- do.call("rbind",out)
 
-
-#########################
-#####Visualization#######
-#########################
-theme_set(theme_bw())
-theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
-              strip.background = element_blank(),
-              text = element_text(size = 16),
-              strip.text= element_text(size = 16),
-              axis.text = element_text(size = 16))
-
-sim1_mean <- output_sim1 %>%
+##data manipulation
+simlp_mean <- output_simlp %>%
   group_by(year) %>%
   summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance") 
-sim1_sd <- output_sim1 %>%
+  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance")
+simlp_CI25 <- output_simlp %>%
   group_by(year) %>%
-  summarize(Bromus=sd(Nb),Layia=sd(Nl),Plantago=sd(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "sd_abundance")
+  summarize(Bromus=quantile(Nb,probs = 0.25),Layia=quantile(Nl,probs = 0.25),Plantago=quantile(Np,probs = 0.25)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIlower") 
+simlp_CI75 <- output_simlp %>%
+  group_by(year) %>%
+  summarize(Bromus=quantile(Nb,probs = 0.75),Layia=quantile(Nl,probs = 0.75),Plantago=quantile(Np,probs = 0.75)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "CIupper") 
+simlp_CI <- left_join(simlp_CI25,simlp_CI75)
+simlp_med <- output_simlp %>%
+  group_by(year) %>%
+  summarize(Bromus=median(Nb),Layia=median(Nl),Plantago=median(Np)) %>%
+  pivot_longer(2:4,names_to = "species",values_to = "median") 
+simlp <- left_join(simlp_mean,simlp_CI) 
+simlp <- left_join(simlp,simlp_med)
+cols <- c("mean_abundance","CIlower","CIupper","median")
+simlp[cols] <- log(simlp[cols])
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+simlp[is.nan(simlp)] <- 0
+simlp["mean_abundance"][simlp["mean_abundance"] == -Inf] <- 0
+simlp["median"][simlp["median"] == -Inf] <- 0
+simlp["CIlower"][simlp["CIlower"] == -Inf] <- 0
+simlp["CIupper"][simlp["CIupper"] == -Inf] <- 0
+simlp["median"][simlp["median"] == -Inf] <- 0
+simlp$mean_abundance <- ifelse(simlp$mean_abundance < 0, 0, simlp$mean_abundance)
+simlp$CIlower <- ifelse(simlp$CIlower < 0, 0, simlp$CIlower)
+simlp$CIupper <- ifelse(simlp$CIupper < 0, 0, simlp$CIupper)
+simlp$median <- ifelse(simlp$median < 0, 0, simlp$median)
 
-sim1a <- left_join(sim1_mean,sim1_sd)%>%
+##visualization
+lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
+  scale_fill_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
+                    values=c("#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04))
+
+
+
+
+################################
+#####Figure visualization#######
+################################
+sim1a <- sim1_mean %>%
   inner_join(trt) %>%
   mutate(sim = "sim1") 
-sim1b <- left_join(sim1_mean,sim1_sd)%>%
+sim2a <- sim2_mean%>%
   inner_join(trt) %>%
-  mutate(sim = "sim1") %>%
-  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
-
-sim2_mean <- output_sim2 %>%
-  group_by(year) %>%
-  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance") 
-sim2_sd <- output_sim2 %>%
-  group_by(year) %>%
-  summarize(Bromus=sd(Nb),Layia=sd(Nl),Plantago=sd(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "sd_abundance")
-
-sim2a <- left_join(sim2_mean,sim2_sd)%>%
-  inner_join(trt) %>%
-  mutate(sim = "sim2") 
-sim2b <- left_join(sim2_mean,sim2_sd)%>%
-  inner_join(trt) %>%
-  mutate(sim = "sim2") %>%
-  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
-
+  mutate(sim = "sim2")
 simbrho <- rbind(sim1a,sim2a) %>%
   add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
-
-simlp_mean <- output_lp %>%
-  group_by(year) %>%
-  summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "mean_abundance") 
-simlp_sd <- output_lp %>%
-  group_by(year) %>%
-  summarize(Bromus=sd(Nb),Layia=sd(Nl),Plantago=sd(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "sd_abundance")
-
-simlp <- left_join(simlp_mean,simlp_sd)%>%
-  inner_join(trt) %>%
-  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
-
-sim1b$N <- factor(sim1b$N, levels = c("Low","Intermediate","High"))
-simbrho$N <- factor(simbrho$N, levels = c("Low","Intermediate","High"))
-sim2b$N <- factor(sim2b$N, levels = c("Low","Intermediate","High"))
-simlp$N <- factor(simlp$N, levels = c("Low","Intermediate","High"))
-
 
 p <- ggplot(simbrho,aes(year,mean_abundance,color=species)) +
   annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
@@ -426,76 +524,7 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   annotate("text", x=2001,y=1200, label="Intermediate N") +
   annotate("text", x=2014,y=1200, label="High N") 
 
-lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,mean_abundance,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  geom_errorbar(aes(ymin = mean_abundance-sd_abundance,ymax=mean_abundance+sd_abundance))+
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
-  scale_x_continuous(expand = c(0.04,0.04))
-
-
-sim1_CI25 <- output_sim1 %>%
-  group_by(year) %>%
-  summarize(Bromus=quantile(Nb,probs = 0.25),Layia=quantile(Nl,probs = 0.25),Plantago=quantile(Np,probs = 0.25)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "CIlower") 
-sim1_CI75 <- output_sim1 %>%
-  group_by(year) %>%
-  summarize(Bromus=quantile(Nb,probs = 0.75),Layia=quantile(Nl,probs = 0.75),Plantago=quantile(Np,probs = 0.75)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "CIupper") 
-sim1_CI <- left_join(sim1_CI25,sim1_CI75)
-sim1_med <- output_sim1 %>%
-  group_by(year) %>%
-  summarize(Bromus=median(Nb),Layia=median(Nl),Plantago=median(Np)) %>%
-  pivot_longer(2:4,names_to = "species",values_to = "median") 
-
-sim1 <- left_join(sim1_mean,sim1_CI) 
-sim1 <- left_join(sim1,sim1_med)
-cols <- c("mean_abundance","CIlower","CIupper","median")
-sim1[cols] <- log(sim1[cols])
-is.nan.data.frame <- function(x)
-  do.call(cbind, lapply(x, is.nan))
-sim1[is.nan(sim1)] <- 0
-sim1["mean_abundance"][sim1["mean_abundance"] == -Inf] <- 0
-sim1["median"][sim1["median"] == -Inf] <- 0
-sim1["CIlower"][sim1["CIlower"] == -Inf] <- 0
-sim1["CIupper"][sim1["CIupper"] == -Inf] <- 0
-sim1["median"][sim1["median"] == -Inf] <- 0
-sim1$mean_abundance <- ifelse(sim1$mean_abundance < 0, 0, sim1$mean_abundance)
-sim1$CIlower <- ifelse(sim1$CIlower < 0, 0, sim1$CIlower)
-sim1$CIupper <- ifelse(sim1$CIupper < 0, 0, sim1$CIupper)
-sim1$median <- ifelse(sim1$median < 0, 0, sim1$median)
-
-
-simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
- # geom_line(aes(y=CIlower), size = .4) + 
-#  geom_line(aes(y=CIupper), size = .4) + 
-  
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04)) 
-  
-
-ggplot(subset(output_sim1, year > 2000)) + geom_histogram(aes(x=Np)) + facet_wrap(~year)
-
-
-simulation2 <-  ggplot(sim2b,aes(year,mean_abundance,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  geom_errorbar(aes(ymin = mean_abundance-sd_abundance,ymax=mean_abundance+sd_abundance))+
-  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.y = element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04, 0.04))
-
-
-leg <- ggplot(sim1b,aes(year,mean_abundance,color=species)) +
+leg <- ggplot(simbrho,aes(year,mean_abundance,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank()) +
   ylab(expression(Abundance~(m^{"2"})))+
@@ -536,6 +565,6 @@ bar <- ggplot(trt2,aes(year,gst)) +
   guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))+
   geom_vline(xintercept=c(1994.5,2006.5))
 
-plot_grid(legend,lp + scale_y_log10(),simulation1+ scale_y_log10(),simulation2+ scale_y_log10(),bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
+plot_grid(legend,lp,simulation1,simulation2,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
 
 
