@@ -67,12 +67,12 @@ p <- ggplot(ppt, aes(x=year)) +
   annotate("pointrange", x =1983, y =1250.442, 
            ymin = 1250.442, ymax = 1250.442,
            colour = "#3182bd")+
-  annotate("text",x=1983.5,y=1292,label=x,cohttp://127.0.0.1:18009/graphics/plot_zoom_png?width=1349&height=1098lour="#3182bd")+
+  annotate("text",x=1983.5,y=1292,label=x,colour="#3182bd")+
   annotate("pointrange", x =1998, y =1028.446, 
            ymin = 1028.446, ymax = 1028.446,
            colour = "#3182bd")+
   annotate("text", x=1998,y=1072,label=x,colour="#3182bd") +
-  annotate("pointrange", x=2017,y=859.028,ymin = 85http://127.0.0.1:18009/graphics/plot_zoom_png?width=1349&height=10989.028, ymax = 859.028,
+  annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
            colour = "#3182bd")+
   annotate("pointrange", x=2023,y=1537.54,ymin = 1537.54, ymax = 1537.54,
            colour = "#3182bd")+

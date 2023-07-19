@@ -486,7 +486,7 @@ simlp$median <- ifelse(simlp$median < 0, 0, simlp$median)
 lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank())+
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank(),axis.ticks.x = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
   scale_fill_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
@@ -607,10 +607,23 @@ simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
                      values=c("#D55E00","#0072B2","#009E73")) +
   scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04)) 
+  scale_x_continuous(expand = c(0.04,0.04))
+
+simulation2 <- ggplot(sim2,aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04)) +
+  ylab(expression(atop("Log median",paste("abundance (per  ",m^{2},")")))) 
 
 
-plot_grid(jr,simulation1,bar,ncol=1,align="v",rel_heights = c(1,1,.4),labels = c("a)","b)","c)"))
+
+
+plot_grid(legend,lp,simulation2,simulation1,bar,ncol=1,align="v",rel_heights = c(.1,1,1,1,.55),labels = c("","a)","b)","c)","d)"),label_y = 1.06,hjust = -2.5) 
 
 
 
