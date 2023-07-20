@@ -90,30 +90,33 @@ CI <- left_join(lower,upper)
 jrdatCI <- left_join(jrdat,CI)
 
 #graph with species 
+#without lomu
+jrnolomu <- jrdatCI %>%
+  filter(species != "Lolium") %>%
+  filter(year %in% 1983:2019)
 
-jr <- ggplot(jrdatCI,aes(year,med_cov,color=species)) + 
+jr <- ggplot(jrnolomu,aes(year,med_cov,color=species)) + 
   geom_line(size=.8) + 
   geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
   ylab("Percent cover") +
-  scale_color_manual(values=c("#D55E00","#0072B2","black","#009E73"),name = "Species", 
-                     labels = c("*Bromus*", "*Layia*","*Lolium*","*Plantago*"))+
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","Lolium","*Plantago*"),
-                    values=c("#D55E00","#0072B2","black","#009E73")) +
+  scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
   scale_x_continuous(expand = c(0.04, 0.04)) +
   xlab("Year") +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",legend.text = ggtext::element_markdown()) +
   theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))#, legend.position = "top")
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))
 
-
-leg <- ggplot(jrdatCI,aes(year,mean_cov,color=species)) + 
+legnolomu <- ggplot(jrnolomu,aes(year,med_cov,color=species)) + 
   geom_line(size=.8) + 
   geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
   ylab("Percent cover") +
-  scale_color_manual(values=c("#D55E00","#0072B2","black","#009E73"),name = "Species", 
-                     labels = c("*Bromus*", "*Layia*","*Lolium*", "*Plantago*"))+
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Lolium*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","black","#009E73")) +
+  scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
   scale_x_continuous(expand = c(0.04, 0.04)) +
   xlab("Year") +
   theme(legend.position = "top") +
@@ -122,6 +125,7 @@ leg <- ggplot(jrdatCI,aes(year,mean_cov,color=species)) +
   theme(legend.text = ggtext::element_markdown())
   
 
+
 g_legend <- function(a.gplot){ 
   tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
@@ -129,15 +133,80 @@ g_legend <- function(a.gplot){
   legend
 } 
 
-legend <- as.ggplot(g_legend(leg))
+legendnolomu <- as.ggplot(g_legend(legnolomu))
 
+#with lomu
+jrlomu <- ggplot(jrdatCI,aes(year,med_cov,color=species)) + 
+  geom_line(size=.8) + 
+  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
+  ylab("Percent cover") +
+  xlab("Year") +
+  scale_color_manual(values=c("#D55E00","#0072B2","black","#009E73"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Lolium*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Lolium*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","black","#009E73")) +
+  theme(legend.position = "none",legend.text = ggtext::element_markdown()) +
+  theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))
+
+
+
+leglomu <- ggplot(jrdatCI,aes(year,med_cov,color=species)) + 
+  geom_line(size=.8) + 
+  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
+  ylab("Percent cover") +
+  xlab("Year") +
+  scale_color_manual(values=c("#D55E00","#0072B2","black","#009E73"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Lolium*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Lolium*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","black","#009E73")) +
+  theme(legend.position = "top",legend.text = ggtext::element_markdown()) +
+  theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm"))
+
+g_legend <- function(a.gplot){ 
+  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+  legend <- tmp$grobs[[leg]] 
+  legend
+} 
+
+legendlomu <- as.ggplot(g_legend(leglomu))
 
 
 #rainfall
-ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
-  filter(year != 1982)
+ppt2019 <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
+  filter(year != 1982) %>%
+  filter(year %in% 1983:2019)
 
-p2 <- ggplot(ppt, aes(x=year)) + 
+ppt2023 <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
+  filter(year != 1982) 
+
+p2019 <- ggplot(ppt2019, aes(x=year)) + 
+  geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
+  geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#de2d26",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[9:25,],colour="black",size=.8) +
+  geom_line(aes(y=growing_season_ppt),data=ppt[25:27,],colour="#de2d26",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[27:30,],colour="black",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#de2d26",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
+  xlab("Year") + 
+  #ylab(expression(atop("Rainfall",paste("(mm)"))))+
+  ylab("Rainfall (mm)") +
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm")) +
+  geom_hline(yintercept=565, linetype="dashed")+
+  annotate("pointrange", x =1983, y =1250.442, 
+           ymin = 1250.442, ymax = 1250.442,
+           colour = "#3182bd")+
+  annotate("pointrange", x =1998, y =1028.446, 
+           ymin = 1028.446, ymax = 1028.446,
+           colour = "#3182bd")+
+  annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
+           colour = "#3182bd")+
+  scale_y_continuous(breaks = seq(0,1400,by=565))
+
+p2023 <- ggplot(ppt2023, aes(x=year)) + 
   geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
   geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#de2d26",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[9:25,],colour="black",size=.8) +
@@ -163,14 +232,32 @@ p2 <- ggplot(ppt, aes(x=year)) +
            colour = "#3182bd") +
   scale_y_continuous(breaks = seq(0,1600,by=565))
 
+#2019
 gjr <- ggplotGrob(jr)
-gp <- ggplotGrob(p2)
+gp <- ggplotGrob(p2019)
 maxWidth = grid::unit.pmax(gjr$widths[2:5], gp$widths[2:5])
 gjr$widths[2:5] <- as.list(maxWidth)
 gp$widths[2:5] <- as.list(maxWidth)
 grid.arrange(gjr,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7), 
+                                           y = c(.92,.51), gp = gpar(fontface = "bold", fontsize = 16)))
+
+#2023
+gjrlomu <- ggplotGrob(jrlomu)
+gp <- ggplotGrob(p2023)
+maxWidth = grid::unit.pmax(gjr$widths[2:5], gp$widths[2:5])
+gjr$widths[2:5] <- as.list(maxWidth)
+gp$widths[2:5] <- as.list(maxWidth)
+grid.arrange(gjrlomu,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7), 
                                     y = c(.92,.51), gp = gpar(fontface = "bold", fontsize = 16)))
 
-plot_grid(legend,jr,p2,ncol=1,align="v",rel_heights = c(.05,.6,.15),labels = c("","a)","b)"),hjust = -3,vjust=0)
+
+
+pdf("jr-timeseries-nolomu.pdf", width = , height = )
+plot_grid(legendnolomu,jr,p2019,ncol=1,align="v",rel_heights = c(.03,.2,.08),labels = c("","a)","b)"),hjust = -3,vjust=0)
+dev.off()
+
+pdf("jr-timeseries-lomu.pdf", width = , height = )
+plot_grid(legendlomu,jrlomu,p2023,ncol=1,align="v",rel_heights = c(.03,.2,.08),labels = c("","a)","b)"),hjust = -3,vjust=0)
+dev.off()
 
 
