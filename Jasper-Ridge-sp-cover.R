@@ -15,25 +15,28 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 #####################################
 ######Code for updated JR data#######
 #####################################
-#skip to line 52 to read in data produced by code below
-#BRHO, PLER, and LAPL 1983-2019
-dat <- read.csv(paste(datpath, "JR_cover_1mplot1983-2019.csv", sep = "")) %>%
-  filter(treatment == "c") %>%
-  filter(species == "PLER" | species == "BRMO" | species == "LAPL") %>%
-  mutate(species=case_when(species %in% "BRMO"~"Bromus",
-                           species %in%"LAPL" ~ "Layia",
-                           species %in% "PLER" ~"Plantago")) %>%
-  mutate_at(4,as.character)
-#BRHO, PLER, and LAPL 2021-2021
-cover <- read.csv(paste(datpath,"JR_cover2021-23.csv",sep=""))
-
-cov <- cover %>%
-  separate(1,into=c("treatment","trtrep"),sep=-1) %>%
-  rename(year=Year,species=Species,subplot=Quad,cover=Data) %>%
-  filter(species %in% c("Bromus","Layia","Plantago")) %>%
+#skip to line 78 to read in data by code produced below
+#1983-2019 1m^s plot cover
+dat <- read.csv(paste(datpath, "JR_cover_1mplot1983-2019.csv",sep="")) %>%
   mutate_at(4,as.character) %>%
+  filter(treatment=="c") %>%
+  filter(species=="BRMO"|species=="LAPL"|species =="LOMU"|species=="PLER") %>%
+  mutate(species = case_when(species %in% "BRMO" ~ "Bromus",
+                             species %in% "LAPL" ~ "Layia",
+                             species %in% "LOMU" ~ "Lolium",
+                             species %in% "PLER" ~ "Plantago"))
+#convert 2021-23 cover to 1m^2 plot 
+dat_upd <- read.csv(paste(datpath, "JR_cover2021-23.csv", sep = ""))
+
+cover_upd <- dat_upd %>%
+  separate(1,into=c("treatment","trtrep"),sep=1) %>%
+  mutate(treatment = "c") %>%
+  filter(treatment == "c") %>%
+  rename(year=Year,species=Species,cover=Data,subplot=Quad) %>%
+  select(-8) %>%
+  filter(species == "Plantago" | species == "Bromus" | species == "Layia" | species == "Lolium") %>%
   mutate_at(6,as.numeric) %>%
-  select(-8)
+  mutate_at(4,as.character) 
 
 # create a key to aggregate 0.5 m x 0.5 m subplots into 1 m x 1 m plots
 top_block1 <- cbind(c(1,2,7,8), rep("block1_top", 4))
@@ -57,48 +60,45 @@ key <- key %>%
 
 rm(top_block1, top_block2, middle_block1, middle_block2, bottom_block1, bottom_block2)
 
-
 # merge JRcover and key; aggregate at the 1 m x 1 m plot scale
-JRm2cover <- merge(cov, key) %>%
+JRm2cover <- merge(cover_upd, key) %>%
   tbl_df() %>%
   group_by(year, species, treatment, trtrep, plot) %>%
   summarize(cover=mean(cover)) %>%
-  mutate(uniqueID=paste(treatment, trtrep, plot, sep="_")) %>%
+  mutate(uniqueID=paste(treatment, trtrep, sep="_")) %>%
   #removing the middle block for independence
   filter(plot!="block1_middle", plot!="block2_middle") %>%
-  mutate(treatment="c") %>%
-  rename()
+  mutate(treatment="c") 
 
-comp_cover <- rbind(dat,JRm2cover)
+cover_complete <- rbind(dat,JRm2cover)
 
-#write.csv(comp_cover,"JR_cover_1mplot1983-2023.csv")
+#write.csv(cover_complete,"JR_cover_1mplot1983-2023.csv")
 #################################################################
 
-comp_cover <- read.csv(paste(datpath,"JR_cover_1mplot1983-2023.csv",sep=""))
+cover_complete <- read.csv(paste(datpath,"JR_cover_1mplot1983-2023.csv",sep=""))
 
-jrdat <-  comp_cover %>%
+jrdat <-  cover_complete %>%
   group_by(year,species) %>%
-  summarize(mean_cov = mean(cover))
-lower <- comp_cover %>%
+  summarize(mean_cov = mean(cover),med_cov = median(cover))
+lower <- cover_complete %>%
   group_by(year,species) %>%
   summarize(lower=quantile(cover,probs = 0.25))
-upper <- comp_cover %>%
+upper <- cover_complete %>%
   group_by(year,species) %>%
   summarize(upper=quantile(cover,probs=0.75))
 CI <- left_join(lower,upper)
 jrdatCI <- left_join(jrdat,CI)
 
-
 #graph with species 
 
-jr <- ggplot(jrdatCI,aes(year,mean_cov,color=species)) + 
+jr <- ggplot(jrdatCI,aes(year,med_cov,color=species)) + 
   geom_line(size=.8) + 
   geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
   ylab("Percent cover") +
-  scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
-                     labels = c("*Bromus*", "*Layia*", "*Plantago*"))+
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_color_manual(values=c("#D55E00","#0072B2","black","#009E73"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Lolium*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","Lolium","*Plantago*"),
+                    values=c("#D55E00","#0072B2","black","#009E73")) +
   scale_x_continuous(expand = c(0.04, 0.04)) +
   xlab("Year") +
   theme(legend.position = "none") +
@@ -110,10 +110,10 @@ leg <- ggplot(jrdatCI,aes(year,mean_cov,color=species)) +
   geom_line(size=.8) + 
   geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
   ylab("Percent cover") +
-  scale_color_manual(values=c("#D55E00","#0072B2","#009E73"),name = "Species", 
-                     labels = c("*Bromus*", "*Layia*", "*Plantago*"))+
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_color_manual(values=c("#D55E00","#0072B2","black","#009E73"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Lolium*", "*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Lolium*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","black","#009E73")) +
   scale_x_continuous(expand = c(0.04, 0.04)) +
   xlab("Year") +
   theme(legend.position = "top") +
