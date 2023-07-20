@@ -2139,6 +2139,8 @@ levels(mean_sd_LDGR$invader_resident)= c("pler_lapl"=expression("*Plantago* inva
                                          "lapl_brho"=expression("*Layia* invading *Bromus*"),
                                          "brho_lapl"=expression("*Bromus* invading *Layia*"))
 
+
+
 theme_set(theme_bw())
 theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
               strip.background = element_blank(),
@@ -2146,26 +2148,18 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
               strip.text= element_text(size = 16),
               axis.text = element_text(size = 16))
 
-ggplot(mean_sd_LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
-                                 ymax=mean_LDGR+sd_LDGR, fill = water_trt)) + 
+grwr <- ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
+                                 ymax=mean_LDGR+sd_LDGR, fill = invader_water)) + 
   geom_bar(stat="identity", position = position_dodge()) + 
-  facet_wrap(~invader_resident,nrow=3,labeller = labeller(type=label_parsed)) +
-  theme(strip.text.x = element_markdown())+
+  facet_wrap(~invader_resident,nrow=3) +
+  theme(strip.text.x = element_blank(),legend.position= "none")+
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
-  scale_fill_manual(name="Water treatments", labels = c("Dry","Wet"), 
-                    values=c("azure3","azure4")) +
+  scale_fill_manual(name="Water treatments", 
+                    values=c("#D55E00","#f79f59","#0072B2","#49a0d1","#009E73","#5fc9ac")) +
   geom_hline(yintercept = 0)+
   geom_errorbar(position = position_dodge(0.9),width=0.1)
 
-ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
-                         ymax=mean_LDGR+sd_LDGR, fill = water_trt)) + 
-  geom_bar(stat="identity", position = position_dodge()) + 
-  facet_wrap(~invader_resident,nrow=3,labeller = labeller(type=label_parsed)) +
-  theme(strip.text.x = element_markdown())+
-  ylab("Growth rate when rare") + xlab("N treatments") +
-  scale_x_discrete(labels = c("Low","Intermediate","High")) +
-  scale_fill_manual(name="Species water treatments", labels = c("Dry","Wet"), 
-                    values=c("azure3","azure4")) +
-  geom_hline(yintercept = 0)+
-  geom_errorbar(position = position_dodge(0.9),width=0.1)
+pdf("grwr.pdf", width = , height = )
+grwr
+dev.off()
