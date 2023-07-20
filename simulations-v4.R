@@ -16,8 +16,9 @@ lg <- .32 # rossington
 ## Read in data
 #params2 <- read.csv(paste(datpath, "params2_LGS.csv", sep = "")) # parameters from first stan model fits
 trt <- read.csv(paste(datpath, "years_trt.csv", sep = "")) %>%
-  rename(w_trt=type_year)
-cover <-read.csv(paste(datpath,"JR_cover_1mplot.csv",sep=""))
+  rename(w_trt=type_year) %>%
+  filter(year %in% 1983:2019)
+cover <-read.csv(paste(datpath,"JR_cover_1mplot1983-2019.csv",sep=""))
 #stems_dat <-  read.csv(paste(datpath, "/stems_background.csv", sep = "")) %>%
   #filter(seed_sp != "FEMI") %>%
   #mutate(recruit=stem_density/seed_added) 
@@ -329,27 +330,6 @@ sim1$CIlower <- ifelse(sim1$CIlower < 0, 0, sim1$CIlower)
 sim1$CIupper <- ifelse(sim1$CIupper < 0, 0, sim1$CIupper)
 sim1$median <- ifelse(sim1$median < 0, 0, sim1$median)
 
-ggplot(subset(output_sim1, year > 2000)) + geom_histogram(aes(x=Np)) + facet_wrap(~year)
-
-## visualization
-theme_set(theme_bw())
-theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
-              strip.background = element_blank(),
-              text = element_text(size = 16),
-              strip.text= element_text(size = 16),
-              axis.text = element_text(size = 16))
-
-simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
-  ylab(expression(Log~abundance~(per~m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04)) 
-
 ########################################################
 ## all species sim with changes in Bromus germination ##
 ########################################################
@@ -414,17 +394,6 @@ sim2$CIupper <- ifelse(sim2$CIupper < 0, 0, sim2$CIupper)
 sim2$median <- ifelse(sim2$median < 0, 0, sim2$median)
 
 
-simulation2 <-  ggplot(sim2,aes(year,median,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,0,5.5),"pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x = element_blank()) +
-  ylab(expression(Log~median~abundance~(per~m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04, 0.04))
-
 #############################
 ######PLER and LAPL sim######
 #############################
@@ -447,7 +416,10 @@ X <- split(alldat, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
 output_simlp <- do.call("rbind",out)
 
-##data manipulation
+
+##################################
+#########data manipulation########
+##################################
 simlp_mean <- output_simlp %>%
   group_by(year) %>%
   summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
@@ -480,44 +452,17 @@ simlp["median"][simlp["median"] == -Inf] <- 0
 simlp$mean_abundance <- ifelse(simlp$mean_abundance < 0, 0, simlp$mean_abundance)
 simlp$CIlower <- ifelse(simlp$CIlower < 0, 0, simlp$CIlower)
 simlp$CIupper <- ifelse(simlp$CIupper < 0, 0, simlp$CIupper)
-simlp$median <- ifelse(simlp$median < 0, 0, simlp$median)
-
-##visualization
-lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,median,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank(),axis.ticks.x = element_blank())+
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
-  scale_fill_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
-                    values=c("#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04))
-
-
-
+simlp$median <- ifelse(simlp$median < 0, 0, simlp$median
 
 ################################
 #####Figure visualization#######
 ################################
-sim1a <- sim1_mean %>%
-  inner_join(trt) %>%
-  mutate(sim = "sim1") 
-sim2a <- sim2_mean%>%
-  inner_join(trt) %>%
-  mutate(sim = "sim2")
-simbrho <- rbind(sim1a,sim2a) %>%
-  add_column(N = if_else(.$year < 1995,"Low",ifelse(.$year > 1995 & .$year > 2006, "High", "Intermediate")))
-
-p <- ggplot(simbrho,aes(year,mean_abundance,color=species)) +
-  annotate("rect", xmin = 1983, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2")+
-  annotate("rect", xmin = 1995, xmax = 2007, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow3")+
-  annotate("rect", xmin = 2007, xmax = 2019, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow4")+
-  geom_line(size = .8) + xlab("Year") +
-  theme(legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top") +
-  facet_wrap(~sim,ncol=1)+
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) 
+theme_set(theme_bw())
+theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+              strip.background = element_blank(),
+              text = element_text(size = 16),
+              strip.text= element_text(size = 16),
+              axis.text = element_text(size = 12))
 
 trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   annotate("rect", xmin = -Inf, xmax = 1995, min = -0.5, ymax = Inf, alpha = 0.6, fill="snow2") +
@@ -535,24 +480,6 @@ trts <- ggplot(trt,aes(year,growing_season_ppt)) +
   annotate("text", x=1988,y=1200, label="Low N")+
   annotate("text", x=2001,y=1200, label="Intermediate N") +
   annotate("text", x=2014,y=1200, label="High N") 
-
-leg <- ggplot(simbrho,aes(year,mean_abundance,color=species)) +
-  geom_line(size = .8) + xlab("Year") +
-  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank()) +
-  ylab(expression(Abundance~(m^{"2"})))+
-  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                     values=c("#D55E00","#0072B2","#009E73")) +
-  scale_x_continuous(expand = c(0.04,0.04))+
-  theme(legend.text = element_markdown())
-
-g_legend <- function(a.gplot){ 
-  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
-  legend <- tmp$grobs[[leg]] 
-  legend
-} 
-
-legend <- as.ggplot(g_legend(leg))
 
 trt2 <- trt %>%
   mutate(gst = 1,n=NA) 
@@ -577,27 +504,15 @@ bar <- ggplot(trt2,aes(year,gst)) +
   guides(color=guide_legend('N deposition',override.aes=list(color=c("snow2","snow3","snow4"),size=5)))+
   geom_vline(xintercept=c(1994.5,2006.5))
 
-plot_grid(legend,simulation1,simulation2,lp,bar,ncol=1,align="v",rel_heights = c(.2,1,1,1,.6),labels = c("","a)","b)","c)","d)"))
-
-#just simulation 1 and JR dat
-theme_set(theme_bw())
-theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
-              strip.background = element_blank(),
-              text = element_text(size = 16),
-              strip.text= element_text(size = 16),
-              axis.text = element_text(size = 12))
-#source("Jasper-Ridge-sp-cover.R")
-
-leg <- jr
-
-g_legend <- function(a.gplot){ 
-  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
-  legend <- tmp$grobs[[leg]] 
-  legend
-} 
-
-legend <- as.ggplot(g_legend(leg))
+lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank(),axis.ticks.x = element_blank())+
+  ylab(expression(Abundance~(m^{"2"})))+
+  scale_color_manual(values=c("#0072B2","#009E73"),guide=FALSE)+
+  scale_fill_manual(name = "Species",labels = c("*Layia*","*Plantago*"),
+                    values=c("#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04))
 
 simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
@@ -620,10 +535,32 @@ simulation2 <- ggplot(sim2,aes(year,median,color=species)) +
   scale_x_continuous(expand = c(0.04,0.04)) +
   ylab(expression(atop("Log median",paste("abundance (per  ",m^{2},")")))) 
 
+leg <- ggplot(sim2,aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  theme(legend.text = element_markdown(),
+        strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),
+        legend.position = "top",axis.text.x = element_blank(),axis.title.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#009E73")) +
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#009E73")) +
+  scale_x_continuous(expand = c(0.04,0.04)) +
+  ylab(expression(atop("Log median",paste("abundance (per  ",m^{2},")"))))
 
+g_legend <- function(a.gplot){ 
+  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+  legend <- tmp$grobs[[leg]] 
+  legend
+} 
 
+legend <- as.ggplot(g_legend(leg))
 
+pdf("sims.pdf", width = 8, height = 9)
 plot_grid(legend,lp,simulation2,simulation1,bar,ncol=1,align="v",rel_heights = c(.1,1,1,1,.55),labels = c("","a)","b)","c)","d)"),label_y = 1.06,hjust = -2.5) 
+dev.off()
 
 
 
