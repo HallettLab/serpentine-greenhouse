@@ -2118,8 +2118,8 @@ mean_sd_LDGR <- left_join(mean_LDGR,sd_LDGR)
 mean_sd_LDGR$n_trt <- factor(mean_sd_LDGR$n_trt, levels = c("lo","int","hi"))
 mean_sd_LDGR$water_trt <- factor(mean_sd_LDGR$water_trt, levels = c("lo","hi"))
 mean_sd_LDGR$invader_resident <- factor(mean_LDGR$invader_resident, 
-                                        levels = c("pler_lapl","lapl_pler","pler_brho",
-                                                   "brho_pler","lapl_brho","brho_lapl"))
+                                        levels = c("pler_brho","brho_pler","pler_lapl","lapl_pler",
+                                                   "lapl_brho","brho_lapl"))
 
 LDGR <- mean_sd_LDGR %>%
   mutate(invader_resident2=invader_resident) %>%
