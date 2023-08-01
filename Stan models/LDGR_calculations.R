@@ -2115,31 +2115,17 @@ mean_sd_LDGR <- left_join(mean_LDGR,sd_LDGR)
 ###################################################
 ###LDGR/GRWR data manipulation & visualization#####
 ###################################################
-mean_sd_LDGR$n_trt <- factor(mean_sd_LDGR$n_trt, levels = c("lo","int","hi"))
-mean_sd_LDGR$water_trt <- factor(mean_sd_LDGR$water_trt, levels = c("lo","hi"))
-mean_sd_LDGR$invader_resident <- factor(mean_LDGR$invader_resident, 
-                                        levels = c("pler_brho","brho_pler","pler_lapl","lapl_pler",
-                                                   "lapl_brho","brho_lapl"))
-
 LDGR <- mean_sd_LDGR %>%
   mutate(invader_resident2=invader_resident) %>%
   separate(1,into="invader",sep="_") %>%
   rename(invader_resident = invader_resident2) %>%
   unite("invader_water",1:2,sep = "_",remove = FALSE)
 
-sp.labs<- c("Plantago invading Layia","Layia invading Plantago","Plantago invading Bromus","Bromus invading Plantago","Layia invading Bromus","Bromus invading Layia")
-names(sp.labs) <- c("pler_lapl","lapl_pler","pler_brho",
-                    "brho_pler","lapl_brho","brho_lapl")
-
-
-levels(mean_sd_LDGR$invader_resident)= c("pler_lapl"=expression("*Plantago* invading *Layia*"),
-                                         "lapl_pler"=expression("*Layia* invading *Plantago*"),
-                                         "pler_brho"=expression("*Plantago* invading *Bromus*"),
-                                         "brho_pler"=expression("*Bromus* invading *Plantago*"),
-                                         "lapl_brho"=expression("*Layia* invading *Bromus*"),
-                                         "brho_lapl"=expression("*Bromus* invading *Layia*"))
-
-
+LDGR$invader_resident <- factor(LDGR$invader_resident, 
+                                        levels = c("pler_brho","pler_lapl","lapl_brho",
+                                                   "brho_pler","lapl_pler","brho_lapl"))
+LDGR$n_trt <- factor(mean_sd_LDGR$n_trt, levels = c("lo","int","hi"))
+LDGR$water_trt <- factor(mean_sd_LDGR$water_trt, levels = c("lo","hi"))
 
 theme_set(theme_bw())
 theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
@@ -2151,8 +2137,9 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 grwr <- ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
                                  ymax=mean_LDGR+sd_LDGR, fill = invader_water)) + 
   geom_bar(stat="identity", position = position_dodge()) + 
-  facet_wrap(~invader_resident,nrow=3) +
-  theme(strip.text.x = element_blank(),legend.position= "none")+
+  facet_wrap(~invader_resident) +
+  theme(strip.text.x = element_blank(),legend.position= "none",
+        axis.title = element_blank(),axis.text.x = element_blank())+
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", 
@@ -2160,6 +2147,6 @@ grwr <- ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
   geom_hline(yintercept = 0)+
   geom_errorbar(position = position_dodge(0.9),width=0.1)
 
-pdf("grwr.pdf", width = , height = )
+pdf("grwr.pdf", width = 7, height = 5)
 grwr
 dev.off()
