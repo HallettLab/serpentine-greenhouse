@@ -2143,10 +2143,15 @@ grwr <- ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", 
-                    values=c("#D55E00","#f79f59","#0072B2","#49a0d1","#009E73","#5fc9ac")) +
+                    values=c("#DD7E33","#F1CBAD","#0072B2","#99C6E0","#48B99B","#99D8C7")) +
   geom_hline(yintercept = 0)+
   geom_errorbar(position = position_dodge(0.9),width=0.1)
 
 pdf("grwr.pdf", width = 7, height = 5)
 grwr
 dev.off()
+
+cvdPlot(grwr)
+cvdPlot(replacePlotColor(displayColors(c("#DD7E33","#F1CBAD","#0072B2","#99C6E0","#48B99B","#99D8C7"))))
+
+
