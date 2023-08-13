@@ -189,7 +189,7 @@ ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
 ppt2023 <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
   filter(year != 1982) 
 
-p2019 <- ggplot(ppt2019, aes(x=year)) +
+p2019 <- ggplot(ppt, aes(x=year)) +
   geom_hline(yintercept=565, linetype="dashed",linewidth=0.2)+
   geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
   geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#c54e49",size=.8)+
@@ -216,7 +216,8 @@ p2019 <- ggplot(ppt2019, aes(x=year)) +
            colour = "#4b7ea3")+
   annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
            colour = "#4b7ea3")+
-  scale_y_continuous(breaks = seq(0,1400,by=565))
+  scale_y_continuous(limits=c(0,1700),breaks = seq(0,1700,by=565))
+
 
 p2023 <- ggplot(ppt2023, aes(x=year)) + 
   geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
@@ -264,12 +265,12 @@ grid.arrange(gjrlomu,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7),
 
 
 
-pdf("jr-timeseries-nolomu.pdf", width = , height = )
-plot_grid(legendnolomu,jr,p2019,ncol=1,align="v",rel_heights = c(.03,.2,.08),labels = c("","a)","b)"),hjust = -3,vjust=0)
+pdf("jr-timeseries-nolomu.pdf",height = 5,width=6 )
+plot_grid(jr,p2019,ncol=1,align="v",rel_heights = c(.2,.07),hjust = -3,vjust=0)
 dev.off()
 
 pdf("jr-timeseries-lomu.pdf", width = , height = )
-plot_grid(legendlomu,jrlomu,p2023,ncol=1,align="v",rel_heights = c(.03,.2,.08),labels = c("","a)","b)"),hjust = -3,vjust=0)
+plot_grid(legendlomu,jrlomu,p2023,ncol=1,align="v",rel_heights = c(.03,.2,.05),hjust = -3,vjust=0)
 dev.off()
 
 cvdPlot(jrfinal)
