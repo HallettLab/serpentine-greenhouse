@@ -571,15 +571,9 @@ p2019 <- ggplot(ppt, aes(x=year)) +
   geom_line(aes(y=growing_season_ppt),data=ppt[27:30,],colour="black",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#c54e49",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
-  geom_rect(xmin = -Inf, xmax = 1987,   ymin = -Inf, ymax = Inf,   fill = NA,colour="black",linewidth=.3) +
-  geom_rect(xmin = 1987, xmax = 1993,   ymin = -Inf, ymax = Inf,   fill = NA,colour="black",linewidth=.3) +
-  geom_rect(xmin = 1993, xmax = 2007,   ymin = -Inf, ymax = Inf,   fill = NA,colour="black",linewidth=.3) +
-  geom_rect(xmin = 2007, xmax = 2015,   ymin = -Inf, ymax = Inf,   fill = NA,colour="black",linewidth=.3) +
-  geom_rect(xmin = 2015, xmax = Inf,   ymin = -Inf, ymax = Inf,   fill = NA,colour="black",linewidth=.3) +
   xlab("Year") + 
-  #ylab(expression(atop("Rainfall",paste("(mm)"))))+
   scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.title = element_blank()) +
+  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.title.y = element_blank()) +
   annotate("pointrange", x =1983, y =1250.442, 
            ymin = 1250.442, ymax = 1250.442,
            colour = "#4b7ea3")+
