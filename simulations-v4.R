@@ -506,7 +506,7 @@ bar <- ggplot(trt2,aes(year,gst)) +
 
 lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), colour=NA, alpha = .2) +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.title.y = element_blank(),axis.ticks.x = element_blank())+
   ylab(expression(Abundance~(m^{"2"})))+
   scale_color_manual(values=c("#0072B2","#48B99B"),guide=FALSE)+
@@ -516,7 +516,7 @@ lp <- ggplot(subset(simlp, !species %in% "Bromus"),aes(year,median,color=species
 
 simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), colour=NA, alpha = .2) +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.title.y = element_blank()) +
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#48B99B")) +
@@ -526,7 +526,7 @@ simulation1 <- ggplot(sim1,aes(year,median,color=species)) +
 
 simulation2 <- ggplot(sim2,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
-  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), color=NA, alpha = .2) +
   theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.title.y = element_blank()) +
   scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
                      values=c("#D55E00","#0072B2","#48B99B")) +
@@ -572,8 +572,10 @@ p2019 <- ggplot(ppt, aes(x=year)) +
   geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#c54e49",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
   xlab("Year") + 
+  #ylab(expression(atop("Rainfall",paste("(mm)"))))+
+  ylab("Rainfall (mm)") +
   scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.title.y = element_blank()) +
+  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.text.x = element_text(angle = 90)) +
   annotate("pointrange", x =1983, y =1250.442, 
            ymin = 1250.442, ymax = 1250.442,
            colour = "#4b7ea3")+
@@ -582,12 +584,14 @@ p2019 <- ggplot(ppt, aes(x=year)) +
            colour = "#4b7ea3")+
   annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
            colour = "#4b7ea3")+
-  scale_y_continuous(limits=c(0,1700),breaks = seq(0,1700,by=565))
+  scale_y_continuous(limits=c(0,1300),breaks = seq(0,1600,by=565))+
+  scale_x_continuous(breaks=seq(1983,2019,by=4))
 
 
 
-pdf("sims.pdf",width=5)
-plot_grid(lp,simulation2,simulation1,p2019,ncol=1,align="v",rel_heights = c(.02,.02,.02,.014))
+
+pdf("sims.pdf",width=6)
+plot_grid(lp,simulation2,simulation1,p2019,ncol=1,align="v",rel_heights = c(.015,.015,.015,.015))
 dev.off()
 
 
