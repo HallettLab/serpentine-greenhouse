@@ -18,7 +18,7 @@ data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "LAPL")
-dat <- subset(dat, waterN_treatment == "lo_int") %>%
+dat <- subset(dat, waterN_treatment == "lo_lo") %>%
   na.omit()
 
 ## Create model variables for our data
