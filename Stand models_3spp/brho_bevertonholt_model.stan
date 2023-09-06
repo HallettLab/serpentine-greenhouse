@@ -7,10 +7,11 @@ data{
   vector[N] pler;
   vector[N] brho;
   vector[N] lapl;
-  vector[N] femi;
   int<lower = 1>P;
   int Plot[N];
   real bg;
+  real pg;
+  real lg;
 }
 
 parameters{
@@ -20,12 +21,10 @@ parameters{
   real alpha_pler;
   real alpha_brho;
   real alpha_lapl;
-  real alpha_femi;
 
   //real<lower = 0>  alpha_pler;
   //real<lower = 0>  alpha_brho;
   //real<lower = 0>  alpha_lapl;
-  //real<lower = 0>  alpha_femi;
 
 
 }
@@ -38,10 +37,9 @@ model{
   // set priors
   sigma ~ gamma(0.001, 0.001);
   epsilon ~ gamma(sigma, sigma);
-  alpha_pler ~ normal(0, 5);
-  alpha_brho ~ normal(0, 5);
-  alpha_lapl ~ normal(0, 5);
-  alpha_femi ~ normal(0, 5);
+  alpha_pler ~ normal(0, 10);
+  alpha_brho ~ normal(0, 10);
+  alpha_lapl ~ normal(0, 10);
   //lambda ~ normal(0, 1000);
   lambda ~ gamma(0.001, 0.001);
 
@@ -49,10 +47,15 @@ model{
 
   // implement the biological model
   for(i in 1:N){
-    F_hat[i] = lambda*intra[i]*bg / (1 + alpha_pler*pler[i] + alpha_brho*brho[i]+ alpha_lapl*lapl[i]+ alpha_femi*femi[i]);
+    F_hat[i] = lambda*intra[i]*bg / (1 + alpha_pler*pler[i]*pg + alpha_brho*brho[i]*bg+ alpha_lapl*lapl[i]*lg);
     F_hat2[i] = F_hat[i]*epsilon[Plot[i]];
   }
 
   // calculate the likelihood
   Fecundity ~ poisson(F_hat2);
 }
+
+
+
+
+
