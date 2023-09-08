@@ -167,7 +167,7 @@ initials1<- list(initials, initials, initials)
 
 brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                                 iter = 20000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 40),
+                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 40),
                                  init = initials1)
 
 traceplot(brho_hi_lo, pars="lambda")

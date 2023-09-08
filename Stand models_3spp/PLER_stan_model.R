@@ -5,18 +5,299 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 ## Read in data
-data <- read.csv(paste(datpath, "/model_dat2.csv", sep = "")) %>%
+data <- read.csv(paste(datpath, "model_dat2_3spp.csv", sep = "")) %>%
   select(-X)
 
-#data <- read.csv("model_dat_0.csv", sep = ",") %>%
-#  select(-X)
-
-## Set initial parameter estimates, once for each chain to run
-#initials <- list(lambda=10, alpha_pler=0.01, alpha_brho=0.01, alpha_lapl=0.01,
-#                 alpha_femi=0.01)
-
-
 ## Subset data for competitor and treatment of interest
+dat <- subset(data, species == "PLER")
+dat <- subset(dat, waterN_treatment == "hi_hi")
+
+## Create model variables for our data
+### Set Fecundity as the seeds out from our focal species
+Fecundity <- as.integer(round(dat$seeds_out))
+
+### Set population context for each species as seeds in
+pler <- as.integer(dat$PLER_seeds_in)
+brho <- as.integer(dat$BRHO_seeds_in)
+lapl <- as.integer(dat$LAPL_seeds_in)
+
+
+### Number of observations 
+N <- as.integer(length(Fecundity))
+P <- as.integer(length(unique(dat$block)))
+
+### Set intra-specific species
+intra <- pler
+Plot <- dat$block
+
+bg <- 0.98
+pg <- 0.92
+lg <- 0.32
+
+######################################################
+# HIGH HIGH
+# high high dirty run
+initials <- list(lambda=10.5, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
+                 epsilon=rep(1,P), sigma = 10)
+initials1<- list(initials, initials, initials)
+
+pler_hi_hi <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   init = initials1)
+
+# high high model fit
+initials <- list(lambda= 16, alpha_pler= 0.11, alpha_brho=0.15, alpha_lapl=0.08,
+                 epsilon=rep(1,P), sigma = 13)
+initials1<- list(initials, initials, initials)
+
+pler_hi_hi <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   init = initials1)
+
+
+traceplot(pler_hi_hi, pars="lambda")
+pairs(pler_hi_hi)
+
+### Save posterior distributions to file
+save(pler_hi_hi, file = "pler_hi_hi.rdata")
+
+## Look at resulting estimated parameter distributions
+stan_dens(pler_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
+
+## Extract all parameter estimates
+pler_hi_hi <- rstan::extract(pler_hi_hi)
+acf(pler_hi_hi$lambda)
+
+#############################################################
+# HIGH INTERMEDIATE
+## Subset data for competitor and treatment of interest
+dat <- subset(data, species == "PLER")
+dat <- subset(dat, waterN_treatment == "hi_int")
+
+## Create model variables for our data
+### Set Fecundity as the seeds out from our focal species
+Fecundity <- as.integer(round(dat$seeds_out))
+
+### Set population context for each species as seeds in
+pler <- as.integer(dat$PLER_seeds_in)
+brho <- as.integer(dat$BRHO_seeds_in)
+lapl <- as.integer(dat$LAPL_seeds_in)
+
+
+### Number of observations 
+N <- as.integer(length(Fecundity))
+P <- as.integer(length(unique(dat$block)))
+
+### Set intra-specific species
+intra <- pler
+Plot <- dat$block
+
+# High intermediate dirty run
+initials <- list(lambda=3.5, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
+                 epsilon=rep(1,P), sigma = 10)
+initials1<- list(initials, initials, initials)
+
+pler_hi_int <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   init = initials1)
+
+# High intermediate model fit
+initials <- list(lambda=5, alpha_pler=0.09, alpha_brho=0.09, alpha_lapl=0.10,
+                 epsilon=rep(1,P), sigma = 29)
+initials1<- list(initials, initials, initials)
+
+pler_hi_int <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 10),
+                   init = initials1)
+
+traceplot(pler_hi_int, pars="lambda")
+pairs(pler_hi_int)
+
+### Save posterior distributions to file
+save(pler_hi_int, file = "pler_hi_int.rdata")
+
+## Look at resulting estimated parameter distributions
+stan_dens(pler_hi_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
+
+## Extract all parameter estimates
+pler_hi_int <- rstan::extract(pler_hi_int)
+acf(pler_hi_int$lambda)
+
+######################################################
+# HIGH LOW
+dat <- subset(data, species == "PLER")
+dat <- subset(dat, waterN_treatment == "hi_lo")
+
+## Create model variables for our data
+### Set Fecundity as the seeds out from our focal species
+Fecundity <- as.integer(round(dat$seeds_out))
+
+### Set population context for each species as seeds in
+pler <- as.integer(dat$PLER_seeds_in)
+brho <- as.integer(dat$BRHO_seeds_in)
+lapl <- as.integer(dat$LAPL_seeds_in)
+
+
+### Number of observations 
+N <- as.integer(length(Fecundity))
+P <- as.integer(length(unique(dat$block)))
+
+### Set intra-specific species
+intra <- pler
+Plot <- dat$block
+
+# High low dirty run
+initials <- list(lambda=1.8, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
+                 epsilon=rep(1,P), sigma = 10)
+initials1<- list(initials, initials, initials)
+
+pler_hi_lo <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                    iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                    init = initials1)
+
+# High low model fit
+initials <- list(lambda=1.6, alpha_pler=0.01, alpha_brho=0.01, alpha_lapl=0.02,
+                 epsilon=rep(1,P), sigma = 4)
+initials1<- list(initials, initials, initials)
+
+pler_hi_lo <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 10),
+                   init = initials1)
+
+
+traceplot(pler_hi_lo, pars="lambda")
+pairs(pler_hi_lo)
+
+### Save posterior distributions to file
+save(pler_hi_lo, file = "pler_hi_lo.rdata")
+
+## Look at resulting estimated parameter distributions
+stan_dens(pler_hi_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
+
+## Extract all parameter estimates
+pler_hi_lo <- rstan::extract(pler_hi_lo)
+acf(pler_hi_lo$lambda)
+
+########################################################
+# LOW HIGH
+dat <- subset(data, species == "PLER")
+dat <- subset(dat, waterN_treatment == "lo_hi")
+
+## Create model variables for our data
+### Set Fecundity as the seeds out from our focal species
+Fecundity <- as.integer(round(dat$seeds_out))
+
+### Set population context for each species as seeds in
+pler <- as.integer(dat$PLER_seeds_in)
+brho <- as.integer(dat$BRHO_seeds_in)
+lapl <- as.integer(dat$LAPL_seeds_in)
+
+
+### Number of observations 
+N <- as.integer(length(Fecundity))
+P <- as.integer(length(unique(dat$block)))
+
+### Set intra-specific species
+intra <- pler
+Plot <- dat$block
+
+# Low high dirty run
+initials <- list(lambda= 23, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
+                 epsilon=rep(1,P), sigma = 10)
+initials1<- list(initials, initials, initials)
+
+pler_lo_hi <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   init = initials1)
+
+# Low high model fit
+initials <- list(lambda= 32, alpha_pler=0.22, alpha_brho=0.26, alpha_lapl=0.24,
+                 epsilon=rep(1,P), sigma = 6)
+initials1<- list(initials, initials, initials)
+
+pler_lo_hi <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 10),
+                   init = initials1)
+
+traceplot(pler_lo_hi, pars="lambda")
+pairs(pler_lo_hi)
+
+### Save posterior distributions to file
+save(pler_lo_hi, file = "pler_lo_hi.rdata")
+
+## Look at resulting estimated parameter distributions
+stan_dens(pler_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
+
+## Extract all parameter estimates
+pler_lo_hi <- rstan::extract(pler_lo_hi)
+acf(pler_lo_hi$lambda)
+
+######################################################
+# LOW INTERMEDIATE
+dat <- subset(data, species == "PLER")
+dat <- subset(dat, waterN_treatment == "lo_int")
+
+## Create model variables for our data
+### Set Fecundity as the seeds out from our focal species
+Fecundity <- as.integer(round(dat$seeds_out))
+
+### Set population context for each species as seeds in
+pler <- as.integer(dat$PLER_seeds_in)
+brho <- as.integer(dat$BRHO_seeds_in)
+lapl <- as.integer(dat$LAPL_seeds_in)
+
+
+### Number of observations 
+N <- as.integer(length(Fecundity))
+P <- as.integer(length(unique(dat$block)))
+
+### Set intra-specific species
+intra <- pler
+Plot <- dat$block
+
+# Low intermediate dirty run
+initials <- list(lambda= 6, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
+                 epsilon=rep(1,P), sigma = 10)
+initials1<- list(initials, initials, initials)
+
+pler_lo_int <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   init = initials1)
+
+# Low intermediate model fit
+initials <- list(lambda= 8, alpha_pler=0.1, alpha_brho=0.06, alpha_lapl=0.06,
+                 epsilon=rep(1,P), sigma = 3)
+initials1<- list(initials, initials, initials)
+
+pler_lo_int <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                    iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 20),
+                    init = initials1)
+
+traceplot(pler_lo_int, pars="lambda")
+pairs(pler_lo_int)
+
+### Save posterior distributions to file
+save(pler_lo_int, file = "pler_lo_int.rdata")
+
+## Look at resulting estimated parameter distributions
+stan_dens(pler_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
+
+## Extract all parameter estimates
+pler_lo_int <- rstan::extract(pler_lo_int)
+acf(pler_lo_int$lambda)
+
+########################################################
+# LOW LOW
 dat <- subset(data, species == "PLER")
 dat <- subset(dat, waterN_treatment == "lo_lo")
 
@@ -28,7 +309,7 @@ Fecundity <- as.integer(round(dat$seeds_out))
 pler <- as.integer(dat$PLER_seeds_in)
 brho <- as.integer(dat$BRHO_seeds_in)
 lapl <- as.integer(dat$LAPL_seeds_in)
-femi <- as.integer(dat$FEMI_seeds_in)
+
 
 ### Number of observations 
 N <- as.integer(length(Fecundity))
@@ -36,162 +317,37 @@ P <- as.integer(length(unique(dat$block)))
 
 ### Set intra-specific species
 intra <- pler
-
 Plot <- dat$block
 
-pg <- 0.92
-
-######################################################
-# high high initials
-initials <- list(lambda=15.7, alpha_pler=0.10, alpha_brho=0.14, alpha_lapl=0.03,
-                 alpha_femi=0.10, epsilon=rep(1,P), sigma = 12.6)
+# Low low dirty run
+initials <- list(lambda= 2, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
+                 epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-## Fit high high high model
-### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
-### thinning constant (2 or 3 is usually fine), 
-# NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_pler_hi_hi <- stan(file = "PLER_Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","pg"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99999999999999, max_treedepth =50),
-                                 init = initials1)
+pler_lo_lo <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                    iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                    init = initials1)
 
-traceplot(no_dist_seeds_pler_hi_hi, pars="lambda")
-pairs(no_dist_seeds_pler_hi_hi)
-
-### Save posterior distributions to file
-save(no_dist_seeds_pler_hi_hi, file = "no_dist_seeds_pler_hi_hi.rdata")
-
-## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
-
-## Extract all parameter estimates
-pler_hi_hi <- rstan::extract(no_dist_seeds_pler_hi_hi)
-acf(pler_hi_hi$lambda)
-
-#############################################################
-
-# High intermediate initials
-initials <- list(lambda=5.5, alpha_pler=0.08, alpha_brho=0.09, alpha_lapl=0.03,
-                 alpha_femi=0.02, epsilon=rep(1,P), sigma = 21.4)
+# Low low model fit
+initials <- list(lambda= 2, alpha_pler=0.03, alpha_brho=0.03, alpha_lapl=0.01,
+                 epsilon=rep(1,P), sigma = 5)
 initials1<- list(initials, initials, initials)
 
-## Fit high high high model
-### Specify the stan model, the data to send it by name, iterations, chains (based on number of cores), 
-### thinning constant (2 or 3 is usually fine), 
-# NOTE: NUMBER OF DIVERGENT TRANSITIONS IS 4; ALL RHAT VALUES ARE 1.00
-no_dist_seeds_pler_hi_int <- stan(file = "PLER_Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","pg"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
-                                 init = initials1)
+pler_lo_lo <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999, max_treedepth = 30),
+                   init = initials1)
 
-traceplot(no_dist_seeds_pler_hi_int, pars="lambda")
-pairs(no_dist_seeds_pler_hi_int)
+traceplot(pler_lo_lo, pars="lambda")
+pairs(pler_lo_lo)
 
 ### Save posterior distributions to file
-save(no_dist_seeds_pler_hi_int, file = "no_dist_seeds_pler_hi_int.rdata")
+save(pler_lo_lo, file = "pler_lo_lo.rdata")
 
 ## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_hi_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
+stan_dens(pler_lo_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
 
 ## Extract all parameter estimates
-pler_hi_int <- rstan::extract(no_dist_seeds_pler_hi_int)
-acf(pler_hi_int$lambda)
-
-######################################################
-# High low initials
-initials <- list(lambda=1.8, alpha_pler=0.01, alpha_brho=0.005, alpha_lapl=0.007,
-                 alpha_femi=0.005, epsilon=rep(1,P), sigma = 4.8)
-initials1<- list(initials, initials, initials)
-
-no_dist_seeds_pler_hi_lo <- stan(file = "PLER_Constrained_rplot_four_species_BH_model.stan", 
-                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","pg"),
-                                  iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
-                                  init = initials1)
-
-traceplot(no_dist_seeds_pler_hi_lo, pars="lambda")
-pairs(no_dist_seeds_pler_hi_lo)
-
-### Save posterior distributions to file
-save(no_dist_seeds_pler_hi_lo, file = "no_dist_seeds_pler_hi_lo.rdata")
-
-## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_hi_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
-
-## Extract all parameter estimates
-pler_hi_lo <- rstan::extract(no_dist_seeds_pler_hi_lo)
-acf(pler_hi_lo$lambda)
-
-########################################################
-# Low high initials
-initials <- list(lambda=29.8, alpha_pler=0.21, alpha_brho=0.27, alpha_lapl=0.08,
-                 alpha_femi=0.09, epsilon=rep(1,P), sigma = 6.3)
-initials1<- list(initials, initials, initials)
-
-no_dist_seeds_pler_lo_hi <- stan(file = "PLER_Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","pg"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999999999999999, max_treedepth =50),
-                                 init = initials1)
-
-traceplot(no_dist_seeds_pler_lo_hi, pars="lambda")
-pairs(no_dist_seeds_pler_lo_hi)
-
-### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_hi, file = "no_dist_seeds_pler_lo_hi.rdata")
-
-## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_lo_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
-
-## Extract all parameter estimates
-pler_lo_hi <- rstan::extract(no_dist_seeds_pler_lo_hi)
-acf(pler_lo_hi$lambda)
-
-######################################################
-
-# Low intermediate initials
-initials <- list(lambda=8.4, alpha_pler=0.09, alpha_brho=0.06, alpha_lapl=0.02,
-                 alpha_femi=0.04, epsilon=rep(1,P), sigma = 3.2)
-initials1<- list(initials, initials, initials)
-
-no_dist_seeds_pler_lo_int <- stan(file = "PLER_Constrained_rplot_four_species_BH_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","pg"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999999999999999, max_treedepth =50),
-                                 init = initials1)
-
-traceplot(no_dist_seeds_pler_lo_int, pars="lambda")
-pairs(no_dist_seeds_pler_lo_int)
-
-### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_int, file = "no_dist_seeds_pler_lo_int.rdata")
-
-## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_lo_int, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
-
-## Extract all parameter estimates
-pler_lo_int <- rstan::extract(no_dist_seeds_pler_lo_int)
-acf(pler_lo_int$lambda)
-
-########################################################
-
-# Low low initials
-initials <- list(lambda=2.04, alpha_pler=0.029, alpha_brho=0.03, alpha_lapl=0.004,
-                 alpha_femi=0.014, epsilon=rep(1,P), sigma = 4.7)
-initials1<- list(initials, initials, initials)
-
-no_dist_seeds_pler_lo_lo <- stan(file = "PLER_Constrained_rplot_four_species_BH_model.stan", 
-                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "femi", "P", "Plot","pg"),
-                                  iter = 10000, chains = 3, thin = 3, control = list(adapt_delta = 0.999999999999999, max_treedepth =50),
-                                  init = initials1)
-
-traceplot(no_dist_seeds_pler_lo_lo, pars="lambda")
-pairs(no_dist_seeds_pler_lo_lo)
-
-### Save posterior distributions to file
-save(no_dist_seeds_pler_lo_lo, file = "no_dist_seeds_pler_lo_lo.rdata")
-
-## Look at resulting estimated parameter distributions
-stan_dens(no_dist_seeds_pler_lo_lo, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl", "alpha_femi"))
-
-## Extract all parameter estimates
-pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
+pler_lo_lo <- rstan::extract(pler_lo_lo)
 acf(pler_lo_lo$lambda)
