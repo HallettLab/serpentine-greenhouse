@@ -5,21 +5,25 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
 ## Read in data
-data <- read.csv(paste(datpath, "model_dat2_3spp.csv", sep = "")) %>%
-  select(-X)
+data <- read.csv(paste(datpath, "/model_dat2_3spp.csv", sep = "")) %>%
+  select(-X) %>%
+  mutate(BRHO_seeds_in = ifelse(BRHO_seeds_in %in% 1, 1/0.98, BRHO_seeds_in)) %>%
+  mutate(PLER_seeds_in = ifelse(PLER_seeds_in %in% 1, 1/0.92, PLER_seeds_in)) %>%
+  mutate(LAPL_seeds_in = ifelse(LAPL_seeds_in %in% 1, 1/0.32, LAPL_seeds_in))
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "BRHO")
-dat <- subset(dat, waterN_treatment == "hi_hi")
+dat <- subset(dat, waterN_treatment == "hi_hi") %>%
+  na.omit()
 
 ## Create model variables for our data
 ### Set Fecundity as the seeds out from our focal species
 Fecundity <- as.integer(round(dat$seeds_out))
 
 ### Set population context for each species as seeds in
-pler <- as.integer(dat$PLER_seeds_in)
-brho <- as.integer(dat$BRHO_seeds_in)
-lapl <- as.integer(dat$LAPL_seeds_in)
+pler <- dat$PLER_seeds_in
+brho <- dat$BRHO_seeds_in
+lapl <- dat$LAPL_seeds_in
 
 ### Number of observations 
 N <- as.integer(length(Fecundity))
@@ -57,7 +61,7 @@ brho_hi_hi <- stan(file = "brho_bevertonholt_model.stan",
                    init = initials1)
 
 traceplot(brho_hi_hi, pars="lambda")
-pairs(brho_hi_hi)
+pairs(brho_hi_hi, pars = c("lambda", "alpha_pler", "alpha_brho", "alpha_lapl"))
 
 ### Save posterior distributions to file
 save(brho_hi_hi, file = "brho_hi_hi.rdata")
@@ -151,24 +155,30 @@ intra <- brho
 Plot <- dat$block
 
 # high low dirty run
-initials <- list(lambda=6, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
-                 epsilon=rep(1,P), sigma = 10)
+initials <- list(lambda=7.5, alpha_pler=0.1, alpha_brho=0.3, alpha_lapl=0.1,
+                 epsilon=rep(1,P), sigma = 220)
+initials <- list(lambda=7, alpha_pler=0.1, alpha_brho=0.3, alpha_lapl=0.1)
 initials1<- list(initials, initials, initials)
 
-brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
+brho_hi_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
                     data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                    iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 20),
-                    init = initials1)
+                   iter = 20000, chains = 3, thin = 12, control = list(adapt_delta = 0.9999999999999999, max_treedepth =100, stepsize=0.1),
+                    init = initials1, cores=3)
+
+brho_hi_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth =20),
+                   init = initials1, cores=3)
 
 # high low model fit
-initials <- list(lambda=7.83, alpha_pler=0.11, alpha_brho=0.38, alpha_lapl=0.15,
-                 epsilon=rep(1,P), sigma = 242)
-initials1<- list(initials, initials, initials)
+#initials <- list(lambda=7.83, alpha_pler=0.11, alpha_brho=0.38, alpha_lapl=0.15,
+#                 epsilon=rep(1,P), sigma = 242)
+#initials1<- list(initials, initials, initials)
 
-brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                                 iter = 20000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 40),
-                                 init = initials1)
+#brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
+#                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
+#                   iter = 16000, warmup=10000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999, max_treedepth =100),
+#                                 init = initials1)
 
 traceplot(brho_hi_lo, pars="lambda")
 pairs(brho_hi_lo)
@@ -211,9 +221,9 @@ initials <- list(lambda=85, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
                  epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-brho_lo_hi <- stan(file = "brho_lohi_constrained_bevertonholt_model.stan", 
+brho_lo_hi <- stan(file = "brho_lo_hi_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                   iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   iter = 9000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 10),
                    init = initials1)
 
 #low high model fit
@@ -221,7 +231,7 @@ initials <- list(lambda=273, alpha_pler=0.02, alpha_brho=0.16, alpha_lapl=0.07,
                  epsilon=rep(1,P), sigma = 147)
 initials1<- list(initials, initials, initials)
 
-brho_lo_hi <- stan(file = "brho_lohi_constrained_bevertonholt_model.stan", 
+brho_lo_hi <- stan(file = "brho_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
                    iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 20),
                    init = initials1)
