@@ -154,38 +154,20 @@ intra <- brho
 
 Plot <- dat$block
 
-# high low dirty run
-initials <- list(lambda=7.5, alpha_pler=0.1, alpha_brho=0.3, alpha_lapl=0.1,
-                 epsilon=rep(1,P), sigma = 220)
-initials <- list(lambda=7, alpha_pler=0.1, alpha_brho=0.3, alpha_lapl=0.1)
-initials1<- list(initials, initials, initials)
-
-brho_hi_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
-                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                   iter = 20000, chains = 3, thin = 12, control = list(adapt_delta = 0.9999999999999999, max_treedepth =100, stepsize=0.1),
-                    init = initials1, cores=3)
-
-brho_hi_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
-                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth =20),
-                   init = initials1, cores=3)
 
 # high low model fit
-#initials <- list(lambda=7.83, alpha_pler=0.11, alpha_brho=0.38, alpha_lapl=0.15,
-#                 epsilon=rep(1,P), sigma = 242)
-#initials1<- list(initials, initials, initials)
+# 12 divergent transitions
+initials <- list(lambda=8, alpha_pler=0.11, alpha_brho=0.39, alpha_lapl=0.15,
+                 epsilon=rep(1,P), sigma = 217)
+initials1<- list(initials, initials, initials)
 
-<<<<<<< HEAD
-brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
+
+brho_hi_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                                 iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 40),
+                                 iter = 20000, chains = 3, thin = 12, control = list(adapt_delta = 0.9999999999999999, max_treedepth = 100, stepsize=0.1),
                                  init = initials1)
-=======
-#brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
-#                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-#                   iter = 16000, warmup=10000, chains = 3, thin = 3, control = list(adapt_delta = 0.9999, max_treedepth =100),
-#                                 init = initials1)
->>>>>>> 93b74b8c37258488cb5252c5c97d136037309161
+
+
 
 traceplot(brho_hi_lo, pars="lambda")
 pairs(brho_hi_lo)
@@ -201,7 +183,7 @@ brho_hi_lo <- rstan::extract(brho_hi_lo)
 acf(brho_hi_lo$lambda)
 
 ######################################################
-# LOW HIGH - LAUREN S HELP?
+# LOW HIGH 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "BRHO")
 dat <- subset(dat, waterN_treatment == "lo_hi")
@@ -228,14 +210,14 @@ initials <- list(lambda=85, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
                  epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-brho_lo_hi <- stan(file = "brho_lo_hi_bevertonholt_model.stan", 
+brho_lo_hi <- stan(file = "brho_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
                    iter = 9000, chains = 3, thin = 3, control = list(adapt_delta = 0.999, max_treedepth = 10),
                    init = initials1)
 
 #low high model fit
-initials <- list(lambda=273, alpha_pler=0.02, alpha_brho=0.16, alpha_lapl=0.07,
-                 epsilon=rep(1,P), sigma = 147)
+initials <- list(lambda=342, alpha_pler=0.49, alpha_brho=2.88, alpha_lapl=1.15,
+                 epsilon=rep(1,P), sigma = 427)
 initials1<- list(initials, initials, initials)
 
 brho_lo_hi <- stan(file = "brho_bevertonholt_model.stan", 
@@ -287,20 +269,20 @@ Plot <- dat$block
 
 # low intermediate dirty run
 initials <- list(lambda=14, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
-                 epsilon=rep(1,P), sigma = 18)
+                 epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-brho_lo_int <- stan(file = "brho_constrained_bevertonholt_model.stan", 
+brho_lo_int <- stan(file = "brho_bevertonholt_model.stan", 
                                  data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
                                  iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
                                  init = initials1)
 
 # low intermediate model fit
 initials <- list(lambda=24, alpha_pler=0.08, alpha_brho=0.54, alpha_lapl=0.13,
-                 epsilon=rep(1,P), sigma = 33)
+                 epsilon=rep(1,P), sigma = 32)
 initials1<- list(initials, initials, initials)
 
-brho_lo_int <- stan(file = "brho_constrained_bevertonholt_model.stan", 
+brho_lo_int <- stan(file = "brho_bevertonholt_model.stan", 
                     data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
                     iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
                     init = initials1)
@@ -345,19 +327,20 @@ initials <- list(lambda=2.25, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl= 0.05
                  epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-brho_lo_lo <- stan(file = "brho2_constrained_bevertonholt_model.stan", 
+brho_lo_lo <- stan(file = "brho_bevertonholt_model.stan", 
                                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","bg","pg","lg"),
-                                  iter = 12000, chains = 3, thin = 5, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                                  iter = 2000, chains = 3, thin = 5, control = list(adapt_delta = 0.9, max_treedepth = 10),
                                   init = initials1)
 
 # low low model fit
-initials <- list(lambda=0.24, alpha_pler=0.01, alpha_brho=0.0006, alpha_lapl= -0.005,
-                 epsilon=rep(1,P), sigma = 160)
+# 15 divergent transitions
+initials <- list(lambda=0.23, alpha_pler=0.01, alpha_brho=0.0002, alpha_lapl= -0.005,
+                 epsilon=rep(1,P), sigma = 133)
 initials1<- list(initials, initials, initials)
 
-brho_lo_lo <- stan(file = "brho2_constrained_bevertonholt_model.stan", 
+brho_lo_lo <- stan(file = "brho_constrained_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","bg","pg","lg"),
-                   iter = 12000, chains = 3, thin = 5, control = list(adapt_delta = 0.9, max_treedepth = 20),
+                   iter = 12000, chains = 3, thin = 5, control = list(adapt_delta = 0.999999999, max_treedepth = 30),
                    init = initials1)
 
 
