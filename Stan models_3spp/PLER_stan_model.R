@@ -55,7 +55,7 @@ initials <- list(lambda= 16, alpha_pler= 0.11, alpha_brho=0.15, alpha_lapl=0.08,
                  epsilon=rep(1,P), sigma = 13)
 initials1<- list(initials, initials, initials)
 
-pler_hi_hi <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+pler_hi_hi <- stan(file = "pler_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
                    iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
                    init = initials1)
