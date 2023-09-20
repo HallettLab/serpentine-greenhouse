@@ -6,11 +6,15 @@ rstan_options(auto_write = TRUE)
 
 ## Read in data
 data <- read.csv(paste(datpath, "model_dat2_3spp.csv", sep = "")) %>%
-  select(-X)
+  select(-X) %>%
+  mutate(BRHO_seeds_in = ifelse(BRHO_seeds_in %in% 1, 1/0.98, BRHO_seeds_in)) %>%
+  mutate(PLER_seeds_in = ifelse(PLER_seeds_in %in% 1, 1/0.92, PLER_seeds_in)) %>%
+  mutate(LAPL_seeds_in = ifelse(LAPL_seeds_in %in% 1, 1/0.32, LAPL_seeds_in))
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "PLER")
-dat <- subset(dat, waterN_treatment == "hi_hi")
+dat <- subset(dat, waterN_treatment == "hi_hi") %>%
+  na.omit()
 
 ## Create model variables for our data
 ### Set Fecundity as the seeds out from our focal species
@@ -41,7 +45,7 @@ initials <- list(lambda=10.5, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl=0.05,
                  epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-pler_hi_hi <- stan(file = "pler_constrained_bevertonholt_model.stan", 
+pler_hi_hi <- stan(file = "pler_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
                    iter = 2000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
                    init = initials1)
