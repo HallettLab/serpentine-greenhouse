@@ -57,7 +57,7 @@ initials1<- list(initials, initials, initials)
 
 pler_hi_hi <- stan(file = "pler_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","pg","bg","lg"),
-                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth = 10),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 10),
                    init = initials1)
 
 
