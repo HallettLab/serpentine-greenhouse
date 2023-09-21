@@ -6,7 +6,10 @@ rstan_options(auto_write = TRUE)
 
 ## Read in data
 data <- read.csv(paste(datpath, "model_dat2_3spp.csv", sep = "")) %>%
-  select(-X)
+  select(-X) %>%
+  mutate(BRHO_seeds_in = ifelse(BRHO_seeds_in %in% 1, 1/0.98, BRHO_seeds_in)) %>%
+  mutate(PLER_seeds_in = ifelse(PLER_seeds_in %in% 1, 1/0.92, PLER_seeds_in)) %>%
+  mutate(LAPL_seeds_in = ifelse(LAPL_seeds_in %in% 1, 1/0.32, LAPL_seeds_in))
 
 ## Subset data for competitor and treatment of interest
 dat <- subset(data, species == "LAPL")
@@ -51,7 +54,7 @@ lapl_hi_hi <- stan(file = "lapl_constrained_bevertonholt_model.stan",
 initials <- list(lambda=602, alpha_pler=0.43, alpha_brho=10.49, alpha_lapl=4.34,
                  epsilon=rep(1,P), sigma = 5)
 initials1<- list(initials, initials, initials)
-lapl_hi_hi <- stan(file = "lapl_constrained_bevertonholt_model.stan", 
+lapl_hi_hi <- stan(file = "lapl_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","lg","bg","pg"),
                    iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth = 10),
                    init = initials1)
@@ -109,9 +112,9 @@ initials <- list(lambda=117, alpha_pler=0.34, alpha_brho=6.61, alpha_lapl=9.86,
                  epsilon=rep(1,P), sigma =2)
 initials1<- list(initials, initials, initials)
 
-lapl_hi_int <- stan(file = "lapl_constrained_bevertonholt_model.stan", 
+lapl_hi_int <- stan(file = "lapl_bevertonholt_model.stan", 
                     data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","lg","bg","pg"),
-                    iter = 15000, chains = 3, thin = 5, control = list(adapt_delta = 0.99999999, max_treedepth =50),
+                    iter = 20000, chains = 3, thin = 10, control = list(adapt_delta = 0.99999999999, max_treedepth =50),
                     init = initials1)
 
 traceplot(lapl_hi_int, pars="lambda")
@@ -171,9 +174,9 @@ initials <- list(lambda=245, alpha_pler=0.24, alpha_brho=2.33, alpha_lapl=2.52,
                  epsilon=rep(1,P), sigma = 18)
 initials1<- list(initials, initials, initials)
 
-lapl_lo_hi <- stan(file = "lapl_constrained_bevertonholt_model.stan", 
+lapl_lo_hi <- stan(file = "lapl_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","lg","bg","pg"),
-                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth =10),
+                   iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.99, max_treedepth =10),
                    init = initials1)
 
 traceplot(lapl_lo_hi, pars="lambda")
@@ -229,9 +232,9 @@ initials <- list(lambda=245, alpha_pler=0.24, alpha_brho=2.33, alpha_lapl=2.52,
                  epsilon=rep(1,P), sigma = 18)
 initials1<- list(initials, initials, initials)
 
-lapl_lo_int <- stan(file = "lapl_constrained_bevertonholt_model.stan", 
+lapl_lo_int <- stan(file = "lapl_bevertonholt_model.stan", 
                     data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","lg","bg","pg"),
-                    iter = 15000, chains = 3, thin = 4, control = list(adapt_delta = 0.99999, max_treedepth = 50),
+                    iter = 15000, chains = 3, thin = 6, control = list(adapt_delta = 0.9999999, max_treedepth = 50),
                     init = initials1)
 
 traceplot(no_dist_seeds_lapl_lo_int, pars="lambda")
