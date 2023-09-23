@@ -1,42 +1,3 @@
-## Loads rstan and sets the number of useable cores based on your computer
-library(tidyverse)
-library(rstan)
-options(mc.cores = parallel::detectCores())
-rstan_options(auto_write = TRUE)
-
-## Read in data
-data <- read.csv(paste(datpath, "/model_dat2_3spp.csv", sep = "")) %>%
-  select(-X) %>%
-  mutate(BRHO_seeds_in = ifelse(BRHO_seeds_in %in% 1, 1/0.98, BRHO_seeds_in)) %>%
-  mutate(PLER_seeds_in = ifelse(PLER_seeds_in %in% 1, 1/0.92, PLER_seeds_in)) %>%
-  mutate(LAPL_seeds_in = ifelse(LAPL_seeds_in %in% 1, 1/0.32, LAPL_seeds_in))
-
-## Subset data for competitor and treatment of interest
-dat <- subset(data, species == "BRHO")
-dat <- subset(dat, waterN_treatment == "hi_hi") %>%
-  na.omit()
-
-## Create model variables for our data
-### Set Fecundity as the seeds out from our focal species
-Fecundity <- as.integer(round(dat$seeds_out))
-
-### Set population context for each species as seeds in
-pler <- dat$PLER_seeds_in
-brho <- dat$BRHO_seeds_in
-lapl <- dat$LAPL_seeds_in
-
-### Number of observations 
-N <- as.integer(length(Fecundity))
-P <- as.integer(length(unique(dat$block)))
-
-### Set intra-specific species
-intra <- brho
-
-Plot <- dat$block
-
-bg <- 0.98
-pg <- 0.92
-lg <- 0.32
 
 ######################################################
 # HIGH HIGH
@@ -117,7 +78,7 @@ brho_hi_int <- stan(file = "brho_bevertonholt_model.stan",
                     iter = 12000, chains = 3, thin = 3, control = list(adapt_delta = 0.9, max_treedepth =10),
                     init = initials1)
 
-traceplot(brho_hi_lo, pars="lambda")
+traceplot(brho_hi_int, pars="lambda")
 pairs(brho_hi_int)
 
 ### Save posterior distributions to file
@@ -155,19 +116,19 @@ intra <- brho
 Plot <- dat$block
 
 
-# high low model fit
-# 12 divergent transitions
-initials <- list(lambda=8, alpha_pler=0.11, alpha_brho=0.39, alpha_lapl=0.15,
-                 epsilon=rep(1,P), sigma = 217)
+initials <- list(lambda=10, alpha_pler=0.1, alpha_brho=0.1, alpha_lapl=0.1,
+                 epsilon=rep(1,P), sigma = 220)
 initials1<- list(initials, initials, initials)
 
+brho_hi_lo <- stan(file = "brho_bevertonholt_model.stan", 
+                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
+                    iter = 6000, chains = 3, thin = 3, control = list(adapt_delta = 0.999999, max_treedepth =20),
+                    init = initials1)
 
 brho_hi_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
-                                 data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
-                                 iter = 20000, chains = 3, thin = 12, control = list(adapt_delta = 0.9999999999999999, max_treedepth = 100, stepsize=0.1),
-                                 init = initials1)
-
-
+                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl", "P", "Plot","bg","pg","lg"),
+                   iter = 6000, chains = 3, thin = 3, control = list(adapt_delta = 0.999999, max_treedepth =20),
+                   init = initials1)
 
 traceplot(brho_hi_lo, pars="lambda")
 pairs(brho_hi_lo)
@@ -301,7 +262,8 @@ brho_lo_int <- rstan::extract(brho_lo_int)
 acf(brho_lo_int$lambda)
 
 ######################################################
-# LOW LOW - LAUREN S HELP?
+# LOW LOW - 2 divergent transitions and all R_hat 1.01 or less
+# 
 dat <- subset(data, species == "BRHO")
 dat <- subset(dat, waterN_treatment == "lo_lo")
 
@@ -327,18 +289,20 @@ initials <- list(lambda=2.25, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl= 0.05
                  epsilon=rep(1,P), sigma = 10)
 initials1<- list(initials, initials, initials)
 
-brho_lo_lo <- stan(file = "brho_bevertonholt_model.stan", 
+# using hi-lo because it constrains alphas to be positive
+brho_lo_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
                                   data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","bg","pg","lg"),
                                   iter = 2000, chains = 3, thin = 5, control = list(adapt_delta = 0.9, max_treedepth = 10),
                                   init = initials1)
 
 # low low model fit
 # 15 divergent transitions
-initials <- list(lambda=0.23, alpha_pler=0.01, alpha_brho=0.0002, alpha_lapl= -0.005,
+initials <- list(lambda=0.23, alpha_pler=0.05, alpha_brho=0.05, alpha_lapl= .05,
                  epsilon=rep(1,P), sigma = 133)
 initials1<- list(initials, initials, initials)
 
-brho_lo_lo <- stan(file = "brho_constrained_bevertonholt_model.stan", 
+# using hi-lo because it constrains alphas to be positive
+brho_lo_lo <- stan(file = "brho_hi_lo_bevertonholt_model.stan", 
                    data = c("N", "Fecundity", "intra", "pler", "brho", "lapl","P", "Plot","bg","pg","lg"),
                    iter = 12000, chains = 3, thin = 5, control = list(adapt_delta = 0.999999999, max_treedepth = 30),
                    init = initials1)
