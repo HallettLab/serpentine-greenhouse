@@ -209,8 +209,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_brho_hi_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_brho_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_brho_hi_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_brho_hi_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
@@ -245,8 +245,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_hi_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_hi_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_hi_hi_mean <- mean(ldgr_out, na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -281,8 +281,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_brho_hi_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_brho_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_brho_hi_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_brho_hi_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -317,8 +317,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_lapl_hi_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_lapl_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_lapl_hi_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_lapl_hi_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading lapl at hi_hi conditions.
@@ -353,8 +353,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_pler_hi_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_pler_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_pler_hi_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_pler_hi_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -389,8 +389,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_lapl_hi_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_lapl_hi_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_lapl_hi_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_lapl_hi_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -650,8 +650,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_brho_hi_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_brho_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_brho_hi_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_brho_hi_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -722,8 +722,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_pler_hi_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_pler_hi_int_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_pler_hi_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_pler_hi_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -904,8 +904,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_brho_hi_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_brho_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_brho_hi_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_brho_hi_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
@@ -940,8 +940,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_hi_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_hi_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_hi_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -973,8 +973,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_brho_hi_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_brho_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_brho_hi_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_brho_hi_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1009,8 +1009,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_lapl_hi_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_lapl_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_lapl_hi_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_lapl_hi_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading lapl at hi_hi conditions.
@@ -1042,8 +1042,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_pler_hi_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_pler_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_pler_hi_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_pler_hi_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1078,8 +1078,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_lapl_hi_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_lapl_hi_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_lapl_hi_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_lapl_hi_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1271,8 +1271,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_brho_lo_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_brho_lo_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_brho_lo_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_brho_lo_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
@@ -1307,8 +1307,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_lo_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_lo_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_lo_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_lo_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -1343,8 +1343,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_brho_lo_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_brho_lo_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_brho_lo_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_brho_lo_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1379,8 +1379,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_lapl_lo_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_lapl_lo_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_lapl_lo_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_lapl_lo_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading lapl at hi_hi conditions.
@@ -1415,8 +1415,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_pler_lo_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_pler_lo_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_pler_lo_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_pler_lo_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1451,8 +1451,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_lapl_lo_hi_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_lapl_lo_hi_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_lapl_lo_hi_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_lapl_lo_hi_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1644,8 +1644,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_brho_lo_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_brho_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_brho_lo_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_brho_lo_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
@@ -1716,8 +1716,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_brho_lo_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_brho_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_brho_lo_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_brho_lo_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1788,8 +1788,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_pler_lo_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_pler_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_pler_lo_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_pler_lo_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1824,8 +1824,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_lapl_lo_int_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_lapl_lo_int_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_lapl_lo_int_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_lapl_lo_int_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -1971,8 +1971,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_brho_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_brho_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_brho_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_brho_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of pler invading brho at hi_hi conditions.
@@ -2007,8 +2007,8 @@ for (i in 1:length(posts)){
   
 }
 
-brho_pler_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-brho_pler_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+brho_pler_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+brho_pler_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of brho invading pler at hi_hi conditions.
@@ -2040,8 +2040,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_brho_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_brho_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_brho_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_brho_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -2109,8 +2109,8 @@ for (i in 1:length(posts)){
   
 }
 
-lapl_pler_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-lapl_pler_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+lapl_pler_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+lapl_pler_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -2145,8 +2145,8 @@ for (i in 1:length(posts)){
   
 }
 
-pler_lapl_lo_lo_sd <- sd(ldgr_out) # LGS: since we take the log above, we are all set here
-pler_lapl_lo_lo_mean <- mean(ldgr_out) # LGS: same comment as above
+pler_lapl_lo_lo_sd <- sd(ldgr_out,na.rm=TRUE) # LGS: since we take the log above, we are all set here
+pler_lapl_lo_lo_mean <- mean(ldgr_out,na.rm=TRUE) # LGS: same comment as above
 
 # LGS, this now gives us a posterior distribution (ldgr_out) of all expected
 # ldgr of lapl invading brho at hi_hi conditions.
@@ -2204,6 +2204,9 @@ LDGR <- mean_sd_LDGR %>%
 LDGR$invader_resident <- factor(LDGR$invader_resident, 
                                         levels = c("pler_brho","pler_lapl","lapl_brho",
                                                    "brho_pler","lapl_pler","brho_lapl"))
+LDGR$invader_resident <- factor(LDGR$invader_resident, 
+                                levels = c("pler_brho","brho_pler","pler_lapl",
+                                           "lapl_pler","lapl_brho","brho_lapl"))
 LDGR$n_trt <- factor(mean_sd_LDGR$n_trt, levels = c("lo","int","hi"))
 LDGR$water_trt <- factor(mean_sd_LDGR$water_trt, levels = c("lo","hi"))
 
@@ -2217,9 +2220,8 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 grwr <- ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
                                  ymax=mean_LDGR+sd_LDGR, fill = invader_water)) + 
   geom_bar(stat="identity", position = position_dodge()) + 
-  facet_wrap(~invader_resident) +
-  theme(strip.text.x = element_blank(),legend.position= "none",
-        axis.title = element_blank(),axis.text.x = element_blank())+
+  facet_wrap(~invader_resident,ncol = 2) +
+  theme(strip.text.x = element_blank(),legend.position= "none")+
   ylab("Growth rate when rare") + xlab("N treatments") +
   scale_x_discrete(labels = c("Low","Intermediate","High")) +
   scale_fill_manual(name="Water treatments", 
@@ -2227,7 +2229,7 @@ grwr <- ggplot(LDGR, aes(x=n_trt, y=mean_LDGR,ymin=mean_LDGR-sd_LDGR,
   geom_hline(yintercept = 0)+
   geom_errorbar(position = position_dodge(0.9),width=0.1)
 
-pdf("grwr_updated.pdf", width = 7, height = 5)
+pdf("grwr_updated.pdf", width = 6.5, height = 7)
 grwr
 dev.off()
 
