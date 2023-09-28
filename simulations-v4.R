@@ -32,40 +32,40 @@ ls <- .15 # rossington
 lg <- .32 # rossington
 
 ##Load stan models from Stan models folder
-load(here("Stan models","no_dist_seeds_pler_hi_hi.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_hi_hi.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_hi_hi.Rdata"))
-load(here("Stan models","no_dist_seeds_pler_hi_int.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_hi_int.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_hi_int.Rdata"))
-load(here("Stan models","no_dist_seeds_pler_hi_lo.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_hi_lo.Rdata"))
-load(here("Stan models","no_dist_seeds_pler_lo_hi.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_lo_hi.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_lo_hi.Rdata"))
-load(here("Stan models","no_dist_seeds_pler_lo_int.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_lo_int.Rdata"))
-load(here("Stan models","no_dist_seeds_lapl_lo_int.Rdata"))
-load(here("Stan models","no_dist_seeds_pler_lo_lo.Rdata"))
-load(here("Stan models","no_dist_seeds_brho_lo_lo.Rdata"))
+load(here("Stan models_3spp","pler_hi_hi.Rdata"))
+load(here("Stan models_3spp","brho_hi_hi.Rdata"))
+load(here("Stan models_3spp","lapl_hi_hi.Rdata"))
+load(here("Stan models_3spp","pler_hi_int.Rdata"))
+load(here("Stan models_3spp","brho_hi_int.Rdata"))
+load(here("Stan models_3spp","lapl_hi_int.Rdata"))
+load(here("Stan models_3spp","pler_hi_lo.Rdata"))
+load(here("Stan models_3spp","brho_hi_lo.Rdata"))
+load(here("Stan models_3spp","pler_lo_hi.Rdata"))
+load(here("Stan models_3spp","brho_lo_hi.Rdata"))
+load(here("Stan models_3spp","lapl_lo_hi.Rdata"))
+load(here("Stan models_3spp","pler_lo_int.Rdata"))
+load(here("Stan models_3spp","brho_lo_int.Rdata"))
+load(here("Stan models_3spp","lapl_lo_int.Rdata"))
+load(here("Stan models_3spp","pler_lo_lo.Rdata"))
+load(here("Stan models_3spp","brho_lo_lo.Rdata"))
 
 #Extract parameters from models and rename 
-brho_hi_hi <- rstan::extract(no_dist_seeds_brho_hi_hi)
-brho_hi_int <- rstan::extract(no_dist_seeds_brho_hi_int)
-brho_hi_lo <- rstan::extract(no_dist_seeds_brho_hi_lo)
-brho_lo_hi <- rstan::extract(no_dist_seeds_brho_lo_hi)
-brho_lo_int <- rstan::extract(no_dist_seeds_brho_lo_int)
-brho_lo_lo <- rstan::extract(no_dist_seeds_brho_lo_lo)
-lapl_hi_hi <- rstan::extract(no_dist_seeds_lapl_hi_hi)
-lapl_hi_int <- rstan::extract(no_dist_seeds_lapl_hi_int)
-lapl_lo_hi <- rstan::extract(no_dist_seeds_lapl_lo_hi)
-lapl_lo_int <- rstan::extract(no_dist_seeds_lapl_lo_int)
-pler_hi_hi <- rstan::extract(no_dist_seeds_pler_hi_hi)
-pler_hi_int <- rstan::extract(no_dist_seeds_pler_hi_int)
-pler_hi_lo <- rstan::extract(no_dist_seeds_pler_hi_lo)
-pler_lo_hi <- rstan::extract(no_dist_seeds_pler_lo_hi)
-pler_lo_int <- rstan::extract(no_dist_seeds_pler_lo_int)
-pler_lo_lo <- rstan::extract(no_dist_seeds_pler_lo_lo)
+brho_hi_hi <- rstan::extract(brho_hi_hi)
+brho_hi_int <- rstan::extract(brho_hi_int)
+brho_hi_lo <- rstan::extract(brho_hi_lo)
+brho_lo_hi <- rstan::extract(brho_lo_hi)
+brho_lo_int <- rstan::extract(brho_lo_int)
+brho_lo_lo <- rstan::extract(brho_lo_lo)
+lapl_hi_hi <- rstan::extract(lapl_hi_hi)
+lapl_hi_int <- rstan::extract(lapl_hi_int)
+lapl_lo_hi <- rstan::extract(lapl_lo_hi)
+lapl_lo_int <- rstan::extract(lapl_lo_int)
+pler_hi_hi <- rstan::extract(pler_hi_hi)
+pler_hi_int <- rstan::extract(pler_hi_int)
+pler_hi_lo <- rstan::extract(pler_hi_lo)
+pler_lo_hi <- rstan::extract(pler_lo_hi)
+pler_lo_int <- rstan::extract(pler_lo_int)
+pler_lo_lo <- rstan::extract(pler_lo_lo)
 
 ##hi water hi N posteriors
 # brho
@@ -234,6 +234,7 @@ cover_dat <- cover %>%
   mutate(year=1983)
 
 source("equil-abund-by-trt.R")
+
 #1983 is wet and low N
 species_eq_wet_lo <- species_eq %>%
   filter(w_trt=="Wet") %>%
@@ -574,7 +575,6 @@ p2019 <- ggplot(ppt, aes(x=year)) +
   xlab("Year") + 
   #ylab(expression(atop("Rainfall",paste("(mm)"))))+
   ylab("Rainfall (mm)") +
-  scale_x_continuous(expand = c(0.04, 0.04)) +
   theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.text.x = element_text(angle = 90)) +
   annotate("pointrange", x =1983, y =1250.442, 
            ymin = 1250.442, ymax = 1250.442,
@@ -585,7 +585,7 @@ p2019 <- ggplot(ppt, aes(x=year)) +
   annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
            colour = "#4b7ea3")+
   scale_y_continuous(limits=c(0,1300),breaks = seq(0,1600,by=565))+
-  scale_x_continuous(breaks=seq(1983,2019,by=4))
+  scale_x_continuous(breaks=seq(1983,2019,by=4),expand = c(0.04, 0.04))
 
 
 
