@@ -332,10 +332,11 @@ sim1$CIupper <- ifelse(sim1$CIupper < 0, 0, sim1$CIupper)
 sim1$median <- ifelse(sim1$median < 0, 0, sim1$median)
 
 ########################################################
-## all species sim with changes in Bromus germination ##
+## all species sim 2 with changes in Bromus germination ##
 ########################################################
-g0 <- rep(0.49, 37000)
-g1 <- rep(0.98,37000)
+g0 <- rep(0.79, 24667)
+g1 <- rep(0.88, 18500)
+g2 <- rep(0.98,30833)
 bg2 <- c(g0,g1)
 
 growth = function(N){
@@ -417,10 +418,6 @@ X <- split(alldat, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
 output_simlp <- do.call("rbind",out)
 
-
-##################################
-#########data manipulation########
-##################################
 simlp_mean <- output_simlp %>%
   group_by(year) %>%
   summarize(Bromus=mean(Nb),Layia=mean(Nl),Plantago=mean(Np)) %>%
