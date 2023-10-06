@@ -253,14 +253,6 @@ cover_trt <- left_join(cover_dat,trt) %>%
   rename(BRHO = BRMO) %>%
   mutate(BRHO = BRHO*BRHO_equil$equil_abundance,PLER=PLER*PLER_equil$equil_abundance,LAPL=LAPL*LAPL_equil$equil_abundance)
 
- 
-
-######################################
-########## Simulations ###############
-######################################
-
-###all species sim 1 without altering bromus germination###
-
 alldat0 <- left_join(trt_posts,cover_trt) %>%
   filter(year !=1983) %>%
   select(-BRHO, -LAPL, -PLER)
@@ -269,9 +261,15 @@ key <- as.data.frame(cbind(replicate.var=rep(seq(1:2000),36)))
 
 alldat <- cbind(key, alldat0) %>%
   mutate(Nb = cover_trt$BRHO, Nl=cover_trt$LAPL, Np=cover_trt$PLER)
-  
+
 #dummy <- alldat %>%
-  #filter(replicate.var == 1)
+#filter(replicate.var == 1)
+
+######################################
+########## Simulations ###############
+######################################
+
+###all species sim 1 without altering bromus germination###
 
 growth = function(N){
 
@@ -334,19 +332,28 @@ sim1$median <- ifelse(sim1$median < 0, 0, sim1$median)
 ########################################################
 ## all species sim 2 with changes in Bromus germination ##
 ########################################################
-g0 <- rep(0.79, 24667)
-g1 <- rep(0.88, 18500)
-g2 <- rep(0.98,30833)
-bg2 <- c(g0,g1)
+bg2 <- rep(0.98,72000)
+alldatbg <- cbind(bg2,alldat)
+colnames(alldatbg)[1] ="bg2"
+
+
 
 growth = function(N){
   
   for (i in 1:(nrow(N)-1)){
-    N$Nb[i+1] = bs*(1-bg2)*N$Nb[i]  + bg2*N$Nb[i]*(N$blambda[i]/(1 + N$bap[i]*pg*N$Np[i] + N$bab[i]*bg2*N$Nb[i] + N$bal[i]*lg*N$Nl[i]))
+    N$Nb[i+1] = bs*(1-N$bg2[i])*N$Nb[i]  + N$bg2[i]*N$Nb[i]*(N$blambda[i]/(1 + N$bap[i]*pg*N$Np[i] + N$bab[i]*N$bg2[i]*N$Nb[i] + N$bal[i]*lg*N$Nl[i]))
     
-    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(N$plambda[i]/(1 + N$pap[i]*pg*N$Np[i] + N$pab[i]*bg2*N$Nb[i] + N$pal[i]*lg*N$Nl[i]))
+    N$Nb[1:26] = 0
     
-    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(N$llambda[i]/(1 + N$lal[i]*lg*N$Nl[i] + N$lab[i]*bg2*N$Nb[i] + N$lap[i]*pg*N$Np[i]))
+    N$Nb[27] = 2
+    
+    N$Nb[28] = (bs*(1-N$bg2[27])*2  + N$bg2[27]*2*(N$blambda[27]/(1 + N$bap[27]*pg*N$Np[27] + N$bab[27]*N$bg2[27]*2 + N$bal[27]*lg*N$Nl[27]))) + 4
+    
+    N$Nb[29] = (bs*(1-N$bg2[28])*N$Nb[28]  + N$bg2[28]*N$Nb[28]*(N$blambda[28]/(1 + N$bap[28]*pg*N$Np[28] + N$bab[28]*N$bg2[28]*N$Nb[28] + N$bal[28]*lg*N$Nl[28]))) + 4
+    
+    N$Np[i+1] = ps*(1-pg)*N$Np[i] + pg*N$Np[i]*(N$plambda[i]/(1 + N$pap[i]*pg*N$Np[i] + N$pab[i]*N$bg2[i]*N$Nb[i] + N$pal[i]*lg*N$Nl[i]))
+    
+    N$Nl[i+1] = ls*(1-lg)*N$Nl[i] + lg*N$Nl[i]*(N$llambda[i]/(1 + N$lal[i]*lg*N$Nl[i] + N$lab[i]*N$bg2[i]*N$Nb[i] + N$lap[i]*pg*N$Np[i]))
     
     N$Nl[i+1] = ifelse(N$Nl[i+1]<0.1,0.1,N$Nl[i+1])
     
@@ -356,8 +363,7 @@ growth = function(N){
   return(N)
 }
 
-
-X <- split(alldat, alldat["replicate.var"])
+X <- split(alldatbg, alldat["replicate.var"])
 out <- lapply(X, FUN=growth)
 output_sim2 <- do.call("rbind",out)
 
@@ -394,6 +400,16 @@ sim2$mean_abundance <- ifelse(sim2$mean_abundance < 0, 0, sim2$mean_abundance)
 sim2$CIlower <- ifelse(sim2$CIlower < 0, 0, sim2$CIlower)
 sim2$CIupper <- ifelse(sim2$CIupper < 0, 0, sim2$CIupper)
 sim2$median <- ifelse(sim2$median < 0, 0, sim2$median)
+
+ggplot(sim2,aes(year,median,color=species)) +
+  geom_line(size = .8) + xlab("Year") +
+  geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), color=NA, alpha = .2) +
+  theme(plot.margin=unit(c(5.5,10,5.5,5.5),units = "pt"),legend.text = element_markdown(),strip.text.x = element_blank(),panel.spacing = unit(1.5, "lines"),legend.position = "none",axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank(),axis.title.y = element_blank()) +
+  scale_color_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                     values=c("#D55E00","#0072B2","#48B99B")) +
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#48B99B")) +
+  scale_x_continuous(expand = c(0.04,0.04))
 
 
 #############################
