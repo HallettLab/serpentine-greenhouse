@@ -22,7 +22,7 @@ pop.invade <- function (N0, resident, s, g, a_inter, a_intra, lambda, g_resident
 ##surv and germ fractions from literature
 ps <- .75 # gulmon
 pg <- .92 # gulmon
-bs <- .013 # andrew
+bs <- .01 # andrew
 bg <- .98 # gulmon
 ls <- .15 # ms thesis from Cal Poly SLO
 lg <- .32 # ms thesis from Cal Poly SLO

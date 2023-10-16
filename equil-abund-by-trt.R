@@ -9,7 +9,7 @@ library(here)
 ##survival and germination fractions
 ps <- .75 # gulmon
 pg <- .92 # gulmon
-bs <- .013 # andrew
+bs <- .01 # andrew
 bg <- .98 # gulmon
 ls <- .15 # rossington
 lg <- .32 # rossington
