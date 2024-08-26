@@ -15,16 +15,117 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 #####################################
 ######Code for updated JR data#######
 #####################################
-#skip to line 78 to read in data by code produced below
-#1983-2019 1m^s plot cover
 dat <- read.csv(paste(datpath, "JR_cover_1mplot1983-2019.csv",sep="")) %>%
   mutate_at(4,as.character) %>%
   filter(treatment=="c") %>%
   filter(species=="BRMO"|species=="LAPL"|species =="LOMU"|species=="PLER") %>%
   mutate(species = case_when(species %in% "BRMO" ~ "Bromus",
                              species %in% "LAPL" ~ "Layia",
-                             species %in% "LOMU" ~ "Lolium",
                              species %in% "PLER" ~ "Plantago"))
+
+jrdat <-  dat %>%
+  group_by(year,species) %>%
+  summarize(mean_cov = mean(cover),med_cov = median(cover))
+CI <- dat %>%
+  group_by(year,species) %>%
+  summarize(lower=quantile(cover,probs = 0.25),upper=quantile(cover,probs=0.75))
+jrdatCI <- left_join(jrdat,CI)
+
+#graph with species 
+#without lomu for ms
+jrms <- jrdatCI %>%
+  filter(year %in% 1983:2019)
+
+jrmsfig <- ggplot(jrms,aes(year,med_cov,color=species)) +
+  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species),colour=NA, alpha = .2) +
+  geom_line(linewidth=.8) +
+  ylab("Percent cover") +
+  scale_color_manual(values=c("#D55E00","#0072B2","#48B99B"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#48B99B")) +
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  xlab("Year") +
+  theme(legend.position = "none",legend.text = ggtext::element_markdown()) +
+  theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm")) 
+
+#rainfall
+ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
+  filter(year %in% c(1983:2019)) 
+
+p2019 <- ggplot(ppt, aes(x=year)) +
+  geom_hline(yintercept=565, linetype="dashed",linewidth=0.2)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
+  geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#bf9b30",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[9:25,],colour="black",size=.8) +
+  geom_line(aes(y=growing_season_ppt),data=ppt[25:27,],colour="#bf9b30",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[27:30,],colour="black",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#bf9b30",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
+  xlab("Year") + 
+  #ylab(expression(atop("Rainfall",paste("(mm)"))))+
+  ylab("Rainfall (mm)") +
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.text.x = element_text(angle = 90)) +
+  annotate("pointrange", x =1983, y =1250.442, 
+           ymin = 1250.442, ymax = 1250.442,
+           colour = "#593392")+
+  annotate("pointrange", x =1998, y =1028.446, 
+           ymin = 1028.446, ymax = 1028.446,
+           colour = "#593392")+
+  annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
+           colour = "#593392")+
+  scale_y_continuous(limits=c(0,1300),breaks = seq(0,1600,by=565))+
+  scale_x_continuous(breaks=seq(1983,2019,by=4))
+
+#2019
+gjr <- ggplotGrob(jrmsfig)
+gp <- ggplotGrob(p2019)
+maxWidth = grid::unit.pmax(gjr$widths[2:5], gp$widths[2:5])
+gjr$widths[2:5] <- as.list(maxWidth)
+gp$widths[2:5] <- as.list(maxWidth)
+grid.arrange(gjr,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7), 
+                                           y = c(.92,.51), gp = gpar(fontface = "bold", fontsize = 16)))
+
+pdf("jr-timeseries-msfig.pdf")
+plot_grid(jrmsfig,p2019,ncol=1,align="v",rel_heights = c(.2,.09),hjust = -3,vjust=0)
+dev.off()
+
+##legend if needed
+legmsfig <- ggplot(jrms,aes(year,med_cov,color=species)) + 
+  geom_line(size=.8) + 
+  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
+  ylab("Percent cover") +
+  scale_color_manual(values=c("#D55E00","#0072B2","#48B99B"),name = "Species", 
+                     labels = c("*Bromus*", "*Layia*","*Plantago*"))+
+  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
+                    values=c("#D55E00","#0072B2","#48B99B")) +
+  scale_x_continuous(expand = c(0.04, 0.04)) +
+  xlab("Year") +
+  theme(legend.position = "top") +
+  theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
+  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm")) +
+  theme(legend.text = ggtext::element_markdown())
+
+
+g_legend <- function(a.gplot){ 
+  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
+  legend <- tmp$grobs[[leg]] 
+  legend
+} 
+
+legendms <- as.ggplot(g_legend(legmsfig))
+
+
+
+
+#####################################################
+#with lomu
+
+#skip to line 78 to read in data by code produced below
+#1983-2019 1m^s plot cover
 #convert 2021-23 cover to 1m^2 plot 
 dat_upd <- read.csv(paste(datpath, "JR_cover2021-23.csv", sep = ""))
 
@@ -71,113 +172,6 @@ JRm2cover <- merge(cover_upd, key) %>%
   mutate(treatment="c") 
 
 cover_complete <- rbind(dat,JRm2cover)
-
-#write.csv(cover_complete,"JR_cover_1mplot1983-2023.csv")
-#################################################################
-
-cover_complete <- read.csv(paste(datpath,"JR_cover_1mplot1983-2019.csv",sep=""))
-
-jrdat <-  cover_complete %>%
-  group_by(year,species) %>%
-  summarize(mean_cov = mean(cover),med_cov = median(cover))
-CI <- cover_complete %>%
-  group_by(year,species) %>%
-  summarize(lower=quantile(cover,probs = 0.25),upper=quantile(cover,probs=0.75))
-jrdatCI <- left_join(jrdat,CI)
-
-#graph with species 
-#without lomu for ms
-jrms <- jrdatCI %>%
-  filter(species %in% c("BRMO","PLER","LAPL")) %>%
-  filter(year %in% 1983:2019)
-
-jrmsfig <- ggplot(jrms,aes(year,med_cov,color=species)) +
-  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species),colour=NA, alpha = .2) +
-  geom_line(linewidth=.8) +
-  ylab("Percent cover") +
-  scale_color_manual(values=c("#D55E00","#0072B2","#48B99B"),name = "Species", 
-                     labels = c("*Bromus*", "*Layia*","*Plantago*"))+
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","#48B99B")) +
-  scale_x_continuous(expand = c(0.04, 0.04)) +
-  xlab("Year") +
-  theme(legend.position = "none",legend.text = ggtext::element_markdown()) +
-  theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm")) 
-
-
-##legend if needed
-legmsfig <- ggplot(jrms,aes(year,med_cov,color=species)) + 
-  geom_line(size=.8) + 
-  geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
-  ylab("Percent cover") +
-  scale_color_manual(values=c("#D55E00","#0072B2","#48B99B"),name = "Species", 
-                     labels = c("*Bromus*", "*Layia*","*Plantago*"))+
-  scale_fill_manual(name = "Species",labels = c("*Bromus*","*Layia*","*Plantago*"),
-                    values=c("#D55E00","#0072B2","#48B99B")) +
-  scale_x_continuous(expand = c(0.04, 0.04)) +
-  xlab("Year") +
-  theme(legend.position = "top") +
-  theme(axis.text.x = element_blank(),axis.title.x = element_blank(),axis.ticks.x = element_blank()) +
-  theme(plot.margin = unit(c(.5,.8,.5,.5), "cm")) +
-  theme(legend.text = ggtext::element_markdown())
-
-
-g_legend <- function(a.gplot){ 
-  tmp <- ggplot_gtable(ggplot_build(a.gplot)) 
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box") 
-  legend <- tmp$grobs[[leg]] 
-  legend
-} 
-
-legendms <- as.ggplot(g_legend(legmsfig))
-
-#rainfall
-ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
-  filter(year %in% c(1983:2019)) 
-
-p2019 <- ggplot(ppt, aes(x=year)) +
-  geom_hline(yintercept=565, linetype="dashed",linewidth=0.2)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
-  geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#bf9b30",size=.8)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[9:25,],colour="black",size=.8) +
-  geom_line(aes(y=growing_season_ppt),data=ppt[25:27,],colour="#bf9b30",size=.8)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[27:30,],colour="black",size=.8)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#bf9b30",size=.8)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
-  xlab("Year") + 
-  #ylab(expression(atop("Rainfall",paste("(mm)"))))+
-  ylab("Rainfall (mm)") +
-  scale_x_continuous(expand = c(0.04, 0.04)) +
-  theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.text.x = element_text(angle = 90)) +
-  annotate("pointrange", x =1983, y =1250.442, 
-           ymin = 1250.442, ymax = 1250.442,
-           colour = "#593392")+
-  annotate("pointrange", x =1998, y =1028.446, 
-           ymin = 1028.446, ymax = 1028.446,
-           colour = "#593392")+
-  annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
-           colour = "#593392")+
-  scale_y_continuous(limits=c(0,1300),breaks = seq(0,1600,by=565))+
-  scale_x_continuous(breaks=seq(1983,2019,by=4))
-
-#2019
-gjr <- ggplotGrob(jrmsfig)
-gp <- ggplotGrob(p2019)
-maxWidth = grid::unit.pmax(gjr$widths[2:5], gp$widths[2:5])
-gjr$widths[2:5] <- as.list(maxWidth)
-gp$widths[2:5] <- as.list(maxWidth)
-grid.arrange(gjr,gp,ncol=1,left = textGrob(c("a)","b)"), x =c(2.7,2.7), 
-                                           y = c(.92,.51), gp = gpar(fontface = "bold", fontsize = 16)))
-
-pdf("jr-timeseries-msfig.pdf")
-plot_grid(jrmsfig,p2019,ncol=1,align="v",rel_heights = c(.2,.09),hjust = -3,vjust=0)
-dev.off()
-
-
-
-#####################################################
-#with lomu
 jrlomu <- ggplot(jrdatCI,aes(year,med_cov,color=species)) + 
   geom_line(size=.8) + 
   geom_ribbon(aes(x= year, ymin=lower,ymax=upper, fill=species), alpha = .2) +
