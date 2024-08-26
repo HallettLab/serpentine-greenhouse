@@ -549,6 +549,8 @@ simulation2 <- ggplot(sim2,aes(year,median,color=species)) +
   scale_x_continuous(expand = c(0.04,0.04)) #+
  # ylab(expression(atop("Log median",paste("abundance (per  ",m^{2},")")))) 
 
+##legend if needed
+
 leg <- ggplot(sim2,aes(year,median,color=species)) +
   geom_line(size = .8) + xlab("Year") +
   geom_ribbon(aes(x= year, ymin=CIlower,ymax=CIupper, fill=species), alpha = .2) +
@@ -572,34 +574,35 @@ g_legend <- function(a.gplot){
 
 legend <- as.ggplot(g_legend(leg))
 
+##rainfall dat
+
 ppt <- read.csv(paste(datpath, "JR_rain.csv", sep = "")) %>%
-  filter(year != 1982) %>%
   filter(year %in% 1983:2019)
 
 p2019 <- ggplot(ppt, aes(x=year)) +
   geom_hline(yintercept=565, linetype="dashed",linewidth=0.2)+
   geom_line(aes(y=growing_season_ppt),data=ppt[1:5,],colour="black",size=.8) +
-  geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#c54e49",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[5:9,],colour="#bf9b30",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[9:25,],colour="black",size=.8) +
-  geom_line(aes(y=growing_season_ppt),data=ppt[25:27,],colour="#c54e49",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[25:27,],colour="#bf9b30",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[27:30,],colour="black",size=.8)+
-  geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#c54e49",size=.8)+
+  geom_line(aes(y=growing_season_ppt),data=ppt[30:33,],colour="#bf9b30",size=.8)+
   geom_line(aes(y=growing_season_ppt),data=ppt[33:37,],colour="black",size=.8)+
   xlab("Year") + 
   #ylab(expression(atop("Rainfall",paste("(mm)"))))+
   ylab("Rainfall (mm)") +
+  scale_x_continuous(expand = c(0.04, 0.04)) +
   theme(plot.margin = unit(c(.01,.8,.5,.5), "cm"),axis.text.x = element_text(angle = 90)) +
   annotate("pointrange", x =1983, y =1250.442, 
            ymin = 1250.442, ymax = 1250.442,
-           colour = "#4b7ea3")+
+           colour = "#593392")+
   annotate("pointrange", x =1998, y =1028.446, 
            ymin = 1028.446, ymax = 1028.446,
-           colour = "#4b7ea3")+
+           colour = "#593392")+
   annotate("pointrange", x=2017,y=859.028,ymin = 859.028, ymax = 859.028,
-           colour = "#4b7ea3")+
+           colour = "#593392")+
   scale_y_continuous(limits=c(0,1300),breaks = seq(0,1600,by=565))+
-  scale_x_continuous(breaks=seq(1983,2019,by=4),expand = c(0.04, 0.04))
-
+  scale_x_continuous(breaks=seq(1983,2019,by=4))
 
 
 
