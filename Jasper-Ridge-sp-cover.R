@@ -18,7 +18,7 @@ theme_update( panel.grid.major=element_blank(), panel.grid.minor=element_blank()
 dat <- read.csv(paste(datpath, "JR_cover_1mplot1983-2019.csv",sep="")) %>%
   mutate_at(4,as.character) %>%
   filter(treatment=="c") %>%
-  filter(species=="BRMO"|species=="LAPL"|species =="LOMU"|species=="PLER") %>%
+  filter(species=="BRMO"|species=="LAPL"|species=="PLER") %>%
   mutate(species = case_when(species %in% "BRMO" ~ "Bromus",
                              species %in% "LAPL" ~ "Layia",
                              species %in% "PLER" ~ "Plantago"))
