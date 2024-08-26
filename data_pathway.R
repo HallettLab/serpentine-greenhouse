@@ -6,8 +6,7 @@
 datpath <- "C:/Users/eliza/Dropbox (University Of Oregon)/Serpentine-Eliza/Greenhouse ms/Data/"
 datpath <- "C:/Users/16265/Dropbox (University of Oregon)/Serpentine-Eliza/Greenhouse ms/Data/"
 datpath <- "C:/Users/ehernan2/Dropbox (University of Oregon)/Serpentine-Eliza/Greenhouse ms/Data/"
-datpath <- "C:/Users/ElizaHernandez/Dropbox (University of Oregon)/Serpentine-Eliza/Greenhouse ms/Data/"
-
+datpath <- "C:/Users/ElizaHernandez/University of Oregon Dropbox/Eliza Hernandez/Serpentine-Eliza/Greenhouse ms/Data/"
 
 
 ##mac user = lauren
